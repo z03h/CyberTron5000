@@ -327,7 +327,7 @@ class Bot(commands.Cog):
             
             embed.add_field(name="General",
                             value=f"**Guilds**: {len(self.client.guilds)} \n**Members**: {len(self.client.users)}"
-                                  f"\nAbout **{round(int(len(self.client.guilds))/int(len(self.client.users)))}** users per guild"
+                                  f"\nAbout **{round(int(len(self.client.users))/int(len(self.client.guilds)))}** users per guild"
                                   f"\n **Emojis**: {len(self.client.emojis)}")
             embed.add_field(name="Bot Info",
                             value=f"**Cogs**: {len(self.client.cogs)} "
