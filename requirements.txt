@@ -1,0 +1,7 @@
+discord
+humanize
+aiohttp
+googletrans
+random_word
+praw
+disputils
