@@ -1,7 +1,9 @@
 import random
+import asyncio
 
 import discord
 from discord.ext import commands
+from async_timeout import timeout
 
 from .utils.lists import INDICATOR_LETTERS
 
@@ -15,6 +17,7 @@ class Fun(commands.Cog):
     """Fun commands"""
     def __init__(self, client):
         self.client = client
+        self.tick = ":GreenTick:707950252434653184"
     
     @commands.group(invoke_without_command=True, help="≫ Replies with what you said and deletes your message.",
                     aliases=['say'])
@@ -302,6 +305,31 @@ class Fun(commands.Cog):
             await ctx.send(emoji)
         else:
             await ctx.message.add_reaction(emoji=emoji)
+            
+    @commands.command(aliases=['gt'])
+    async def greentext(self, ctx):
+        """Write a greentext story"""
+        try:
+            story = []
+            await ctx.send("Greentext story starting! Type `quit` or `exit` to stop the session, or `finish` to see your final story!")
+            while True:
+                message = await self.client.wait_for('message', check=lambda m: m.author == ctx.author, timeout=30)
+                async with timeout(30):
+                    if message.content == "quit":
+                        await ctx.send("Session exited.")
+                        return
+                    elif message.content == "exit":
+                        await ctx.send("Session exited.")
+                        return
+                    elif message.content == "finish":
+                        final_story = "\n".join(story)
+                        await ctx.send("```css\n" + final_story + "```")
+                        return
+                    else:
+                        story.append(">" + message.content)
+                        await message.add_reaction(emoji=self.tick)
+        except asyncio.TimeoutError:
+            await ctx.send("You ran out of time!")
 
 def setup(client):
     client.add_cog(Fun(client))

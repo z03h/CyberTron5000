@@ -19,8 +19,6 @@ def check_admin_or_owner():
             return True
         elif ctx.message.author.permissions_in(channel=ctx.message.channel).administrator:
             return True
-        elif ctx.message.author.id == 675806911194464306:
-            return False
         else:
             return False
     
