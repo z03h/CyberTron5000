@@ -326,8 +326,8 @@ class Bot(commands.Cog):
                                   description=f"[`Invite me to your server!`](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)")
             
             embed.add_field(name="General",
-                            value=f"**Guilds**: {len(self.client.guilds)} \n**Members**: {len(self.client.users)} • "
-                                  f"About **{round(len(self.client.guilds)/len(self.client.users))}** users per guild"
+                            value=f"**Guilds**: {len(self.client.guilds)} \n**Members**: {len(self.client.users)}"
+                                  f"\nAbout **{round(int(len(self.client.guilds))/int(len(self.client.users)))}** users per guild"
                                   f"\n **Emojis**: {len(self.client.emojis)}")
             embed.add_field(name="Bot Info",
                             value=f"**Cogs**: {len(self.client.cogs)} "
