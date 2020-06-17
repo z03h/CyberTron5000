@@ -308,13 +308,13 @@ class Fun(commands.Cog):
             
     @commands.command(aliases=['gt'])
     async def greentext(self, ctx):
-        """Write a greentext story"""
+        """≫ Write a greentext story"""
         try:
             story = []
             await ctx.send("Greentext story starting! Type `quit` or `exit` to stop the session, or `finish` to see your final story!")
             while True:
-                message = await self.client.wait_for('message', check=lambda m: m.author == ctx.author, timeout=30)
-                async with timeout(30):
+                message = await self.client.wait_for('message', check=lambda m: m.author == ctx.author, timeout=500)
+                async with timeout(500):
                     if message.content == "quit":
                         await ctx.send("Session exited.")
                         return

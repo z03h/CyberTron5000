@@ -173,7 +173,9 @@ class PaginatedHelpCommand(commands.HelpCommand):
 
 
 class Info(commands.Cog):
+    
     """Help Commands"""
+    
     def __init__(self, client):
         self.client = client
         self.old_help_command = client.help_command
@@ -183,13 +185,14 @@ class Info(commands.Cog):
     def cog_unload(self):
         self.client.help_command = self.old_help_command
     
-    @commands.command(help="≫ Shows you every cog")
+    @commands.command()
     async def cogs(self, ctx):
         cogs = []
         for x in self.client.cogs:
             cogs.append(f"`{x}` • {self.client.cogs[x].description}")
         await ctx.send(embed=discord.Embed(colour=colour, title=f"All Cogs ({len(self.client.cogs)})",
-                                           description=f"Do `{ctx.prefix}help <cog>` to know more about them!" + "\n\n" + "\n".join(cogs)))
+                                           description=f"Do `{ctx.prefix}help <cog>` to know more about them!" + "\n\n" + "\n".join(
+                                               cogs)))
     
     @commands.command(name="?", hidden=True)
     async def second_help(self, ctx, *cog):
@@ -230,6 +233,48 @@ class Info(commands.Cog):
                     if not found:
                         pass
                     await ctx.send('', embed=halp)
+        except Exception as error:
+            await ctx.send(error)
+    
+    @commands.command(hidden=True)
+    async def hlap(self, ctx, cmd):
+        """≫ Shows you help for a command, category, or the bot."""
+        try:
+            found: bool = False
+            for command in self.client.commands:
+                if cmd == command.name:
+                    if not command.hidden:
+                        help_msg = command.help or "No help given."
+                        parent = command.full_parent_name
+                        if len(command.aliases) > 0:
+                            aliases = '•'.join(command.aliases)
+                            fmt = f'[{command.name}•{aliases}]'
+                            if parent:
+                                fmt = f'{parent} {fmt}'
+                            alias = fmt
+                        else:
+                            alias = command.name if not parent else f'{parent} {command.name}'
+                        embed = discord.Embed(colour=colour, title=f"{ctx.prefix}{alias} {command.signature}", description=help_msg)
+                        await ctx.send(embed=embed)
+                        found = True
+                elif cmd in command.aliases:
+                    if not command.hidden:
+                        help_msg = command.help or "No help given."
+                        parent = command.full_parent_name
+                        if len(command.aliases) > 0:
+                            aliases = '•'.join(command.aliases)
+                            fmt = f'[{command.name}•{aliases}]'
+                            if parent:
+                                fmt = f'{parent} {fmt}'
+                            alias = fmt
+                        else:
+                            alias = command.name if not parent else f'{parent} {command.name}'
+                        embed = discord.Embed(colour=colour, title=f"{ctx.prefix}{alias} {command.signature}",
+                                              description=help_msg)
+                        await ctx.send(embed=embed)
+                        found = True
+            if not found:
+                await ctx.send(f"Command `{cmd}` not found.")
         except Exception as error:
             await ctx.send(error)
 
