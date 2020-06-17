@@ -323,7 +323,7 @@ class Bot(commands.Cog):
             
             code = nol + count + nol2
             embed = discord.Embed(color=0x00dcff, title=f"About {self.client.user.name}",
-                                  description=f"[`Invite me to your server!`](https://discord.com/oauth2/authorize?client_id=697678160577429584&permissions=8&scope=bot)")
+                                  description=f"[`Invite me to your server!`](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)")
             
             embed.add_field(name="General",
                             value=f"**Guilds**: {len(self.client.guilds)} \n**Members**: {len(self.client.users)} "
