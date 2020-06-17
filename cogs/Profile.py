@@ -212,7 +212,7 @@ class Profile(commands.Cog):
             status_list = f"{status_emoji}{bruhmoji}{bruhmoji2}{bruhmoji3}{bot_bruh}"
             a = discord.Embed(
                 colour=colour, timestamp=ctx.message.created_at, title=f"{member}",
-                description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Member **#{join_position+1}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow()-member.created_at)}**\n**Top Role:** {member.top_role.mention}\n{status_list}"
+                description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position+1}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow()-member.created_at)}**\n**Top Role:** {member.top_role.mention}\n{status_list}"
             )
             a.set_thumbnail(url=member.avatar_url_as(static_format="png"))
             await ctx.send(embed=a)
