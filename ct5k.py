@@ -77,6 +77,8 @@ client.remove_command('help')
 @client.event
 async def on_guild_join(guild):
     owner = client.get_user(id=350349365937700864)
+    mod_list = [member for member in guild.members if member.guild_permissions.administrator]
+    ml = "\n".join([f"{member.mention} • `{member.top_role.name}`" for member in mod_list if member.bot is False])
     with open("prefixes.json", "r") as f:
         prefixes = json.load(f)
     
@@ -108,7 +110,7 @@ async def on_guild_join(guild):
         emojis = [emoji for emoji in guild.emojis]
         region = REGIONS[f"{str(guild.region)}"]
         embed = discord.Embed(colour=colour, title=f'{guild}', description=f"**{guild.id}**"
-                                                                           f"\n<:member:716339965771907099>**{len(guild.members):,}** | <:online:703903072824459265>**{online:,}** • <:dnd:703903073315192832>**{dnd:,}** • <:idle:703903072836911105>**{idle:,}** • <:offline:703918395518746735>**{offline:,}**\n**Owner:** {guild.owner.mention}\n**Region:** {region}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**")
+                                                                           f"\n<:member:716339965771907099>**{len(guild.members):,}** | <:online:703903072824459265>**{online:,}** • <:dnd:703903073315192832>**{dnd:,}** • <:idle:703903072836911105>**{idle:,}** • <:offline:703918395518746735>**{offline:,}**\n**Owner:** {guild.owner.mention}\n**Region:** {region}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**\n**Admins:**\n{ml}")
         
         embed.set_thumbnail(url=guild.icon_url)
         embed.set_footer(

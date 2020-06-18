@@ -315,15 +315,15 @@ class Fun(commands.Cog):
             while True:
                 message = await self.client.wait_for('message', check=lambda m: m.author == ctx.author, timeout=500)
                 async with timeout(500):
-                    if message.content == "quit":
+                    if message.content == "quit" and message.author == ctx.author:
                         await ctx.send("Session exited.")
                         return
-                    elif message.content == "exit":
+                    elif message.content == "exit" and message.author == ctx.author:
                         await ctx.send("Session exited.")
                         return
-                    elif message.content == "finish":
+                    elif message.content == "finish" and message.author == ctx.author:
                         final_story = "\n".join(story)
-                        await ctx.send("```css\n" + final_story + "```")
+                        await ctx.send(f"**{ctx.author}**'s story\n```css\n" + final_story + "```")
                         return
                     else:
                         story.append(">" + message.content)

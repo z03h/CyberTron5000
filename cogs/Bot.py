@@ -171,12 +171,15 @@ class Bot(commands.Cog):
     
     @commands.command(aliases=["sourcecode", "src"], help="≫ Shows source code for a given command")
     async def source(self, ctx, *, command):
-        cmd = self.client.get_command(command).callback
-        src = inspect.getsource(cmd)
-        real_src = str(src).replace("`", "'")
-        await ctx.send(f" Showing source for command `{ctx.prefix + command}` (\` have been replaced with ')"
-                       f"\n\n```python\n{real_src}\n```")
-    
+        try:
+            cmd = self.client.get_command(command).callback
+            src = inspect.getsource(cmd)
+            real_src = str(src).replace("`", "'")
+            await ctx.send(f" Showing source for command `{ctx.prefix + command}` (\` have been replaced with ')"
+                           f"\n\n```python\n{real_src}\n```")
+        except Exception:
+            await ctx.send("This command is too long.")
+        
     @commands.group(invoke_without_command=True, help="≫ Shows total lines of code used to make the bot.")
     async def lines(self, ctx):
         global count
