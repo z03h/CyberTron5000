@@ -32,7 +32,7 @@ class Games(commands.Cog):
                     check=lambda reaction,
                                  user: reaction.emoji
                 )
-                await reaction.remove(user=user)
+                
                 if str(reaction.emoji) == "🗿":
                     if choice == "paper":
                         await msg.edit(embed=discord.Embed(description=f"You lost! I drew {choice}!", colour=colour))
@@ -83,7 +83,7 @@ class Games(commands.Cog):
                                  user: reaction.emoji
                 )
                 if str(reaction.emoji) == "😘":
-                    await reaction.remove(user=user)
+                    
                     embed1 = discord.Embed(colour=colour,
                                            description=f"**Would you marry (👫), or kill(🔪) {member2.display_name}?**")
                     embed1.add_field(name=member1.display_name, value="😘")
@@ -102,7 +102,7 @@ class Games(commands.Cog):
                                          user: reaction.emoji
                         )
                         if str(reaction.emoji) == "👫":
-                            await reaction.remove(user=user)
+                            
                             embed2 = discord.Embed(colour=colour,
                                                    description=f"**Results**")
                             embed2.add_field(name=member1.display_name, value="😘")
@@ -112,7 +112,7 @@ class Games(commands.Cog):
                                               icon_url=ctx.message.author.avatar_url)
                             await ctx.send(embed=embed2)
                         elif str(reaction.emoji) == "🔪":
-                            await reaction.remove(user=user)
+                            
                             embed2 = discord.Embed(colour=colour,
                                                    description=f"**Results**")
                             embed2.add_field(name=member1.display_name, value="😘")
@@ -122,7 +122,7 @@ class Games(commands.Cog):
                                               icon_url=ctx.message.author.avatar_url)
                             await ctx.send(embed=embed2)
                 elif str(reaction.emoji) == "👫":
-                    await reaction.remove(user=user)
+                    
                     embed1 = discord.Embed(colour=colour,
                                            description=f"**Would you kiss (😘), or kill(🔪) {member2.display_name}?**")
                     embed1.add_field(name=member1.display_name, value="👫")
@@ -142,7 +142,7 @@ class Games(commands.Cog):
                                          user: reaction.emoji
                         )
                         if str(reaction.emoji) == "😘":
-                            await reaction.remove(user=user)
+                            
                             embed2 = discord.Embed(colour=colour,
                                                    description=f"**Results**")
                             embed2.add_field(name=member1.display_name, value="👫")
@@ -152,7 +152,7 @@ class Games(commands.Cog):
                                               icon_url=ctx.message.author.avatar_url)
                             await ctx.send(embed=embed2)
                         elif str(reaction.emoji) == "🔪":
-                            await reaction.remove(user=user)
+                            
                             embed2 = discord.Embed(colour=colour,
                                                    description=f"**Results**")
                             embed2.add_field(name=member1.display_name, value="👫")
@@ -162,7 +162,7 @@ class Games(commands.Cog):
                                               icon_url=ctx.message.author.avatar_url)
                             await ctx.send(embed=embed2)
                 elif str(reaction.emoji) == "🔪":
-                    await reaction.remove(user=user)
+                    
                     embed1 = discord.Embed(colour=colour,
                                            description=f"**Would you kiss (😘), or marry (👫) {member2.display_name}?**")
                     embed1.add_field(name=member1.display_name, value="🔪")
@@ -181,7 +181,7 @@ class Games(commands.Cog):
                                          user: reaction.emoji
                         )
                         if str(reaction.emoji) == "😘":
-                            await reaction.remove(user=user)
+                            
                             embed2 = discord.Embed(colour=colour,
                                                    description=f"**Results**")
                             embed2.add_field(name=member1.display_name, value="🔪")
@@ -191,7 +191,7 @@ class Games(commands.Cog):
                                               icon_url=ctx.message.author.avatar_url)
                             await ctx.send(embed=embed2)
                         elif str(reaction.emoji) == "👫":
-                            await reaction.remove(user=user)
+                            
                             embed2 = discord.Embed(colour=colour,
                                                    description=f"**Results**")
                             embed2.add_field(name=member1.display_name, value="🔪")
