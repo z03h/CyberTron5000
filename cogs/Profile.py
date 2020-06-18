@@ -10,6 +10,13 @@ from .utils.lists import REGIONS
 
 colour = 0x00dcff
 
+status_list = {
+    "online": "<:online:703903072824459265>",
+    "offline": "<:offline:703918395518746735>",
+    "idle": "<:idle:703903072836911105>",
+    "dnd": "<:dnd:703903073315192832>"
+}
+
 
 # ≫ •
 
@@ -65,7 +72,7 @@ class Profile(commands.Cog):
             roles = [role for role in ctx.guild.roles]
             role_list = " ".join(role.mention for role in roles[::-1][:10] if role.id != ctx.guild.id)
             embed = discord.Embed(colour=colour, title=f'{guild}', description=f"**{ctx.guild.id}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
-                                                                               f"\n<:member:716339965771907099>**{len(ctx.guild.members):,}** | <:online:703903072824459265>**{online:,}** • <:dnd:703903073315192832>**{dnd:,}** • <:idle:703903072836911105>**{idle}** • <:offline:703918395518746735>**{offline:,}** | <:bot:703728026512392312> **{botno}**\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}")
+                                                                               f"\n<:member:716339965771907099>**{len(ctx.guild.members):,}** | <:online:703903072824459265>**{online:,}** • <:dnd:703903073315192832>**{dnd:,}** • <:idle:703903072836911105>**{idle:,}** • <:offline:703918395518746735>**{offline:,}** | <:bot:703728026512392312> **{botno}**\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}")
             embed.set_thumbnail(url=guild.icon_url)
             if len(roles) > 10:
                 msg = "Top 10 roles"
@@ -136,7 +143,7 @@ class Profile(commands.Cog):
             top_role_msg = f"\n**Top Role:** {member.top_role.mention}"
         a = discord.Embed(
             colour=colour, timestamp=ctx.message.created_at, title=f"{member}",
-            description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**{top_role_msg}\n{status_list}"
+            description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1:,}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**{top_role_msg}\n{status_list}"
         )
         a.set_thumbnail(url=member.avatar_url_as(static_format="png"))
         embedd = discord.Embed(colour=colour, timestamp=ctx.message.created_at,
@@ -224,7 +231,7 @@ class Profile(commands.Cog):
                 top_role_msg = f"\n**Top Role:** {member.top_role.mention}"
             a = discord.Embed(
                 colour=colour, timestamp=ctx.message.created_at, title=f"{member}",
-                description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**{top_role_msg}\n{status_list}"
+                description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1:,}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**{top_role_msg}\n{status_list}"
             )
             a.set_thumbnail(url=member.avatar_url_as(static_format="png"))
             await ctx.send(embed=a)
@@ -251,6 +258,8 @@ class Profile(commands.Cog):
         embedd.add_field(name='Has', value='\n'.join(perms), inline=True)
         embedd.add_field(name='Does Not Have', value='\n'.join(negperms), inline=True)
         await ctx.send(embed=embedd)
+        
+        self.bruh
 
 
 def setup(client):

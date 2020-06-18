@@ -329,13 +329,13 @@ class Bot(commands.Cog):
                                   description=f"[`Invite me to your server!`](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)")
             
             embed.add_field(name="General",
-                            value=f"**Guilds**: {len(self.client.guilds)} \n**Members**: {len(self.client.users)}"
-                                  f"\n **Emojis**: {len(self.client.emojis)}")
+                            value=f"**Guilds**: {len(self.client.guilds):,} \n**Members**: {len(self.client.users):,}"
+                                  f"\n **Emojis**: {len(self.client.emojis):,}")
             embed.add_field(name="Bot Info",
                             value=f"**Cogs**: {len(self.client.cogs)} "
                                   f"\n**Commands and Subcommands**: {len(self.client.commands)}\n**Cached Messages**: {len(self.client.cached_messages)}")
             embed.add_field(name=f"\u200b",
-                            value=f"About **{round(int(len(self.client.users))/int(len(self.client.guilds)))}** users per guild\n**Lines of Code**: {code:,} | <:dpy:708479036518694983><:python:706850228652998667><:JSON:710927078513442857>\n**Want more info?** [Join the CT5k support server!](https://discord.gg/aa9p43W)",
+                            value=f"About **{round(int(len(self.client.users))/int(len(self.client.guilds))):,}** users per guild\n**Lines of Code**: {code:,} | <:dpy:708479036518694983><:python:706850228652998667><:JSON:710927078513442857>\n**Want more info?** [Join the CT5k support server!](https://discord.gg/aa9p43W)",
                             inline=False)
             embed.set_thumbnail(
                 url=self.client.user.avatar_url)
