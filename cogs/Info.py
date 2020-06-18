@@ -27,6 +27,7 @@ class Info(commands.Cog):
         list_of_cogs = []
         walk_commands = []
         final_walk_command_list = []
+        sc = []
         try:
             for cog in self.client.cogs:
                 list_of_cogs.append(cog)
@@ -46,9 +47,14 @@ class Info(commands.Cog):
                     embed.set_footer(text=footer)
                 for wc in self.client.walk_commands():
                     if not wc.cog_name and not wc.hidden:
-                        walk_commands.append(wc.name)
+                        if isinstance(wc, commands.Group):
+                            walk_commands.append(wc.name)
+                            for scw in wc.commands:
+                                sc.append(scw.name)
+                        else:
+                            walk_commands.append(wc.name)
                 for item in walk_commands:
-                    if item not in final_walk_command_list:
+                    if item not in final_walk_command_list and item not in sc:
                         final_walk_command_list.append(item)
                 embed.add_field(name="≫ Uncategorized Commands", value=" • ".join(final_walk_command_list))
                 await ctx.send(embed=embed)
