@@ -56,7 +56,7 @@ class Info(commands.Cog):
                 for item in walk_commands:
                     if item not in final_walk_command_list and item not in sc:
                         final_walk_command_list.append(item)
-                embed.add_field(name="≫ Uncategorized Commands", value=" • ".join(final_walk_command_list))
+                embed.add_field(name="≫ Uncategorized Commands", value=" • ".join(sorted(final_walk_command_list)))
                 await ctx.send(embed=embed)
             elif command in list_of_cogs:
                 cog_doc = self.client.cogs[command].__doc__ or " "
