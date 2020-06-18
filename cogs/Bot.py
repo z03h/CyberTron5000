@@ -379,7 +379,7 @@ class Bot(commands.Cog):
                 if str(message.guild.id) in prefix:
                     pre = prefix[str(message.guild.id)]
                     embed = discord.Embed(colour=colour,
-                                          description=f'**My prefix for {message.guild} is** `{pre}`\n\n**Do** `{pre}help` **for a full list of commands.**\n\n[Invite me to your server!](https://discord.com/oauth2/authorize?client_id=697678160577429584&permissions=8&scope=bot)\n\n[Join our help server!](https://discord.gg/aa9p43W)')
+                                          description=f'**My prefix for {message.guild} is** `{pre}`\n\n**Do** `{pre}help` **for a full list of commands.**\n\n[Invite me to your server!](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)\n\n[Join our help server!](https://discord.gg/aa9p43W)')
                     embed.set_thumbnail(url=self.client.user.avatar_url)
                     embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
                     await message.channel.send(embed=embed)
