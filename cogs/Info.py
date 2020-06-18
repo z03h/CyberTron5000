@@ -85,9 +85,9 @@ class Info(commands.Cog):
                     sub_cmds = []
                     for sub_cmd in cmd.commands:
                         schm = sub_cmd.help or "No help provided for this command"
-                        sub_cmds.append(f"≫ **{cmd.name} {sub_cmd.name}** • {schm}")
-                await ctx.send(embed=discord.Embed(title=f"{pre}{alias} {cmd.signature}", description=help_msg + "\n" + "\n".join(sub_cmds), colour=colour).set_footer(text=f"{footer} • ≫ are subcommands"))
-    
+                        sub_cmds.append(f"≫ **{pre}{cmd.name} {sub_cmd.name}** • {schm}")
+                    await ctx.send(embed=discord.Embed(title=f"{pre}{alias} {cmd.signature}", description=help_msg + "\n\n" +
+                                                                                                      "\n".join(sub_cmds), colour=colour).set_footer(text=f"{footer} • ≫ are subcommands"))
             else:
                 await ctx.send(f"Command/Cog `{command}` not found!")
         except Exception as er:
