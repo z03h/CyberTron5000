@@ -19,7 +19,7 @@ class Info(commands.Cog):
                                            description=f"Do `{ctx.prefix}help <cog>` to know more about them!" + "\n\n" + "\n".join(
                                                cogs)))
     
-    @commands.command()
+    @commands.command(aliases=['?'])
     async def help(self, ctx, *, command=None):
         """≫ Shows info about the bot, a command or category"""
         pre = ctx.prefix
