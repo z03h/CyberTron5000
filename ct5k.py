@@ -1,4 +1,3 @@
-import asyncio
 import datetime
 import json
 import os
@@ -163,67 +162,29 @@ async def on_guild_remove(guild):
 @client.group(invoke_without_command=True, help="≫ Change the guild's prefix", aliases=['prefix', 'pre'])
 @check_admin_or_owner()
 async def changeprefix(ctx, *, prefix):
-    msg = await ctx.send("** **", embed=discord.Embed(
-        description=f"You are about to change this guild's prefix to `{prefix}` Proceed?", colour=colour))
-    for e in [':GreenTick:707950252434653184']:
-        await msg.add_reaction(e)
-    await msg.add_reaction(emoji=":RedX:707949835960975411")
-    await asyncio.sleep(0.1)
-    reaction, user = await client.wait_for(
-        'reaction_add',
-        timeout=30.0,
-        check=lambda reaction,
-                     user: reaction.emoji
-    )
-    await msg.clear_reactions()
-    if str(reaction.emoji) == "<:GreenTick:707950252434653184>":
-        with open("prefixes.json", "r") as f:
-            prefixes = json.load(f)
-        
-        prefixes[str(ctx.guild.id)] = prefix
-        
-        with open("prefixes.json", "w") as f:
-            json.dump(prefixes, f, indent=4)
-        
-        await msg.edit(
-            embed=discord.Embed(description=f"Success! My prefix for `{ctx.guild}` is now `{prefix}`", colour=0x00ff00))
-        await ctx.guild.me.edit(nick=f"({prefix}) {client.user.name}")
-    else:
-        await msg.delete()
+    with open("prefixes.json", "r") as f:
+        prefixes = json.load(f)
+    
+    prefixes[str(ctx.guild.id)] = prefix
+    
+    with open("prefixes.json", "w") as f:
+        json.dump(prefixes, f, indent=4)
+    await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+    await ctx.guild.me.edit(nick=f"({prefix}) {client.user.name}")
 
 
 @changeprefix.command(invoke_without_command=True, help="⤗ Make your prefix end in a space.", aliases=['sp'])
 @check_admin_or_owner()
 async def spaceprefix(ctx, *, prefix):
-    msg = await ctx.send("** **", embed=discord.Embed(
-        description=f"You are about to change this guild's prefix to `{prefix} ` Proceed?", colour=colour))
-    for e in [':GreenTick:707950252434653184']:
-        await msg.add_reaction(e)
-    await msg.add_reaction(emoji=":RedX:707949835960975411")
-    await asyncio.sleep(0.1)
-    reaction, user = await client.wait_for(
-        'reaction_add',
-        timeout=30.0,
-        check=lambda reaction,
-                     user: reaction.emoji
-    )
-    await msg.clear_reactions()
-    if str(reaction.emoji) == "<:GreenTick:707950252434653184>":
-        with open("prefixes.json", "r") as f:
-            prefixes = json.load(f)
-        
-        prefixes[str(ctx.guild.id)] = f"{prefix} "
-        
-        with open("prefixes.json", "w") as f:
-            json.dump(prefixes, f, indent=4)
-        
-        await msg.edit(
-            embed=discord.Embed(description=f"Success! My prefix for `{ctx.guild}` is now `{prefix} `",
-                                colour=0x00ff00))
-        await ctx.guild.me.edit(nick=f"({prefix}) {client.user.name}")
-    else:
-        await msg.delete()
-
+    with open("prefixes.json", "r") as f:
+        prefixes = json.load(f)
+    
+    prefixes[str(ctx.guild.id)] = f"{prefix} "
+    
+    with open("prefixes.json", "w") as f:
+        json.dump(prefixes, f, indent=4)
+    await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+    await ctx.guild.me.edit(nick=f"({prefix}) {client.user.name}")
 
 @client.event
 async def on_ready():
