@@ -18,14 +18,14 @@ status_list = {
 }
 
 
-# ≫ •
+# •
 
 class Profile(commands.Cog):
     """Commands interacting with a user or guild's profile."""
     def __init__(self, client):
         self.client = client
     
-    @commands.command(aliases=["av"], help="≫ Gets the avatar of a user.")
+    @commands.command(aliases=["av"], help="Gets the avatar of a user.")
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         avamember = avamember or ctx.message.author
         await ctx.send(embed=discord.Embed(
@@ -37,7 +37,7 @@ class Profile(commands.Cog):
             ]), timestamp=ctx.message.created_at
         ).set_image(url=avamember.avatar_url_as(static_format="png", size=2048)))
     
-    @commands.group(aliases=['si', 'serverinfo', 'gi', 'guild', 'server'], help="≫ Gets the guild's info.", invoke_without_command=True)
+    @commands.group(aliases=['si', 'serverinfo', 'gi', 'guild', 'server'], help="Gets the guild's info.", invoke_without_command=True)
     async def guildinfo(self, ctx):
         try:
             online = 0
@@ -88,7 +88,7 @@ class Profile(commands.Cog):
             await ctx.send(error)
             
     @commands.command(aliases=['ov'],
-                      help="≫ Gets an overview of a user, including their avatar, permissions in the channel and info.")
+                      help="Gets an overview of a user, including their avatar, permissions in the channel and info.")
     async def overview(self, ctx, *, member: discord.Member = None):
         footer = f"You can also do {ctx.prefix}ui, {ctx.prefix}perms, {ctx.prefix}av for each of these."
         member = member or ctx.message.author
@@ -179,7 +179,7 @@ class Profile(commands.Cog):
         paginator = BotEmbedPaginator(ctx, embeds)
         await paginator.run()
     
-    @commands.command(aliases=['ui', 'user'], help="≫ Gets a user's info.")
+    @commands.command(aliases=['ui', 'user'], help="Gets a user's info.")
     async def userinfo(self, ctx, *, member: discord.Member = None):
         try:
             member = member or ctx.message.author
@@ -238,7 +238,7 @@ class Profile(commands.Cog):
         except Exception as error:
             await ctx.send(error)
     
-    @commands.command(aliases=['perms'], help="≫ Gets a user's permissions in the current channel.")
+    @commands.command(aliases=['perms'], help="Gets a user's permissions in the current channel.")
     async def permissions(self, ctx, *, member: discord.Member = None):
         member = member or ctx.message.author
         perms = []

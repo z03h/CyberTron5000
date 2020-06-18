@@ -23,7 +23,7 @@ class Info(commands.Cog):
     
     @commands.command(aliases=['?'])
     async def help(self, ctx, *, command=None):
-        """≫ Shows info about the bot, a command or category"""
+        """Shows info about the bot, a command or category"""
         pre = ctx.prefix
         footer = f"Do '{pre}help [command/cog]' for more information!"
         list_of_cogs = []
@@ -45,7 +45,7 @@ class Info(commands.Cog):
                     for cmd in cog_object.get_commands():
                         if not cmd.hidden:
                             cmds.append(cmd.name)
-                    embed.add_field(name=f'≫  {cogs_desc_emojis[str(cog_name)]} {cog_name}', value='\u200b' + " • ".join(sorted(cmds)), inline=False)
+                    embed.add_field(name=f' {cogs_desc_emojis[str(cog_name)]} {cog_name}', value='\u200b' + " • ".join(sorted(cmds)), inline=False)
                     embed.set_footer(text=footer)
                 for wc in self.client.walk_commands():
                     if not wc.cog_name and not wc.hidden:
@@ -58,7 +58,7 @@ class Info(commands.Cog):
                 for item in walk_commands:
                     if item not in final_walk_command_list and item not in sc:
                         final_walk_command_list.append(item)
-                embed.add_field(name="≫ Uncategorized Commands", value=" • ".join(sorted(final_walk_command_list)))
+                embed.add_field(name="Uncategorized Commands", value=" • ".join(sorted(final_walk_command_list)))
                 await ctx.send(embed=embed)
             elif command in list_of_cogs:
                 cog_doc = self.client.cogs[command].__doc__ or " "

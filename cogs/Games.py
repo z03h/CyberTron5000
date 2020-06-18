@@ -16,7 +16,7 @@ class Games(commands.Cog):
         
     # rock paper scissors, shoot
     
-    @commands.command(aliases=['rps'], help="≫ Rock paper scissors shoot")
+    @commands.command(aliases=['rps'], help="Rock paper scissors shoot")
     async def rockpaperscissors(self, ctx):
         try:
             choice = random.choice(['rock', 'paper', 'scissors'])
@@ -59,7 +59,7 @@ class Games(commands.Cog):
     
     # kiss marry kill command
     
-    @commands.command(help="≫ Kiss, marry, kill.", aliases=['kmk'])
+    @commands.command(help="Kiss, marry, kill.", aliases=['kmk'])
     async def kissmarrykill(self, ctx):
         try:
             member1 = random.choice(ctx.guild.members)

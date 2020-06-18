@@ -33,7 +33,7 @@ class Bot(commands.Cog):
         self.tick = ":GreenTick:707950252434653184"
         self.version = "CyberTron5000 Alpha v2.0.2"
     
-    @commands.command(help="≫ Shows you how long the bot has been up for.")
+    @commands.command(help="Shows you how long the bot has been up for.")
     async def uptime(self, ctx):
         current_time = time.time()
         difference = int(round(current_time - start_time))
@@ -79,7 +79,7 @@ class Bot(commands.Cog):
             embed.set_author(name=f'{error}')
             await ctx.send(embed=embed)
     
-    @commands.command(help="≫ Fetches the bot's invite link.")
+    @commands.command(help="Fetches the bot's invite link.")
     async def invite(self, ctx):
         embed = discord.Embed(
             colour=colour,
@@ -88,7 +88,7 @@ class Bot(commands.Cog):
         )
         await ctx.send(embed=embed)
     
-    @commands.group(aliases=["e", "evaluate"], name='eval', invoke_without_command=True, help="≫ Evaluates a function.")
+    @commands.group(aliases=["e", "evaluate"], name='eval', invoke_without_command=True, help="Evaluates a function.")
     @commands.is_owner()
     async def eval_fn(self, ctx, *, cmd):
         fn_name = "_eval_expr"
@@ -120,7 +120,7 @@ class Bot(commands.Cog):
             await ctx.send('{:,.3f}'.format(error))
     
     @eval_fn.command(aliases=["rtrn", "r"], name='return', invoke_without_command=True,
-                     help="≫ Evaluates a function and returns output.")
+                     help="Evaluates a function and returns output.")
     @commands.is_owner()
     async def r(self, ctx, *, cmd):
         try:
@@ -155,7 +155,7 @@ class Bot(commands.Cog):
             await ctx.send(embed=discord.Embed(description=f"\n\n```python\n{error}\n```", color=0x00dcff))
             await ctx.message.add_reaction(emoji="⚠️")
     
-    @commands.command(help="≫ Checks the bot's ping.")
+    @commands.command(help="Checks the bot's ping.")
     async def ping(self, ctx):
         start = time.perf_counter()
         message = await ctx.send("** **")
@@ -169,7 +169,7 @@ class Bot(commands.Cog):
                              round(self.client.latency * 1000, 3), duration))
         await message.edit(embed=embe1d)
     
-    @commands.command(aliases=["sourcecode", "src"], help="≫ Shows source code for a given command")
+    @commands.command(aliases=["sourcecode", "src"], help="Shows source code for a given command")
     async def source(self, ctx, *, command):
         try:
             cmd = self.client.get_command(command).callback
@@ -180,7 +180,7 @@ class Bot(commands.Cog):
         except Exception:
             await ctx.send("This command is too long.")
         
-    @commands.group(invoke_without_command=True, help="≫ Shows total lines of code used to make the bot.")
+    @commands.group(invoke_without_command=True, help="Shows total lines of code used to make the bot.")
     async def lines(self, ctx):
         global count
         filename1 = "ct5k.py"
@@ -212,7 +212,7 @@ class Bot(commands.Cog):
             embed=discord.Embed(title="CyberTron5000 was made with {:,.0f} lines of code!".format(code),
                                 color=0x00dcff))
     
-    @lines.command(invoke_without_command=True, help="≫ Shows total lines in the main file.")
+    @lines.command(invoke_without_command=True, help="Shows total lines in the main file.")
     async def main(self, ctx):
         filename = "ct5k.py"
         nol = 0
@@ -224,7 +224,7 @@ class Bot(commands.Cog):
             embed=discord.Embed(title="File {} currently has {:,.0f} lines of code!".format(filename, nol),
                                 color=0x00dcff))
     
-    @lines.command(invoke_without_command=True, help="≫ Shows total lines in the cogs.")
+    @lines.command(invoke_without_command=True, help="Shows total lines in the cogs.")
     async def cogs(self, ctx):
         global count
         line_count = {}
@@ -243,7 +243,7 @@ class Bot(commands.Cog):
         await ctx.send(
             embed=discord.Embed(title="Cogs have a total of {:,.0f} lines of code!".format(count), color=0x00dcff))
     
-    @lines.command(invoke_without_command=True, help="≫ Shows total lines in a single cog.")
+    @lines.command(invoke_without_command=True, help="Shows total lines in a single cog.")
     async def cog(self, ctx, cog):
         global count
         line_count = {}
@@ -263,7 +263,7 @@ class Bot(commands.Cog):
             embed=discord.Embed(title="{}.py has a total of {:,.0f} lines of code!".format(cog.capitalize(), count),
                                 color=0x00dcff))
     
-    @lines.command(invoke_without_command=True, help="≫ Shows total lines in miscellaneous files.")
+    @lines.command(invoke_without_command=True, help="Shows total lines in miscellaneous files.")
     async def misc(self, ctx):
         try:
             filename2 = "prefixes.json"
@@ -278,7 +278,7 @@ class Bot(commands.Cog):
         except Exception as error:
             await ctx.send(error)
     
-    @commands.command(help="≫ Logs CyberTron5000 out.")
+    @commands.command(help="Logs CyberTron5000 out.")
     @commands.is_owner()
     async def logout(self, ctx):
         await ctx.send(
@@ -295,7 +295,7 @@ class Bot(commands.Cog):
         except Exception as error:
             await ctx.send(error)
     
-    @commands.command(aliases=['info', 'ab', 'i'], help="≫ Shows info on the bot.")
+    @commands.command(aliases=['info', 'ab', 'i'], help="Shows info on the bot.")
     async def about(self, ctx):
         try:
             owner = self.client.get_user(350349365937700864)
@@ -347,7 +347,7 @@ class Bot(commands.Cog):
             print(error)
     
     @commands.group(aliases=["n", "changenickname", "nick"], invoke_without_command=True,
-                    help="≫ Change the bot's nickname to a custom one.")
+                    help="Change the bot's nickname to a custom one.")
     @check_admin_or_owner()
     async def nickname(self, ctx, *, nickname):
         name = "({}) {}".format(ctx.prefix, self.client.user.name)
@@ -357,14 +357,14 @@ class Bot(commands.Cog):
         else:
             await ctx.send("Successfully removed nickname")
     
-    @nickname.command(invoke_without_command=True, help="≫ Change the bot's nickname back to the default.")
+    @nickname.command(invoke_without_command=True, help="Change the bot's nickname back to the default.")
     @check_admin_or_owner()
     async def default(self, ctx):
         await ctx.guild.me.edit(nick=f"({ctx.prefix}) {self.client.user.name}")
         await ctx.message.add_reaction(emoji=self.tick)
     
     @nickname.command(invoke_without_command=True,
-                      help="≫ Change the bot's nickname to the default, without the prefix.")
+                      help="Change the bot's nickname to the default, without the prefix.")
     @check_admin_or_owner()
     async def client(self, ctx):
         await ctx.guild.me.edit(nick=self.client.user.name)

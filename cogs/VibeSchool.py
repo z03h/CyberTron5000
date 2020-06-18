@@ -18,12 +18,12 @@ class VibeSchool(commands.Cog):
     
     vibe = 687814997841150016
     
-    @commands.command(help="≫ For report card templates in <#695340515088007249>")
+    @commands.command(help="For report card templates in <#695340515088007249>")
     @check_guild_and_channel(channel=695340515088007249)
     async def rct(self, ctx):
         await ctx.send("```Mentor:[], Mentee:[]\nMentee Level: []\nGrade: []\n[]```")
     
-    @commands.command(help="≫ info about Vibe School.")
+    @commands.command(help="info about Vibe School.")
     @check_guild(guild=vibe)
     async def vinfo(self, ctx):
         infoEmbed = discord.Embed(title="Vibe School Info", color=ctx.message.author.color)
@@ -62,7 +62,7 @@ class VibeSchool(commands.Cog):
         infoEmbed.add_field(name="Failures", value="Failures", inline=False)
         await ctx.send(embed=infoEmbed)
     
-    @commands.command(help="≫ rules for Vibe School")
+    @commands.command(help="rules for Vibe School")
     @check_guild(guild=vibe)
     async def rules(self, ctx):
         rulesEmbed = discord.Embed(color=ctx.message.author.color, title="Vibe School Rules")
@@ -85,7 +85,7 @@ class VibeSchool(commands.Cog):
                              inline=False)
         await ctx.send(embed=rulesEmbed)
     
-    @commands.command(help="≫ MEE6 commands for Vibe School")
+    @commands.command(help="MEE6 commands for Vibe School")
     @check_guild(guild=vibe)
     async def cmds(self, ctx):
         await ctx.send(embed=discord.Embed(title="MEE6 Commands",
@@ -94,7 +94,7 @@ class VibeSchool(commands.Cog):
                                            color=ctx.message.author.color))
     
     @commands.command(
-        help="≫ Fetch a link and some info about your next quiz. `ty = The Young`, `va = Vibe Apprentice`, `ad = Vibe Adult`")
+        help="Fetch a link and some info about your next quiz. `ty = The Young`, `va = Vibe Apprentice`, `ad = Vibe Adult`")
     @check_guild(guild=vibe)
     async def quiz(self, ctx, quiz=None):
         if quiz is None:
@@ -131,7 +131,7 @@ class VibeSchool(commands.Cog):
                                  value=f"**Level Required**: 7\n**Study**: `{ctx.prefix}adinfo`.\n**Upgrade after passing**: Graduate to Vibe Adulthood and choose a Junior Vibe role.")
             await ctx.send(embed=youngEmbed)
     
-    @commands.command(help="≫ Gets you info about Vibe Adulthood")
+    @commands.command(help="Gets you info about Vibe Adulthood")
     @check_guild(guild=vibe)
     async def adinfo(self, ctx):
         adEmbed = discord.Embed(color=0xa30533, title="Job Info")
@@ -176,7 +176,7 @@ class VibeSchool(commands.Cog):
                           inline=False)
         await ctx.send(embed=adEmbed)
     
-    @commands.command(help="≫ the eppicest server in the land")
+    @commands.command(help="the eppicest server in the land")
     async def vibeschool(self, ctx):
         embed = discord.Embed(
             colour=colour,
@@ -184,21 +184,21 @@ class VibeSchool(commands.Cog):
         )
         await ctx.send(embed=embed)
     
-    @commands.command(help="≫ Submit your quizzes in #quiz-inbox")
+    @commands.command(help="Submit your quizzes in #quiz-inbox")
     @check_guild_and_channel(channel=694316034110390343)
     async def quizs(self, ctx, *, quiz):
         niz = self.client.get_user(id=350349365937700864)
         await niz.send(f"Hey, {ctx.message.author.display_name} just submitted a quiz:\n```{quiz}```")
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
     
-    @commands.command(help="≫ Submit your report cards in #report-cards")
+    @commands.command(help="Submit your report cards in #report-cards")
     @check_guild_and_channel(channel=695340515088007249)
     async def rcsend(self, ctx, *, report):
         niz = self.client.get_user(id=350349365937700864)
         await niz.send(f"Hey, {ctx.message.author.display_name} just submitted a report card:\n```{report}```")
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
     
-    @commands.command(help="≫ Vote when it's voting time")
+    @commands.command(help="Vote when it's voting time")
     @check_guild(guild=687814997841150016)
     async def votev(self, ctx, person, *, reason):
         niz = self.client.get_user(id=350349365937700864)
@@ -206,7 +206,7 @@ class VibeSchool(commands.Cog):
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
     
     @commands.group(invoke_without_command=True,
-                    help="≫ contact management if there's anything you want to say to them")
+                    help="contact management if there's anything you want to say to them")
     @check_guild(guild=vibe)
     async def management(self, ctx, *, message):
         channel = self.client.get_channel(id=688812777653141711)
@@ -214,7 +214,7 @@ class VibeSchool(commands.Cog):
             f"Hey, {ctx.message.author} contacted you <@&689613285170872575>\n```{message}```")
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
     
-    @management.command(invoke_without_command=True, help="≫ reply to someone contacting management")
+    @management.command(invoke_without_command=True, help="reply to someone contacting management")
     @check_guild_and_admin(guild=687814997841150016)
     async def reply(self, ctx, member: discord.Member, *, message):
         try:
@@ -224,7 +224,7 @@ class VibeSchool(commands.Cog):
         except Exception as error:
             await ctx.send(error)
     
-    @commands.command(help="≫ ascend someone")
+    @commands.command(help="ascend someone")
     @check_guild_and_admin(guild=687814997841150016)
     async def ascend(self, ctx, member: discord.Member):
         roles = [role for role in member.roles]

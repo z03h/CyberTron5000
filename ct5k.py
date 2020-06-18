@@ -159,7 +159,7 @@ async def on_guild_remove(guild):
     await owner.send("Left guild.", embed=embed)
 
 
-@client.group(invoke_without_command=True, help="≫ Change the guild's prefix", aliases=['prefix', 'pre'])
+@client.group(invoke_without_command=True, help="Change the guild's prefix", aliases=['prefix', 'pre'])
 @check_admin_or_owner()
 async def changeprefix(ctx, *, prefix):
     with open("prefixes.json", "r") as f:
@@ -173,7 +173,7 @@ async def changeprefix(ctx, *, prefix):
     await ctx.guild.me.edit(nick=f"({prefix}) {client.user.name}")
 
 
-@changeprefix.command(invoke_without_command=True, help="⤗ Make your prefix end in a space.", aliases=['sp'])
+@changeprefix.command(invoke_without_command=True, help="Make your prefix end in a space.", aliases=['sp'])
 @check_admin_or_owner()
 async def spaceprefix(ctx, *, prefix):
     with open("prefixes.json", "r") as f:
@@ -391,7 +391,7 @@ async def on_raw_reaction_remove(payload):
 
 @client.group(invoke_without_command=True)
 async def owner(ctx, *, idea):
-    """≫ Suggest an idea for the bot."""
+    """Suggest an idea for the bot."""
     owner = client.get_user(id=350349365937700864)
     try:
         await owner.send(f"Idea: ```{idea}```")
@@ -402,13 +402,13 @@ async def owner(ctx, *, idea):
 
 @owner.command(invoke_without_command=True)
 async def error(ctx, *, error):
-    """≫ Report an error for this bot."""
+    """Report an error for this bot."""
     owner = client.get_user(id=350349365937700864)
     await owner.send(f"You should fix ```{error}```")
     await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
 
 
-@client.command(help="≫ Loads Cogs.")
+@client.command(help="Loads Cogs.")
 @commands.is_owner()
 async def load(ctx, extension=None):
     if not extension:
@@ -423,7 +423,7 @@ async def load(ctx, extension=None):
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
 
 
-@client.command(help="≫ Unloads Cogs.")
+@client.command(help="Unloads Cogs.")
 @commands.is_owner()
 async def unload(ctx, extension=None):
     if not extension:
@@ -438,7 +438,7 @@ async def unload(ctx, extension=None):
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
 
 
-@client.command(help="≫ Reloads Cogs")
+@client.command(help="Reloads Cogs")
 @commands.is_owner()
 async def reload(ctx, extension=None):
     if not extension:

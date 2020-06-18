@@ -19,7 +19,7 @@ class Fun(commands.Cog):
         self.client = client
         self.tick = ":GreenTick:707950252434653184"
     
-    @commands.group(invoke_without_command=True, help="≫ Replies with what you said and deletes your message.",
+    @commands.group(invoke_without_command=True, help="Replies with what you said and deletes your message.",
                     aliases=['say'])
     async def reply(self, ctx, *, message):
         if "@everyone" in message:
@@ -35,13 +35,13 @@ class Fun(commands.Cog):
             await ctx.send(message)
     
     @reply.command(invoke_without_command=True,
-                   help="≫ Replies with what you said and deletes your message, but in an embed.")
+                   help="Replies with what you said and deletes your message, but in an embed.")
     async def embed(self, ctx, *, message):
         await ctx.message.delete()
         await ctx.send(embed=discord.Embed(title=message, colour=colour))
     
     @reply.command(invoke_without_command=True,
-                   help="≫ Replies with what you said and deletes your message, but in a different channel.")
+                   help="Replies with what you said and deletes your message, but in a different channel.")
     async def echo(self, ctx, channel: discord.TextChannel, *, message):
         if "@everyone" in message:
             send = str(message).replace("@everyone", "@\u200beveryone")
@@ -54,7 +54,7 @@ class Fun(commands.Cog):
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
     
     @reply.command(invoke_without_command=True,
-                   help="≫ Replies with what you said and deletes your message, but UwU.")
+                   help="Replies with what you said and deletes your message, but UwU.")
     async def owo(self, ctx, *, message):
         real_message = str(message).replace("l", "w")
         real_message2 = str(real_message).replace("r", "w")
@@ -63,7 +63,7 @@ class Fun(commands.Cog):
         await ctx.message.delete()
         await ctx.send(real_message4)
     
-    @reply.command(help="≫ 🅱", invoke_without_command=True)
+    @reply.command(help="🅱", invoke_without_command=True)
     async def b(self, ctx, *, message):
         message1 = str(message).replace("b", "🅱")
         message2 = str(message1).replace("d", "🅱")
@@ -71,13 +71,13 @@ class Fun(commands.Cog):
         message4 = str(message3).replace("D", "🅱")
         await ctx.send(message4)
     
-    @reply.command(aliases=['msg'], help="≫ Message a user something. ", invoke_without_command=True)
+    @reply.command(aliases=['msg'], help="Message a user something. ", invoke_without_command=True)
     async def message(self, ctx, user: discord.Member, *, message):
         person = self.client.get_user(user.id)
         await person.send(f"{message}\n\n*(Sent by {ctx.message.author})*")
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
     
-    @reply.command(help="≫ Spams a message.", invoke_without_command=True)
+    @reply.command(help="Spams a message.", invoke_without_command=True)
     async def spam(self, ctx, *, message):
         if "@everyone" in message:
             send = str(message).replace("@everyone", "@\u200beveryone")
@@ -90,7 +90,7 @@ class Fun(commands.Cog):
     
     @reply.command(invoke_without_command=True)
     async def indicator(self, ctx, *, message):
-        """≫ reply in emojis"""
+        """reply in emojis"""
         letters = []
         alphabet = ['A', 'B', 'C', 'D',
                     'E',
@@ -127,7 +127,7 @@ class Fun(commands.Cog):
                 
         await ctx.send("\u200b".join(letters))
     
-    @commands.command(help="≫ Asks the mystical Ouija Board a question...")
+    @commands.command(help="Asks the mystical Ouija Board a question...")
     async def askouija(self, ctx, *, question):
         ouija_responses = [
             'Help',
@@ -156,7 +156,7 @@ class Fun(commands.Cog):
         ouija_says = str("You asked me... '_{}_'... I respond... {}".format(question, ouija_choice))
         await ctx.send(ouija_says)
     
-    @commands.command(aliases=['cf'], help="≫ Flips a coin.")
+    @commands.command(aliases=['cf'], help="Flips a coin.")
     async def coinflip(self, ctx, *, clause=None):
         author = ctx.message.author
         if clause is None:
@@ -204,7 +204,7 @@ class Fun(commands.Cog):
             if choice == 'Heads!':
                 await ctx.send(embed=heads)
     
-    @commands.command(help="≫ How bigbrain are you? Find out.")
+    @commands.command(help="How bigbrain are you? Find out.")
     async def iq(self, ctx, *, member: discord.Member = None):
         member = member or ctx.message.author
         embed = discord.Embed(
@@ -216,7 +216,7 @@ class Fun(commands.Cog):
                         value=f"{member.display_name} has an IQ of {random.randint(1, 101)}.")
         await ctx.send(embed=embed)
     
-    @commands.command(help="≫ Fite")
+    @commands.command(help="Fite")
     async def fight(self, ctx, opponent: discord.Member, *, weapon):
         author = ctx.message.author
         if opponent == author:
@@ -286,7 +286,7 @@ class Fun(commands.Cog):
                                                                            possibilities))
             await ctx.send(embed=embed)
     
-    @commands.command(help="≫ Ask the Bot about your peers")
+    @commands.command(help="Ask the Bot about your peers")
     async def who(self, ctx, *, question=None):
         member = random.choice(ctx.guild.members)
         embed = discord.Embed(
@@ -299,7 +299,7 @@ class Fun(commands.Cog):
         embed.set_image(url=member.avatar_url)
         await ctx.send(embed=embed)
     
-    @commands.command(aliases=["em"], help="≫ do an emoji from a different server that cybertron is in.")
+    @commands.command(aliases=["em"], help="do an emoji from a different server that cybertron is in.")
     async def emoji(self, ctx, emoji: discord.Emoji, react=None):
         if react is None:
             await ctx.send(emoji)
@@ -308,7 +308,7 @@ class Fun(commands.Cog):
             
     @commands.command(aliases=['gt'])
     async def greentext(self, ctx):
-        """≫ Write a greentext story"""
+        """Write a greentext story"""
         try:
             story = []
             await ctx.send("Greentext story starting! Type `quit` or `exit` to stop the session, or `finish` to see your final story!")

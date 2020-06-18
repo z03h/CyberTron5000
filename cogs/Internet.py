@@ -25,7 +25,7 @@ class Internet(commands.Cog):
         self.client = client
         self.session = aiohttp.ClientSession()
     
-    @commands.group(invoke_without_command=True, aliases=['trans'], help="≫ Translate something to English.")
+    @commands.group(invoke_without_command=True, aliases=['trans'], help="Translate something to English.")
     async def translate(self, ctx, *, message):
         
         try:
@@ -38,7 +38,7 @@ class Internet(commands.Cog):
         except Exception as err:
             await ctx.send(err)
     
-    @translate.command(invoke_without_command=True, help="≫ Translate something to a language of your choice.")
+    @translate.command(invoke_without_command=True, help="Translate something to a language of your choice.")
     async def to(self, ctx, language, *, message):
         try:
             translator = Translator()
@@ -51,7 +51,7 @@ class Internet(commands.Cog):
         except Exception as err:
             await ctx.send(err)
     
-    @commands.command(aliases=['wotd', 'word'], help="≫ Get the word of the day.")
+    @commands.command(aliases=['wotd', 'word'], help="Get the word of the day.")
     async def wordoftheday(self, ctx):
         try:
             random_word = RandomWords()
@@ -59,7 +59,7 @@ class Internet(commands.Cog):
         except Exception as error:
             await ctx.send(error)
     
-    @commands.command(aliases=['kitty'], help="≫ haha kitty go meow meow.")
+    @commands.command(aliases=['kitty'], help="haha kitty go meow meow.")
     async def cat(self, ctx):
         try:
             async with aiohttp.ClientSession() as cs:
@@ -73,7 +73,7 @@ class Internet(commands.Cog):
         except Exception as er:
             await ctx.send(er)
     
-    @commands.command(aliases=['puppy', 'pup', 'pupper'], help="≫ haha puppy go woof woof")
+    @commands.command(aliases=['puppy', 'pup', 'pupper'], help="haha puppy go woof woof")
     async def dog(self, ctx):
         try:
             async with aiohttp.ClientSession() as cs:
@@ -88,7 +88,7 @@ class Internet(commands.Cog):
         except Exception as er:
             await ctx.send(er)
     
-    @commands.command(help="≫ Get's you a trivia question.", aliases=['tr', 't'])
+    @commands.command(help="Get's you a trivia question.", aliases=['tr', 't'])
     async def trivia(self, ctx):
         try:
             an = []
@@ -134,7 +134,7 @@ class Internet(commands.Cog):
             await message.edit(embed=discord.Embed(colour=colour).set_author(
                 name=f"Times up! The correct answer was {unes(data['correct_answer'])}."))
     
-    @commands.command(aliases=['ily'], help="≫ compliment your friends :heart:")
+    @commands.command(aliases=['ily'], help="compliment your friends :heart:")
     async def compliment(self, ctx, *, user: discord.Member = None):
         try:
             user = user or ctx.message.author
@@ -150,7 +150,7 @@ class Internet(commands.Cog):
         except Exception as error:
             await ctx.send(f"```py\n{error}```")
     
-    @commands.group(help="≫ Shows the weather in your city.", invoke_without_command=True)
+    @commands.group(help="Shows the weather in your city.", invoke_without_command=True)
     async def weather(self, ctx, city):
         try:
             async with aiohttp.ClientSession() as cs:
@@ -178,7 +178,7 @@ class Internet(commands.Cog):
                 "City probably not found. You can specify even more by adding your country as well. eg:\n`{}weather <city name>,<country name>`".format(
                     ctx.prefix))
     
-    @commands.command(help="≫ Shows you info about a Pokémon", aliases=['pokemon', 'poke', 'pokémon', 'pokédex'])
+    @commands.command(help="Shows you info about a Pokémon", aliases=['pokemon', 'poke', 'pokémon', 'pokédex'])
     async def pokedex(self, ctx, pokemon):
         abilities = []
         lst = []
@@ -193,9 +193,9 @@ class Internet(commands.Cog):
             s_s = res['stats']
             ts = res['types']
             for item in s_s:
-                stats.append(f"≫ **{STAT_NAMES[item['stat']['name']]}:** `{item['base_stat']}`")
+                stats.append(f"**{STAT_NAMES[item['stat']['name']]}:** `{item['base_stat']}`")
             for ability in abils:
-                abilities.append(f"≫ **{ability['ability']['name'].capitalize()}**")
+                abilities.append(f"**{ability['ability']['name'].capitalize()}**")
             for a in ts:
                 lst.append(TYPES[a['type']['name']])
             for b in s_s:
@@ -214,7 +214,7 @@ class Internet(commands.Cog):
         except Exception as error:
             await ctx.send(f"Error, Pokemon not found! (Note that the API does not yet support Generation 8)")
     
-    @commands.command(help="≫ Urban Dictionary")
+    @commands.command(help="Urban Dictionary")
     async def urbandict(self, ctx, *, terms):
         try:
             async with self.session.get('http://api.urbandictionary.com/v0/define', params={'term': terms}) as r:
@@ -233,7 +233,7 @@ class Internet(commands.Cog):
             
     @commands.command()
     async def fact(self, ctx):
-        """≫ Random fact"""
+        """Random fact"""
         async with self.session.get("https://useless-facts.sameerkumar.website/api") as r:
             res = await r.json()
             await self.session.close()

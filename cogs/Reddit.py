@@ -37,7 +37,7 @@ class Reddit(commands.Cog):
         self.client = client
         self.loading = "https://media1.tenor.com/images/8f7a28e62f8242b264c8a39ba8bea261/tenor.gif?itemid=15922897"
     
-    @commands.command(aliases=['f'], help="≫ Shows you food")
+    @commands.command(aliases=['f'], help="Shows you food")
     async def food(self, ctx):
         embedd = discord.Embed(
             colour=reddit_colour, title="Loading..."
@@ -65,7 +65,7 @@ class Reddit(commands.Cog):
         await message.edit(embed=embed)
     
     # noinspection PyBroadException
-    @commands.command(aliases=['rs', 'karma'], help="≫ Shows your Reddit Stats.")
+    @commands.command(aliases=['rs', 'karma'], help="Shows your Reddit Stats.")
     async def redditstats(self, ctx, user):
         trophies = []
         try:
@@ -99,7 +99,7 @@ class Reddit(commands.Cog):
         except Exception:
             await ctx.send("Redditor not found.")
 
-    @commands.command(aliases=['m'], help="≫ Gets a meme from some of reddit's dankest places (and r/memes).")
+    @commands.command(aliases=['m'], help="Gets a meme from some of reddit's dankest places (and r/memes).")
     async def meme(self, ctx):
         embedd = discord.Embed(
             colour=reddit_colour, title="Loading..."
@@ -181,7 +181,7 @@ class Reddit(commands.Cog):
     
             await message.edit(embed=embed)
     
-    @commands.command(aliases=['iu'], help="≫ Shows you the banner or icon of a subreddit (on old Reddit).")
+    @commands.command(aliases=['iu'], help="Shows you the banner or icon of a subreddit (on old Reddit).")
     async def icon(self, ctx, subreddit, banner_or_img=None):
         embedd = discord.Embed(
             colour=reddit_colour, title="Loading..."
@@ -243,7 +243,7 @@ class Reddit(commands.Cog):
                 await ctx.send(embed=k)
                 await message.delete()
     
-    @commands.command(help="≫ Shows you info about a subreddit.")
+    @commands.command(help="Shows you info about a subreddit.")
     async def subreddit(self, ctx, subreddit):
         mods = []
         try:
@@ -278,7 +278,7 @@ class Reddit(commands.Cog):
         except Exception as error:
             await ctx.send(error)
     
-    @commands.command(help="≫ Shows you a wiki page for a subreddit.")
+    @commands.command(help="Shows you a wiki page for a subreddit.")
     async def wiki(self, ctx, subreddit, *, page):
         try:
             embedd = discord.Embed(
@@ -296,7 +296,7 @@ class Reddit(commands.Cog):
         except Exception as err:
             await ctx.send(err)
     
-    @commands.command(aliases=['mod'], help="≫ Shows you moderator permissions for a subreddit.")
+    @commands.command(aliases=['mod'], help="Shows you moderator permissions for a subreddit.")
     async def moderator(self, ctx, subreddit, mod):
         mp = []
         try:
@@ -331,7 +331,7 @@ class Reddit(commands.Cog):
             await ctx.send(
                 f"Subreddit not found/Moderator not found/Author not verified. To verify, do `{ctx.prefix}verify [reddit username]`")
     
-    @commands.command(help="≫ hmmmmm <:thonking:667528766439817216>")
+    @commands.command(help="hmmmmm <:thonking:667528766439817216>")
     async def thonk(self, ctx):
         embedd = discord.Embed(
             colour=reddit_colour, title="Loading..."
@@ -416,7 +416,7 @@ class Reddit(commands.Cog):
     
     @commands.command(aliases=['ms'])
     async def modstats(self, ctx, user):
-        """≫ Shows you the moderated subreddits of a specific user."""
+        """Shows you the moderated subreddits of a specific user."""
         reddits = []
         numbas = []
         modstats = []
@@ -475,7 +475,7 @@ class Reddit(commands.Cog):
     
     @commands.command(aliases=['ask'])
     async def askreddit(self, ctx):
-        """≫ Ask Reddit..."""
+        """Ask Reddit..."""
         embedd = discord.Embed(
             colour=reddit_colour, title="Loading..."
         )
@@ -505,7 +505,7 @@ class Reddit(commands.Cog):
             
     @commands.command()
     async def post(self, ctx, subreddit, sort=None):
-        """≫ Gets a random post from a subreddit"""
+        """Gets a random post from a subreddit"""
         message = await ctx.send(embed=discord.Embed(colour=reddit_colour, title="Loading...").set_image(url=self.loading))
         posts = []
         reddit = self.reddit.subreddit(subreddit)

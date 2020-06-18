@@ -66,7 +66,7 @@ class Moderation(commands.Cog):
                 f"Hello, you have been kicked from participating in _{ctx.author.guild.name}_"
                 f". Please see below your reason for removal: `{reason}`.")
     
-    @commands.command(help="≫ Ban a member.")
+    @commands.command(help="Ban a member.")
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason=None):
         if reason is None:
@@ -83,7 +83,7 @@ class Moderation(commands.Cog):
                 f"Hello, you have been banned from participating in _{ctx.guild.name}_"
                 f". Please see below your reason for removal: `{reason}`.")
     
-    @commands.command(help="≫ Unban a member.")
+    @commands.command(help="Unban a member.")
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx, *, member):
         banned = await ctx.guild.bans()
@@ -95,7 +95,7 @@ class Moderation(commands.Cog):
                 await ctx.guild.unban(user)
                 await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
     
-    @commands.command(help="≫ Vote on something.")
+    @commands.command(help="Vote on something.")
     async def vote(self, ctx, *, message):
         author = ctx.message.author
         embed = discord.Embed(
@@ -108,7 +108,7 @@ class Moderation(commands.Cog):
         for r in [':upvote:718895913342337036', ':downvote:718895842404335668']:
             await e.add_reaction(r)
     
-    @commands.group(name='user-nick', help="≫ Change a user's nickname.", aliases=['usernick', 'UnitedNations', 'un'],
+    @commands.group(name='user-nick', help="Change a user's nickname.", aliases=['usernick', 'UnitedNations', 'un'],
                     invoke_without_command=True)
     @commands.has_permissions(administrator=True)
     async def user_nick(self, ctx, member: discord.Member, *, name):
@@ -121,14 +121,14 @@ class Moderation(commands.Cog):
     @user_nick.command(invoke_without_command=True)
     @commands.has_permissions(administrator=True)
     async def default(self, ctx, member: discord.Member):
-        """≫ Change nickname back to default."""
+        """Change nickname back to default."""
         await ctx.guild.get_member(member.id).edit(nick=member.name)
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
         
     @commands.command()
     @check_admin_or_owner()
     async def leave(self, ctx):
-        """≫ Makes bot leave server"""
+        """Makes bot leave server"""
         leave = self.client.get_guild(ctx.guild.id)
         await ctx.message.add_reaction(emoji=self.tick)
         await leave.leave()
