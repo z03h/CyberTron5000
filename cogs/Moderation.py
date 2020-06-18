@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from .utils.funcs import check_admin_or_owner
 
 colour = 0x00dcff
 
@@ -123,6 +124,14 @@ class Moderation(commands.Cog):
         """≫ Change nickname back to default."""
         await ctx.guild.get_member(member.id).edit(nick=member.name)
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        
+    @commands.command()
+    @check_admin_or_owner()
+    async def leave(self, ctx):
+        """≫ Makes bot leave server"""
+        leave = self.client.get_guild(ctx.guild.id)
+        await ctx.message.add_reaction(emoji=self.tick)
+        await leave.leave()
 
 
 def setup(client):

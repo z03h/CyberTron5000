@@ -383,14 +383,6 @@ class Bot(commands.Cog):
                     embed.set_thumbnail(url=self.client.user.avatar_url)
                     embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
                     await message.channel.send(embed=embed)
-                    
-    @commands.command()
-    @check_admin_or_owner()
-    async def leave(self, ctx):
-        """≫ Makes bot leave server"""
-        leave = self.client.get_guild(ctx.guild.id)
-        await ctx.message.add_reaction(emoji=self.tick)
-        await leave.leave()
 
 def setup(client):
     client.add_cog(Bot(client))
