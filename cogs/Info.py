@@ -25,6 +25,8 @@ class Info(commands.Cog):
         pre = ctx.prefix
         footer = f"Do '{pre}help [command/cog]' for more information!"
         list_of_cogs = []
+        walk_commands = []
+        final_walk_command_list = []
         for cog in self.client.cogs:
             list_of_cogs.append(cog)
         if command:
@@ -41,6 +43,12 @@ class Info(commands.Cog):
                         cmds.append(cmd.name)
                 embed.add_field(name=f'≫ {cog_name}', value='\u200b' + " • ".join(sorted(cmds)), inline=False)
                 embed.set_footer(text=footer)
+            for wc in self.client.walk_commands:
+                walk_commands.append(wc)
+            for item in walk_commands:
+                if item not in final_walk_command_list:
+                    final_walk_command_list.append(item)
+            embed.add_field(name="≫ Uncategorized Commands", value=" • ".join(final_walk_command_list))
             await ctx.send(embed=embed)
         elif command in list_of_cogs:
             cog_doc = self.client.cogs[command].__doc__ or " "
