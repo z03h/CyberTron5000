@@ -36,6 +36,7 @@ class Info(commands.Cog):
             else:
                 cmd = None
             if not command:
+                cog_doc = f"• {self.client.cogs[command].__doc__}" or " "
                 embed = discord.Embed(colour=colour, title=f"{self.client.user.name} Help",
                                       description=f"You can do `{pre}help [category]` for more info on a category.\nYou can also do `{pre}help [command]` for more info on a command.\n\n**<argument>** means the argument is **required**\n**[argument]** means the argument is **optional**\n**[A|B]** means it could be either **A or B**\n**[argument...]** means you can have **multiple arguments**\n")
                 for cog_name, cog_object in self.client.cogs.items():
@@ -43,7 +44,7 @@ class Info(commands.Cog):
                     for cmd in cog_object.get_commands():
                         if not cmd.hidden:
                             cmds.append(cmd.name)
-                    embed.add_field(name=f'≫ {cog_name}', value='\u200b' + " • ".join(sorted(cmds)), inline=False)
+                    embed.add_field(name=f'≫ {cog_name} {cog_doc}', value='\u200b' + " • ".join(sorted(cmds)), inline=False)
                     embed.set_footer(text=footer)
                 for wc in self.client.walk_commands():
                     if not wc.cog_name and not wc.hidden:
