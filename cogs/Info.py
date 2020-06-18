@@ -37,7 +37,7 @@ class Info(commands.Cog):
                 cmd = None
             if not command:
                 embed = discord.Embed(colour=colour, title=f"{self.client.user.name} Help",
-                                      description=f"You can do `{pre}help [category]` for more info on a category.\nYou can also do `{pre}help [command]` for more info on a command.")
+                                      description=f"You can do `{pre}help [category]` for more info on a category.\nYou can also do `{pre}help [command]` for more info on a command.\n\n**<argument>** means the argument is **required**\n**[argument]** means the argument is **optional**\n**[A|B]** means it could be either **A or B**\n**[argument...]** means you can have **multiple arguments**")
                 for cog_name, cog_object in self.client.cogs.items():
                     cmds = []
                     for cmd in cog_object.get_commands():
