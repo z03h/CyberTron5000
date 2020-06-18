@@ -157,6 +157,7 @@ class Internet(commands.Cog):
                 async with cs.get(
                         f"http://api.openweathermap.org/data/2.5/weather?appid=2a5e00144cd0454e62a99f975c701c4e&q={city}") as r:
                     res = await r.json()
+                    await self.session.close()
                 topic = res['weather'][0]
                 kelv_temp = round(res['main']['temp'], 1)
                 cels_temp = round(kelv_temp - 273.15, 1)
@@ -186,6 +187,7 @@ class Internet(commands.Cog):
         try:
             async with self.session.get(f'https://pokeapi.co/api/v2/pokemon/{pokemon.lower()}') as r:
                 res = await r.json()
+                await self.session.close()
             sprite = res['sprites']['front_default']
             abils = res['abilities']
             s_s = res['stats']
@@ -217,6 +219,7 @@ class Internet(commands.Cog):
         try:
             async with self.session.get('http://api.urbandictionary.com/v0/define', params={'term': terms}) as r:
                 res = await r.json()
+                await self.session.close()
             term = res['list'][0]['definition']
             defin = res['list'][0]['example']
             trom = str(term).replace("[", "_")
@@ -224,7 +227,7 @@ class Internet(commands.Cog):
             deph = str(defin).replace("[", "_")
             deph2 = str(deph).replace("]", "_")
             await ctx.send(
-                embed=discord.Embed(title=terms, description=trom2, colour=colour).add_field())
+                embed=discord.Embed(title=terms, description=trom2, colour=colour))
         except Exception as error:
             await ctx.send(error)
             
@@ -233,6 +236,7 @@ class Internet(commands.Cog):
         """≫ Random fact"""
         async with self.session.get("https://useless-facts.sameerkumar.website/api") as r:
             res = await r.json()
+            await self.session.close()
         await ctx.send(embed=discord.Embed(title=res['data'], colour=colour))
 
 def setup(client):

@@ -65,8 +65,8 @@ class Profile(commands.Cog):
             text_channels = [text_channel for text_channel in guild.text_channels]
             voice_channels = [voice_channel for voice_channel in guild.voice_channels]
             categories = [category for category in guild.categories]
-            mod_list = [member for member in guild.members if member.guild_permissions.manage_roles and member.bot is False]
-            ml = "\n".join([f"<:Mods:713500789670281216> {member.mention} • `{member.top_role.name}`" for member in mod_list])
+            mod_list = [member for member in guild.members if member.guild_permissions.kick_members and member.bot is False]
+            ml = "\n".join([f"🛡 {member.mention} • `{member.top_role.name}`" for member in mod_list])
             emojis = [emoji for emoji in guild.emojis]
             region = REGIONS[f"{str(guild.region)}"]
             roles = [role for role in ctx.guild.roles]
@@ -258,8 +258,6 @@ class Profile(commands.Cog):
         embedd.add_field(name='Has', value='\n'.join(perms), inline=True)
         embedd.add_field(name='Does Not Have', value='\n'.join(negperms), inline=True)
         await ctx.send(embed=embedd)
-        
-        self.bruh
 
 
 def setup(client):

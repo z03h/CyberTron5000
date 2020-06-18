@@ -505,7 +505,7 @@ class Reddit(commands.Cog):
             
     @commands.command()
     async def post(self, ctx, subreddit, sort=None):
-        """Gets a random post from a subreddit"""
+        """≫ Gets a random post from a subreddit"""
         message = await ctx.send(embed=discord.Embed(colour=reddit_colour, title="Loading...").set_image(url=self.loading))
         posts = []
         reddit = self.reddit.subreddit(subreddit)
