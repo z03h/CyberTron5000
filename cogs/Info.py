@@ -80,11 +80,11 @@ class Info(commands.Cog):
                 else:
                     alias = cmd.name if not parent else f'{parent} {cmd.name}'
                 embed = discord.Embed(title=f"{pre}{alias} {cmd.signature}", description=help_msg, colour=colour)
-                embed.set_footer(text=footer + " • ↠ indicates subcommands")
+                embed.set_footer(text=footer)
                 if isinstance(cmd, commands.Group):
                     for sub_cmd in cmd.commands:
                         schm = sub_cmd.help or "No help provided for this command"
-                        embed.add_field(name=f"↠ {cmd.name} {sub_cmd.name} {sub_cmd.signature}", value=schm, inline=False)
+                        embed.add_field(name=f"{cmd.name} {sub_cmd.name} {sub_cmd.signature}", value=schm, inline=False)
                 await ctx.send(embed=embed)
     
             else:
