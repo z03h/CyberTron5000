@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+from .utils.lists import cogs_desc_emojis
+
 colour = 0x00dcff
 
 
@@ -43,7 +45,7 @@ class Info(commands.Cog):
                     for cmd in cog_object.get_commands():
                         if not cmd.hidden:
                             cmds.append(cmd.name)
-                    embed.add_field(name=f'≫ {cog_name}', value='\u200b' + " • ".join(sorted(cmds)), inline=False)
+                    embed.add_field(name=f'≫{cogs_desc_emojis[str(cog_name)]} {cog_name}', value='\u200b' + " • ".join(sorted(cmds)), inline=False)
                     embed.set_footer(text=footer)
                 for wc in self.client.walk_commands():
                     if not wc.cog_name and not wc.hidden:
