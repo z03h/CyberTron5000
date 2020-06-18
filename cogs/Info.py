@@ -43,7 +43,7 @@ class Info(commands.Cog):
                         cmds.append(cmd.name)
                 embed.add_field(name=f'≫ {cog_name}', value='\u200b' + " • ".join(sorted(cmds)), inline=False)
                 embed.set_footer(text=footer)
-            for wc in self.client.walk_commands:
+            for wc in self.client.walk_commands():
                 walk_commands.append(wc)
             for item in walk_commands:
                 if item not in final_walk_command_list:
