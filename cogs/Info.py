@@ -82,11 +82,14 @@ class Info(commands.Cog):
                 embed = discord.Embed(title=f"{pre}{alias} {cmd.signature}", description=help_msg, colour=colour)
                 embed.set_footer(text=footer)
                 if isinstance(cmd, commands.Group):
+                    sub_cmds = []
                     for sub_cmd in cmd.commands:
                         schm = sub_cmd.help or "No help provided for this command"
-                        embed.add_field(name=f"{cmd.name} {sub_cmd.name} {sub_cmd.signature}", value=schm, inline=False)
-                await ctx.send(embed=embed)
-    
+                        sub_cmds.append(f"≫ **{pre}{cmd.name} {sub_cmd.name}** • {schm}")
+                    scs = "\n".join(sub_cmds)
+                    await ctx.send(embed=discord.Embed(title=f"{pre}{alias} {cmd.signature}", description=help_msg + "\n" + scs, colour=colour).set_footer(text=f"{footer} • ≫ are subcommands"))
+                else:
+                    await ctx.send(embed=embed)
             else:
                 await ctx.send(f"Command/Cog `{command}` not found!")
         except Exception as er:
