@@ -86,8 +86,20 @@ class Profile(commands.Cog):
         except Exception as error:
             await ctx.send(error)
             
-    @commands.command(aliases=['ov'],
-                      help="Gets an overview of a user, including their avatar, permissions in the channel and info.")
+    @guildinfo.command(aliases=['mods'], invoke_without_command=True)
+    async def staff(self, ctx):
+        """Shows you the mods of a guild"""
+        n = "\n"
+        owner = ctx.guild.owner.mention
+        admins = [admin for admin in ctx.guild.members if admin.guild_permissions.administrator and admin.bot is False]
+        mods = [mod for mod in ctx.guild.members if mod.guild_permissions.kick_members and mod.bot is False]
+        mod_bots = [bot for bot in ctx.guild.members if bot.guild_permissions.kick_members and bot.bot is True]
+        await ctx.send(embed=discord.Embed(title=f"🛡 Staff Team for {ctx.guild}", description=f"👑 **OWNER:** {owner}\n"
+        f"\n**ADMINS:**\n {f'{n}'.join([f'🛡 {admin.mention} - {admin.top_role.mention}' for admin in admins])}"
+        f"\n\n**MODERATORS:**\n {f'{n}'.join([f'🛡 {mod.mention} - {mod.top_role.mention}' for mod in mods if mod not in admins])}"
+        f"\n\n**MOD BOTS:**\n {f'{n}'.join([f'🛡 {bot.mention} - {bot.top_role.mention}' for bot in mod_bots])}", colour=colour).set_thumbnail(url=ctx.guild.icon_url))
+            
+    @commands.command(aliases=['ov'],help="Gets an overview of a user, including their avatar, permissions in the channel and info.")
     async def overview(self, ctx, *, member: discord.Member = None):
         footer = f"You can also do {ctx.prefix}ui, {ctx.prefix}perms, {ctx.prefix}av for each of these."
         member = member or ctx.message.author
