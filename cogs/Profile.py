@@ -37,7 +37,7 @@ class Profile(commands.Cog):
             ]), timestamp=ctx.message.created_at
         ).set_image(url=avamember.avatar_url_as(static_format="png", size=2048)))
     
-    @commands.command(aliases=['si', 'serverinfo', 'gi', 'guild', 'server'], help="Gets the guild's info.")
+    @commands.group(aliases=['si', 'serverinfo', 'gi', 'guild', 'server'], help="Gets the guild's info.", invoke_without_command=True)
     async def guildinfo(self, ctx):
         try:
             online = 0

@@ -1,4 +1,7 @@
 import discord
+import asyncio
+import json
+
 from discord.ext import commands
 
 from .utils.lists import cogs_desc_emojis
@@ -24,12 +27,16 @@ class Info(commands.Cog):
     @commands.command(aliases=['?'])
     async def help(self, ctx, *, command=None):
         """Shows info about the bot, a command or category"""
-        pre = ctx.prefix
+        with open("prefixes.json", "r") as f:
+            prefix = json.load(f)
+            if str(ctx.guild.id) in prefix:
+                pre = prefix[str(ctx.guild.id)]
         footer = f"Do '{pre}help [command/cog]' for more information!"
         list_of_cogs = []
         walk_commands = []
         final_walk_command_list = []
         sc = []
+        format = []
         try:
             for cog in self.client.cogs:
                 list_of_cogs.append(cog)
@@ -44,8 +51,8 @@ class Info(commands.Cog):
                     cmds = []
                     for cmd in cog_object.get_commands():
                         if not cmd.hidden:
-                            cmds.append(cmd.name)
-                    embed.add_field(name=f' {cogs_desc_emojis[str(cog_name)]} {cog_name}', value='\u200b' + " • ".join(sorted(cmds)), inline=False)
+                            cmds.append(f"`{cmd.name}`")
+                    embed.add_field(name=f' {cogs_desc_emojis[str(cog_name)]} **{cog_name}**', value='\u200b' + " • ".join(sorted(cmds)), inline=False)
                     embed.set_footer(text=footer)
                 for wc in self.client.walk_commands():
                     if not wc.cog_name and not wc.hidden:
@@ -58,8 +65,18 @@ class Info(commands.Cog):
                 for item in walk_commands:
                     if item not in final_walk_command_list and item not in sc:
                         final_walk_command_list.append(item)
-                embed.add_field(name="Uncategorized Commands", value=" • ".join(sorted(final_walk_command_list)))
-                await ctx.send(embed=embed)
+                for thing in final_walk_command_list:
+                    format.append(f"`{thing}`")
+                embed.add_field(name="**Uncategorized Commands**", value=" • ".join(sorted(format)))
+                msg = await ctx.send("** **", embed=embed)
+                for emoji in ['⏹', 'ℹ️']:
+                    await msg.add_reaction(emoji=emoji)
+                await asyncio.sleep(0.1)
+                reaction, user = await self.client.wait_for('reaction_add', check=lambda reaction, user: reaction.emoji)
+                if str(reaction.emoji) == "⏹":
+                    await msg.delete()
+                elif str(reaction.emoji) == "ℹ️":
+                    await msg.edit(embed=discord.Embed(description="*Help Info*\n\n**<argument>** means the argument is **required**\n**[argument]** means the argument is **optional**\n**[A|B]** means it could be either **A or B**\n**[argument...]** means you can have **multiple arguments**", colour=colour))
             elif command in list_of_cogs:
                 cog_doc = self.client.cogs[command].__doc__ or " "
                 embed = discord.Embed(title=f"Commands in {command}", colour=colour, description=cog_doc)
@@ -87,7 +104,7 @@ class Info(commands.Cog):
                         schm = sub_cmd.help or "No help provided for this command"
                         sub_cmds.append(f"≫ **{pre}{cmd.name} {sub_cmd.name} {sub_cmd.signature}** • {schm}")
                     scs = "\n".join(sub_cmds)
-                    await ctx.send(embed=discord.Embed(title=f"{pre}{alias} {cmd.signature}", description=help_msg + "\n" + scs, colour=colour).set_footer(text=f"{footer} • ≫ are subcommands"))
+                    await ctx.send(embed=discord.Embed(title=f"{pre}{alias} {cmd.signature}", description=help_msg + "\n\n" + scs, colour=colour).set_footer(text=f"{footer} • ≫ are subcommands"))
                 else:
                     await ctx.send(embed=embed)
             else:

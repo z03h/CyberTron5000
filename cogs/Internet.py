@@ -157,7 +157,7 @@ class Internet(commands.Cog):
                 async with cs.get(
                         f"http://api.openweathermap.org/data/2.5/weather?appid=2a5e00144cd0454e62a99f975c701c4e&q={city}") as r:
                     res = await r.json()
-                    await self.session.close()
+                    await cs.close()
                 topic = res['weather'][0]
                 kelv_temp = round(res['main']['temp'], 1)
                 cels_temp = round(kelv_temp - 273.15, 1)
