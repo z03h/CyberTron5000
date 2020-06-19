@@ -67,7 +67,7 @@ class Info(commands.Cog):
                         final_walk_command_list.append(item)
                 for thing in final_walk_command_list:
                     format.append(f"`{thing}`")
-                embed.add_field(name="**Uncategorized Commands**", value=" • ".join(sorted(format)))
+                embed.add_field(name="**Uncategorized Commands**", value='\u200b' + " • ".join(sorted(format)))
                 msg = await ctx.send("** **", embed=embed)
                 for emoji in ['⏹', 'ℹ️']:
                     await msg.add_reaction(emoji=emoji)
