@@ -68,15 +68,7 @@ class Info(commands.Cog):
                 for thing in final_walk_command_list:
                     format.append(f"`{thing}`")
                 embed.add_field(name="**Uncategorized Commands**", value='\u200b' + " • ".join(sorted(format)))
-                msg = await ctx.send("** **", embed=embed)
-                for emoji in ['⏹', 'ℹ️']:
-                    await msg.add_reaction(emoji=emoji)
-                await asyncio.sleep(0.1)
-                reaction, user = await self.client.wait_for('reaction_add', check=lambda reaction, user: reaction.emoji)
-                if str(reaction.emoji) == "⏹":
-                    await msg.delete()
-                elif str(reaction.emoji) == "ℹ️":
-                    await msg.edit(embed=discord.Embed(description="*Help Info*\n\n**<argument>** means the argument is **required**\n**[argument]** means the argument is **optional**\n**[A|B]** means it could be either **A or B**\n**[argument...]** means you can have **multiple arguments**", colour=colour))
+                await ctx.send("** **", embed=embed)
             elif command in list_of_cogs:
                 cog_doc = self.client.cogs[command].__doc__ or " "
                 embed = discord.Embed(title=f"Commands in {command}", colour=colour, description=cog_doc)
