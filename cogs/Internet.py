@@ -186,7 +186,6 @@ class Internet(commands.Cog):
         try:
             async with self.session.get(f'https://pokeapi.co/api/v2/pokemon/{pokemon.lower()}') as r:
                 res = await r.json()
-                await self.session.close()
             sprite = res['sprites']['front_default']
             abils = res['abilities']
             s_s = res['stats']
@@ -202,7 +201,6 @@ class Internet(commands.Cog):
             types = " ".join(lst[::-1])
             async with self.session.get(f"https://pokeapi.co/api/v2/pokemon-species/{res['id']}/") as r:
                 data = await r.json()
-                await self.session.close()
             embed = discord.Embed(color=colour, title=f"{pokemon.capitalize()} • #{res['id']}",
                                   description=f"{types}\n**Height:** {res['height'] / 10} m\n\n<:pokeball:715599637079130202> {unes(data['flavor_text_entries'][0]['flavor_text'])}")
             embed.add_field(name="Abilities", value="\n".join(abilities[::-1]), inline=False)
