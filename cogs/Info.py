@@ -94,7 +94,7 @@ class Info(commands.Cog):
                     sub_cmds = []
                     for sub_cmd in cmd.commands:
                         schm = sub_cmd.help or "No help provided for this command"
-                        sub_cmds.append(f"≫ **{pre}{cmd.name} {sub_cmd.name} {sub_cmd.signature}** • {schm}")
+                        sub_cmds.append(f"≫ **{sub_cmd.name} {sub_cmd.signature}** • {schm}")
                     scs = "\n".join(sub_cmds)
                     await ctx.send(embed=discord.Embed(title=f"{pre}{alias} {cmd.signature}", description=help_msg + "\n\n" + scs, colour=colour).set_footer(text=f"{footer} • ≫ are subcommands"))
                 else:
