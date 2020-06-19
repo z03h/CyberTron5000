@@ -22,6 +22,7 @@ status_list = {
 
 class Profile(commands.Cog):
     """Commands interacting with a user or guild's profile."""
+    
     def __init__(self, client):
         self.client = client
     
@@ -37,7 +38,8 @@ class Profile(commands.Cog):
             ]), timestamp=ctx.message.created_at
         ).set_image(url=avamember.avatar_url_as(static_format="png", size=2048)))
     
-    @commands.group(aliases=['si', 'serverinfo', 'gi', 'guild', 'server'], help="Gets the guild's info.", invoke_without_command=True)
+    @commands.group(aliases=['si', 'serverinfo', 'gi', 'guild', 'server'], help="Gets the guild's info.",
+                    invoke_without_command=True)
     async def guildinfo(self, ctx):
         try:
             online = 0
@@ -65,14 +67,16 @@ class Profile(commands.Cog):
             text_channels = [text_channel for text_channel in guild.text_channels]
             voice_channels = [voice_channel for voice_channel in guild.voice_channels]
             categories = [category for category in guild.categories]
-            mod_list = [member for member in guild.members if member.guild_permissions.kick_members and member.bot is False]
+            mod_list = [member for member in guild.members if
+                        member.guild_permissions.kick_members and member.bot is False]
             ml = "\n".join([f"🛡 {member.mention} • `{member.top_role.name}`" for member in mod_list])
             emojis = [emoji for emoji in guild.emojis]
             region = REGIONS[f"{str(guild.region)}"]
             roles = [role for role in ctx.guild.roles]
             role_list = " ".join(role.mention for role in roles[::-1][:5] if role.id != ctx.guild.id)
-            embed = discord.Embed(colour=colour, title=f'{guild}', description=f"**{ctx.guild.id}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
-                                                                               f"\n<:member:716339965771907099>**{len(ctx.guild.members):,}** | <:online:703903072824459265>**{online:,}** • <:dnd:703903073315192832>**{dnd:,}** • <:idle:703903072836911105>**{idle:,}** • <:offline:703918395518746735>**{offline:,}** | <:bot:703728026512392312> **{botno}**\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}")
+            embed = discord.Embed(colour=colour, title=f'{guild}',
+                                  description=f"**{ctx.guild.id}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
+                                              f"\n<:member:716339965771907099>**{len(ctx.guild.members):,}** | <:online:703903072824459265>**{online:,}** • <:dnd:703903073315192832>**{dnd:,}** • <:idle:703903072836911105>**{idle:,}** • <:offline:703918395518746735>**{offline:,}** | <:bot:703728026512392312> **{botno}**\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}")
             embed.set_thumbnail(url=guild.icon_url)
             if len(roles) > 5:
                 msg = "Top 5 roles"
@@ -85,7 +89,7 @@ class Profile(commands.Cog):
             await ctx.send(embed=embed)
         except Exception as error:
             await ctx.send(error)
-            
+    
     @guildinfo.command(aliases=['mods'], invoke_without_command=True)
     async def staff(self, ctx):
         """Shows you the mods of a guild"""
@@ -94,12 +98,15 @@ class Profile(commands.Cog):
         admins = [admin for admin in ctx.guild.members if admin.guild_permissions.administrator and admin.bot is False]
         mods = [mod for mod in ctx.guild.members if mod.guild_permissions.kick_members and mod.bot is False]
         mod_bots = [bot for bot in ctx.guild.members if bot.guild_permissions.kick_members and bot.bot is True]
-        await ctx.send(embed=discord.Embed(title=f"🛡 Staff Team for {ctx.guild}", description=f"👑 **OWNER:** {owner}\n"
-        f"\n**ADMINS:**\n {f'{n}'.join([f'🛡 {admin.mention} - {admin.top_role.mention}' for admin in admins])}"
-        f"\n\n**MODERATORS:**\n {f'{n}'.join([f'🛡 {mod.mention} - {mod.top_role.mention}' for mod in mods if mod not in admins])}"
-        f"\n\n**MOD BOTS:**\n {f'{n}'.join([f'🛡 {bot.mention} - {bot.top_role.mention}' for bot in mod_bots])}", colour=colour).set_thumbnail(url=ctx.guild.icon_url))
-            
-    @commands.command(aliases=['ov'],help="Gets an overview of a user, including their avatar, permissions in the channel and info.")
+        await ctx.send(
+            embed=discord.Embed(title=f"🛡 Staff Team for {ctx.guild}", description=f"👑 **OWNER:** {owner}\n"
+                                                                                    f"\n**ADMINS:**\n {f'{n}'.join([f'🛡 {admin.mention} - {admin.top_role.mention}' for admin in admins])}"
+                                                                                    f"\n\n**MODERATORS:**\n {f'{n}'.join([f'🛡 {mod.mention} - {mod.top_role.mention}' for mod in mods])}"
+                                                                                    f"\n\n**MOD BOTS:**\n {f'{n}'.join([f'🛡 {bot.mention} - {bot.top_role.mention}' for bot in mod_bots])}",
+                                colour=colour).set_thumbnail(url=ctx.guild.icon_url))
+    
+    @commands.command(aliases=['ov'],
+                      help="Gets an overview of a user, including their avatar, permissions in the channel and info.")
     async def overview(self, ctx, *, member: discord.Member = None):
         footer = f"You can also do {ctx.prefix}ui, {ctx.prefix}perms, {ctx.prefix}av for each of these."
         member = member or ctx.message.author
