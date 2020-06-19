@@ -203,6 +203,7 @@ class Internet(commands.Cog):
             types = " ".join(lst[::-1])
             async with self.session.get(f"https://pokeapi.co/api/v2/pokemon-species/{res['id']}/") as r:
                 data = await r.json()
+                await self.session.close()
             embed = discord.Embed(color=colour, title=f"{pokemon.capitalize()} • #{res['id']}",
                                   description=f"{types}\n**Height:** {res['height'] / 10} m\n\n<:pokeball:715599637079130202> {unes(data['flavor_text_entries'][0]['flavor_text'])}")
             embed.add_field(name="Abilities", value="\n".join(abilities[::-1]), inline=False)
@@ -213,6 +214,7 @@ class Internet(commands.Cog):
             await ctx.send(embed=embed)
         except Exception as error:
             await ctx.send(f"Error, Pokemon not found! (Note that the API does not yet support Generation 8)")
+            await ctx.send(error)
     
     @commands.command(help="Urban Dictionary")
     async def urbandict(self, ctx, *, terms):
