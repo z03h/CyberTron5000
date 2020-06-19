@@ -82,7 +82,7 @@ class Profile(commands.Cog):
                 text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - ctx.guild.created_at)}")
             embed.add_field(name=f'Moderators (Total {len(mod_list)})', value=ml, inline=False)
             embed.add_field(name=f"{msg} (Total {len(roles)})", value=role_list)
-            embed.add_field(name=f"Emojis (Total {len(emojis)})", value=" • ".join(em_list[:24]), inline=False)
+            embed.add_field(name=f"Emojis (Total {len(emojis)})", value=" • ".join(em_list[:12]), inline=False)
             await ctx.send(embed=embed)
         except Exception as error:
             await ctx.send(error)
