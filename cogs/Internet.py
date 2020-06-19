@@ -218,7 +218,6 @@ class Internet(commands.Cog):
         try:
             async with self.session.get('http://api.urbandictionary.com/v0/define', params={'term': terms}) as r:
                 res = await r.json()
-                await self.session.close()
             term = res['list'][0]['definition']
             defin = res['list'][0]['example']
             trom = str(term).replace("[", "_")
@@ -226,7 +225,7 @@ class Internet(commands.Cog):
             deph = str(defin).replace("[", "_")
             deph2 = str(deph).replace("]", "_")
             await ctx.send(
-                embed=discord.Embed(title=terms, description=trom2, colour=colour))
+                embed=discord.Embed(title=terms, description=trom2 + f"\n\n{deph2}", colour=colour))
         except Exception as error:
             await ctx.send(error)
             
