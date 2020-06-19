@@ -93,17 +93,19 @@ class Profile(commands.Cog):
     @guildinfo.command(aliases=['mods'], invoke_without_command=True)
     async def staff(self, ctx):
         """Shows you the mods of a guild"""
-        n = "\n"
-        owner = ctx.guild.owner.mention
-        admins = [admin for admin in ctx.guild.members if admin.guild_permissions.administrator and admin.bot is False]
-        mods = [mod for mod in ctx.guild.members if mod.guild_permissions.kick_members and mod.bot is False]
-        mod_bots = [bot for bot in ctx.guild.members if bot.guild_permissions.kick_members and bot.bot is True]
-        await ctx.send(
-            embed=discord.Embed(title=f"🛡 Staff Team for {ctx.guild}", description=f"👑 **OWNER:** {owner}\n"
-                                                                                    f"\n**ADMINS:**\n {f'{n}'.join([f'🛡 {admin.mention} - {admin.top_role.mention}' for admin in admins])}"
-                                                                                    f"\n\n**MODERATORS:**\n {f'{n}'.join([f'🛡 {mod.mention} - {mod.top_role.mention}' for mod in mods])}"
-                                                                                    f"\n\n**MOD BOTS:**\n {f'{n}'.join([f'🛡 {bot.mention} - {bot.top_role.mention}' for bot in mod_bots])}",
-                                colour=colour).set_thumbnail(url=ctx.guild.icon_url))
+        try:
+            n = "\n"
+            owner = ctx.guild.owner.mention
+            admins = [admin for admin in ctx.guild.members if admin.guild_permissions.administrator and admin.bot is False]
+            mods = [mod for mod in ctx.guild.members if mod.guild_permissions.kick_members and mod.bot is False]
+            mod_bots = [bot for bot in ctx.guild.members if bot.guild_permissions.kick_members and bot.bot is True]
+            await ctx.send(embed=discord.Embed(title=f"🛡 Staff Team for {ctx.guild}", description=f"👑 **OWNER:** {owner}\n"
+                                                                                        f"\n**ADMINS** (Total {len(admins)})\n {f'{n}'.join([f'🛡 {admin.mention} - {admin.top_role.mention}' for admin in admins[:10]])}"
+                                                                                        f"\n\n**MODERATORS** (Total {len(mods)})\n {f'{n}'.join([f'🛡 {mod.mention} - {mod.top_role.mention}' for mod in mods[:10]])}"
+                                                                                        f"\n\n**MOD BOTS** (Total {len(mod_bots)})\n {f'{n}'.join([f'🛡 {bot.mention} - {bot.top_role.mention}' for bot in mod_bots[:10]])}",
+                                    colour=colour).set_thumbnail(url=ctx.guild.icon_url))
+        except Exception as error:
+            await ctx.send(error)
     
     @commands.command(aliases=['ov'],
                       help="Gets an overview of a user, including their avatar, permissions in the channel and info.")
