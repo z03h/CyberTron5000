@@ -199,6 +199,8 @@ async def on_ready():
     print("botttttttttttt ready")
 
 
+# Reaction Roles for Vibe School
+
 @client.event
 async def on_raw_reaction_add(payload):
     message_id = payload.message_id
