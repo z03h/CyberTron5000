@@ -186,6 +186,7 @@ async def spaceprefix(ctx, *, prefix):
     await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
     await ctx.guild.me.edit(nick=f"({prefix}) {client.user.name}")
 
+
 @client.event
 async def on_ready():
     for filename in os.listdir('./cogs'):
@@ -193,8 +194,8 @@ async def on_ready():
             client.load_extension(f'cogs.{filename[:-3]}')
     
     print("All cogs preloaded")
-    e = discord.Game(name=f"with {len(client.users):,} users")
-    await client.change_presence(status=discord.Status.online, activity=e)
+    await client.change_presence(
+        activity=discord.Activity(type=discord.ActivityType.watching, name=f"{len(client.users):,} users"))
     print("botttttttttttt ready")
 
 
