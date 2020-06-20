@@ -2,9 +2,6 @@ import discord
 import json
 
 from discord.ext import commands
-
-from .utils.lists import cogs_desc_emojis
-
 colour = 0x00dcff
 
 

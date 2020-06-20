@@ -6,16 +6,11 @@ import humanize
 from discord.ext import commands
 from disputils import BotEmbedPaginator
 
-from .utils.lists import REGIONS
+from .utils.lists import REGIONS, sl, mlsl, wlsl, dlsl
+
 
 colour = 0x00dcff
 
-status_list = {
-    "online": "<:online:703903072824459265>",
-    "offline": "<:offline:703918395518746735>",
-    "idle": "<:idle:703903072836911105>",
-    "dnd": "<:dnd:703903073315192832>"
-}
 
 
 # •
@@ -67,9 +62,6 @@ class Profile(commands.Cog):
             text_channels = [text_channel for text_channel in guild.text_channels]
             voice_channels = [voice_channel for voice_channel in guild.voice_channels]
             categories = [category for category in guild.categories]
-            mod_list = [member for member in guild.members if
-                        member.guild_permissions.kick_members and member.bot is False]
-            ml = "\n".join([f"🛡 {member.mention} • `{member.top_role.name}`" for member in mod_list])
             emojis = [emoji for emoji in guild.emojis]
             region = REGIONS[f"{str(guild.region)}"]
             roles = [role for role in ctx.guild.roles]
@@ -115,48 +107,12 @@ class Profile(commands.Cog):
         perms = []
         negperms = []
         member = member or ctx.message.author
-        if str(member.status) == "online":
-            status_emoji = "<:online:703903072824459265>"
-        elif str(member.status) == "offline":
-            status_emoji = "<:offline:703918395518746735>"
-        elif str(member.status) == "dnd":
-            status_emoji = " <:dnd:703903073315192832>"
-        else:
-            status_emoji = "<:idle:703903072836911105>"
-        if str(member.mobile_status) == "online":
-            bruhmoji = "<:whiteiphone:703726679377575996>"
-        elif str(member.mobile_status) == "idle":
-            bruhmoji = "<:whiteiphone:703726679377575996>"
-        elif str(member.mobile_status) == "dnd":
-            bruhmoji = "<:whiteiphone:703726679377575996>"
-        else:
-            bruhmoji = "\u200b"
-        if str(member.web_status) == "online":
-            bruhmoji2 = "🌐"
-        elif str(member.web_status) == "idle":
-            bruhmoji2 = "🌐"
-        elif str(member.web_status) == "dnd":
-            bruhmoji2 = "🌐"
-        else:
-            bruhmoji2 = "\u200b"
-        if str(member.desktop_status) == "online":
-            bruhmoji3 = ":desktop:"
-        elif str(member.desktop_status) == "idle":
-            bruhmoji3 = ":desktop:"
-        elif str(member.desktop_status) == "dnd":
-            bruhmoji3 = ":desktop:"
-        else:
-            bruhmoji3 = "\u200b"
-        if str(member.status) == "offline":
-            bruhmoji = "\u200b"
-            bruhmoji2 = "\u200b"
-            bruhmoji3 = "\u200b"
         if member.bot is True:
-            bot_bruh = "<:bot:703728026512392312>"
+            is_bot = "<:bot:703728026512392312>"
         else:
-            bot_bruh = "\u200b"
+            is_bot = "\u200b"
         join_position = sorted(ctx.guild.members, key=lambda member: member.joined_at).index(member)
-        status_list = f"{status_emoji}{bruhmoji}{bruhmoji2}{bruhmoji3}{bot_bruh}"
+        status_list = f"{sl[str(member.status)]}{mlsl[str(member.mobile_status)]}{wlsl[str(member.web_status)]}{dlsl[str(member.desktop_status)]}{is_bot}"
         if member.top_role.id == ctx.guild.id:
             top_role_msg = "\u200b"
         else:
@@ -203,48 +159,23 @@ class Profile(commands.Cog):
     async def userinfo(self, ctx, *, member: discord.Member = None):
         try:
             member = member or ctx.message.author
-            if str(member.status) == "online":
-                status_emoji = "<:online:703903072824459265>"
-            elif str(member.status) == "offline":
-                status_emoji = "<:offline:703918395518746735>"
-            elif str(member.status) == "dnd":
-                status_emoji = " <:dnd:703903073315192832>"
-            else:
-                status_emoji = "<:idle:703903072836911105>"
-            if str(member.mobile_status) == "online":
-                bruhmoji = "<:whiteiphone:703726679377575996>"
-            elif str(member.mobile_status) == "idle":
-                bruhmoji = "<:whiteiphone:703726679377575996>"
-            elif str(member.mobile_status) == "dnd":
-                bruhmoji = "<:whiteiphone:703726679377575996>"
-            else:
-                bruhmoji = "\u200b"
-            if str(member.web_status) == "online":
-                bruhmoji2 = "🌐"
-            elif str(member.web_status) == "idle":
-                bruhmoji2 = "🌐"
-            elif str(member.web_status) == "dnd":
-                bruhmoji2 = "🌐"
-            else:
-                bruhmoji2 = "\u200b"
-            if str(member.desktop_status) == "online":
-                bruhmoji3 = ":desktop:"
-            elif str(member.desktop_status) == "idle":
-                bruhmoji3 = ":desktop:"
-            elif str(member.desktop_status) == "dnd":
-                bruhmoji3 = ":desktop:"
-            else:
-                bruhmoji3 = "\u200b"
-            if str(member.status) == "offline":
-                bruhmoji = "\u200b"
-                bruhmoji2 = "\u200b"
-                bruhmoji3 = "\u200b"
             if member.bot is True:
-                bot_bruh = "<:bot:703728026512392312>"
+                is_bot = "<:bot:703728026512392312>"
             else:
-                bot_bruh = "\u200b"
+                is_bot = "\u200b"
             join_position = sorted(ctx.guild.members, key=lambda member: member.joined_at).index(member)
-            status_list = f"{status_emoji}{bruhmoji}{bruhmoji2}{bruhmoji3}{bot_bruh}"
+            status_list = f"{sl[str(member.status)]}{mlsl[str(member.mobile_status)]}{wlsl[str(member.web_status)]}{dlsl[str(member.desktop_status)]}{is_bot}"
+            if member.top_role.id == ctx.guild.id:
+                top_role_msg = "\u200b"
+            else:
+                top_role_msg = f"\n**Top Role:** {member.top_role.mention}"
+            a = discord.Embed(
+                colour=colour, timestamp=ctx.message.created_at, title=f"{member}",
+                description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1:,}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**{top_role_msg}\n{status_list}"
+            )
+            a.set_thumbnail(url=member.avatar_url_as(static_format="png"))
+            join_position = sorted(ctx.guild.members, key=lambda member: member.joined_at).index(member)
+            status_list = f"{sl[str(member.status)]}{mlsl[str(member.mobile_status)]}{wlsl[str(member.web_status)]}{dlsl[str(member.desktop_status)]}{is_bot}"
             if member.top_role.id == ctx.guild.id:
                 top_role_msg = "\u200b"
             else:
