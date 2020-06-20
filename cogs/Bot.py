@@ -178,7 +178,7 @@ class Bot(commands.Cog):
             await ctx.send(f" Showing source for command `{ctx.prefix + command}` (\` have been replaced with ')"
                            f"\n\n```python\n{real_src}\n```")
         except Exception:
-            await ctx.send("This command is too long.")
+            await ctx.send("This command is too long or wasn't found.")
         
     @commands.group(invoke_without_command=True, help="Shows total lines of code used to make the bot.")
     async def lines(self, ctx):
