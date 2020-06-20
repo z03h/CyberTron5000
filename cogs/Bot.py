@@ -33,6 +33,7 @@ class Bot(commands.Cog):
         self.client = client
         self.tick = ":GreenTick:707950252434653184"
         self.version = "CyberTron5000 Alpha v2.0.2"
+        self.softwares = ['<:dpy:708479036518694983>', '<:python:706850228652998667>', '<:JSON:710927078513442857>']
     
     @commands.command(help="Shows you how long the bot has been up for.")
     async def uptime(self, ctx):
@@ -300,7 +301,7 @@ class Bot(commands.Cog):
             
             code = nol + count
             embed = discord.Embed(colour=colour, title=f"About {self.client.user.name}", description=f"{self.client.user.name} CyberTron5000 is a general purpose discord bot, and the best one! This project was started in April, around **{humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}**.\n\n• **[Invite me to your server!](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)**\n• **[Join our help server!](https://discord.gg/2fxKxJH)**\n<:github:724036339426787380> **[Support this project on GitHub!](https://github.com/niztg/CyberTron5000)**")
-            embed.add_field(name="_Statistics_", value=f"**{len(self.client.users):,}** users, **{len(self.client.guilds):,}** guilds • About **{round(len(self.client.users)/len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands, **{len(self.client.cogs)}** cogs • About **{round(len(self.client.commands)/len(self.client.cogs)):,}** commands per cog\n**{code:,}** lines of code • <:dpy:708479036518694983>|<:python:706850228652998667>|<:JSON:710927078513442857>")
+            embed.add_field(name="_Statistics_", value=f"**{len(self.client.users):,}** users, **{len(self.client.guilds):,}** guilds • About **{round(len(self.client.users)/len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands, **{len(self.client.cogs)}** cogs • About **{round(len(self.client.commands)/len(self.client.cogs)):,}** commands per cog\n**{code:,}** lines of code • " + '|'.join(self.softwares))
             embed.set_thumbnail(url=self.client.user.avatar_url_as(static_format="png"))
             embed.set_footer(text=f"discord.py {discord.__version__} • {self.version}")
             embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
@@ -341,7 +342,10 @@ class Bot(commands.Cog):
                 if str(message.guild.id) in prefix:
                     pre = prefix[str(message.guild.id)]
                     embed = discord.Embed(colour=colour,
-                                          description=f'**My prefix for {message.guild} is** `{pre}`\n\n**Do** `{pre}help` **for a full list of commands.**\n\n[Invite me to your server!](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)\n\n[Join our help server!](https://discord.gg/aa9p43W)')
+                                          description=f'**My prefix for {message.guild} is** `{pre}`\n\n**Do** '
+                                                      f'`{pre}help` **for a full list of commands.**\n\n'
+                                                      f'[Invite me to your server!]'
+                                                      f'(https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)\n\n[Join our help server!](https://discord.gg/aa9p43W)')
                     embed.set_thumbnail(url=self.client.user.avatar_url)
                     embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
                     await message.channel.send(embed=embed)
