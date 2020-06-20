@@ -37,23 +37,11 @@ class Profile(commands.Cog):
                     invoke_without_command=True)
     async def guildinfo(self, ctx):
         try:
-            online = 0
-            offline = 0
-            idle = 0
-            dnd = 0
-            botno = 0
-            for member in ctx.guild.members:
-                if member.status == discord.Status.online:
-                    online += 1
-                elif member.status == discord.Status.offline:
-                    offline += 1
-                elif member.status == discord.Status.dnd:
-                    dnd += 1
-                elif member.status == discord.Status.idle:
-                    idle += 1
-            for member in ctx.guild.members:
-                if member.bot is True:
-                    botno += 1
+            online = len([member for member in ctx.guild.members if member.status == discord.Status.online])
+            offline = len([member for member in ctx.guild.members if member.status == discord.Status.offline])
+            idle = len([member for member in ctx.guild.members if member.status == discord.Status.idle])
+            dnd = len([member for member in ctx.guild.members if member.status == discord.Status.dnd])
+            botno = len([member for member in ctx.guild.members if member.bot is True])
             guild = ctx.guild
             emojis = [emoji for emoji in ctx.guild.emojis]
             em_list = []
