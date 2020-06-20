@@ -86,9 +86,9 @@ class Reddit(commands.Cog):
                 colour=reddit_colour, title="u/" + name, url=f"https://reddit.com/user/{redditor}",
                 description=", ".join(trophies)
             )
-            embed.add_field(name=f'<:karma:704158558547214426> **Karma**',
-                            value='**Total**: {:,.0f} \n**Link**: {:,.0f} \n**Comment**: {:,.0f}'.format(
-                                int(redditor.comment_karma) + int(redditor.link_karma), redditor.link_karma,
+            embed.add_field(name=f'<:karma:704158558547214426> **Karma** • **{int(redditor.link_karma) + int(redditor.comment_karma):,}** Total',
+                            value='**Link**: {:,.0f} \n**Comment**: {:,.0f}'.format(
+                                redditor.link_karma,
                                 redditor.comment_karma))
             embed.set_thumbnail(url=redditor.icon_img)
             ts = int(redditor.created_utc)
