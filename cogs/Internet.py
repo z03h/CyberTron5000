@@ -157,6 +157,7 @@ class Internet(commands.Cog):
                 async with cs.get(
                         f"http://api.openweathermap.org/data/2.5/weather?appid=2a5e00144cd0454e62a99f975c701c4e&q={city}") as r:
                     res = await r.json()
+                    await cs.close()
                 topic = res['weather'][0]
                 kelv_temp = round(res['main']['temp'], 1)
                 cels_temp = round(kelv_temp - 273.15, 1)
@@ -184,31 +185,33 @@ class Internet(commands.Cog):
         stats = []
         numlist = []
         try:
-            async with self.session.get(f'https://pokeapi.co/api/v2/pokemon/{pokemon.lower()}') as r:
-                res = await r.json()
-            sprite = res['sprites']['front_default']
-            abils = res['abilities']
-            s_s = res['stats']
-            ts = res['types']
-            for item in s_s:
-                stats.append(f"**{STAT_NAMES[item['stat']['name']]}:** `{item['base_stat']}`")
-            for ability in abils:
-                abilities.append(f"**{ability['ability']['name'].capitalize()}**")
-            for a in ts:
-                lst.append(TYPES[a['type']['name']])
-            for b in s_s:
-                numlist.append(b['base_stat'])
-            types = " ".join(lst[::-1])
-            async with self.session.get(f"https://pokeapi.co/api/v2/pokemon-species/{res['id']}/") as r:
-                data = await r.json()
-            embed = discord.Embed(color=colour, title=f"{pokemon.capitalize()} • #{res['id']}",
-                                  description=f"{types}\n**Height:** {res['height'] / 10} m\n\n<:pokeball:715599637079130202> {unes(data['flavor_text_entries'][0]['flavor_text'])}")
-            embed.add_field(name="Abilities", value="\n".join(abilities[::-1]), inline=False)
-            embed.add_field(name="Stats", value="\n".join(stats[::-1]) + f"\n**Total**: `{sum(numlist)}`",
-                            inline=False)
-            embed.set_thumbnail(url=sprite)
-            embed.set_footer(text="https://pokeapi.co/")
-            await ctx.send(embed=embed)
+            async with aiohttp.ClientSession() as cs:
+                async with cs.get(f'https://pokeapi.co/api/v2/pokemon/{pokemon.lower()}') as r:
+                    res = await r.json()
+                    await cs.close()
+                sprite = res['sprites']['front_default']
+                abils = res['abilities']
+                s_s = res['stats']
+                ts = res['types']
+                for item in s_s:
+                    stats.append(f"**{STAT_NAMES[item['stat']['name']]}:** `{item['base_stat']}`")
+                for ability in abils:
+                    abilities.append(f"**{ability['ability']['name'].capitalize()}**")
+                for a in ts:
+                    lst.append(TYPES[a['type']['name']])
+                for b in s_s:
+                    numlist.append(b['base_stat'])
+                types = " ".join(lst[::-1])
+                async with self.session.get(f"https://pokeapi.co/api/v2/pokemon-species/{res['id']}/") as r:
+                    data = await r.json()
+                embed = discord.Embed(color=colour, title=f"{pokemon.capitalize()} • #{res['id']}",
+                                      description=f"{types}\n**Height:** {res['height'] / 10} m\n\n<:pokeball:715599637079130202> {unes(data['flavor_text_entries'][0]['flavor_text'])}")
+                embed.add_field(name="Abilities", value="\n".join(abilities[::-1]), inline=False)
+                embed.add_field(name="Stats", value="\n".join(stats[::-1]) + f"\n**Total**: `{sum(numlist)}`",
+                                inline=False)
+                embed.set_thumbnail(url=sprite)
+                embed.set_footer(text="https://pokeapi.co/")
+                await ctx.send(embed=embed)
         except Exception as error:
             await ctx.send(f"Error, Pokemon not found! (Note that the API does not yet support Generation 8)")
             await ctx.send(error)
@@ -216,25 +219,27 @@ class Internet(commands.Cog):
     @commands.command(help="Urban Dictionary")
     async def urbandict(self, ctx, *, terms):
         try:
-            async with self.session.get('http://api.urbandictionary.com/v0/define', params={'term': terms}) as r:
-                res = await r.json()
-            term = res['list'][0]['definition']
-            defin = res['list'][0]['example']
-            trom = str(term).replace("[", "_")
-            trom2 = str(trom).replace("]", "_")
-            deph = str(defin).replace("[", "_")
-            deph2 = str(deph).replace("]", "_")
-            await ctx.send(
-                embed=discord.Embed(title=terms, description=trom2[:2000] + f"\n\n{deph2}", colour=colour))
+            async with aiohttp.ClientSession() as cs:
+                async with cs.get('http://api.urbandictionary.com/v0/define', params={'term': terms}) as r:
+                    res = await r.json()
+                term = res['list'][0]['definition']
+                defin = res['list'][0]['example']
+                trom = str(term).replace("[", "_")
+                trom2 = str(trom).replace("]", "_")
+                deph = str(defin).replace("[", "_")
+                deph2 = str(deph).replace("]", "_")
+                await ctx.send(
+                    embed=discord.Embed(title=terms, description=trom2[:2000] + f"\n\n{deph2}", colour=colour))
         except Exception as error:
             await ctx.send(error)
             
     @commands.command()
     async def fact(self, ctx):
         """Random fact"""
-        async with self.session.get("https://useless-facts.sameerkumar.website/api") as r:
-            res = await r.json()
-            await self.session.close()
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get("https://useless-facts.sameerkumar.website/api") as r:
+                res = await r.json()
+                await cs.close()
         await ctx.send(embed=discord.Embed(title=res['data'], colour=colour))
 
 def setup(client):
