@@ -52,7 +52,7 @@ class Info(commands.Cog):
                     for cmd in cog_object.get_commands():
                         if not cmd.hidden:
                             cmds.append(f"{cmd.name}")
-                    embed.add_field(name=f' {cogs_desc_emojis[str(cog_name)]} *{cog_name}*', value='\u200b' + " • ".join(sorted(cmds)), inline=False)
+                    embed.add_field(name=f'➤ *{cog_name}*', value='\u200b' + " • ".join(sorted(cmds)), inline=False)
                     embed.set_footer(text=footer)
                 for wc in self.client.walk_commands():
                     if not wc.cog_name and not wc.hidden:
@@ -67,7 +67,7 @@ class Info(commands.Cog):
                         final_walk_command_list.append(item)
                 for thing in final_walk_command_list:
                     format.append(f"{thing}")
-                embed.add_field(name="**Uncategorized Commands**", value='\u200b' + " • ".join(sorted(format)))
+                embed.add_field(name="*Uncategorized Commands*", value='\u200b' + " • ".join(sorted(format)))
                 await ctx.send("** **", embed=embed)
             elif command in list_of_cogs:
                 cog_doc = self.client.cogs[command].__doc__ or " "
