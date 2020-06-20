@@ -605,7 +605,6 @@ class Reddit(commands.Cog):
                                  icon_url=submission.subreddit.icon_img)
     
             await message.edit(embed=embed)
-
-
+            
 def setup(client):
     client.add_cog(Reddit(client))
