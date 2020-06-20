@@ -335,7 +335,7 @@ class Bot(commands.Cog):
                             value=f"**Cogs**: {len(self.client.cogs)} "
                                   f"\n**Commands and Subcommands**: {len(self.client.commands)}\n**Cached Messages**: {len(self.client.cached_messages)}")
             embed.add_field(name=f"\u200b",
-                            value=f"About **{round(int(len(self.client.users))/int(len(self.client.guilds))):,}** users per guild\n**Lines of Code**: {code:,} | <:dpy:708479036518694983><:python:706850228652998667><:JSON:710927078513442857>\n**Want more info?** [Join the CT5k support server!](https://discord.gg/aa9p43W)",
+                            value=f"About **{round(int(len(self.client.users))/int(len(self.client.guilds))):,}** users per guild\n**Lines of Code**: {code:,} | <:dpy:708479036518694983><:python:706850228652998667><:JSON:710927078513442857>\n**Want more info?** [Join the CT5k support server!](https://discord.gg/aa9p43W)\nOr star [the repo on GitHub!](https://github.com/niztg/CyberTron5000)",
                             inline=False)
             embed.set_thumbnail(
                 url=self.client.user.avatar_url)
