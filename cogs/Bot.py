@@ -11,6 +11,7 @@ import json
 import os
 import subprocess
 import sys
+import humanize
 import time
 
 import discord
@@ -188,12 +189,6 @@ class Bot(commands.Cog):
         with open(filename1, 'r') as files:
             for i in files:
                 nol += 1
-        
-        filename2 = "prefixes.json"
-        nol2 = 0
-        with open(filename2, 'r') as files:
-            for i in files:
-                nol2 += 1
         line_count = {}
         directory = "./cogs"
         for filename in os.listdir(directory):
@@ -207,7 +202,7 @@ class Bot(commands.Cog):
             for ext, count in line_count.items():
                 pass
         
-        code = nol + count + nol2
+        code = nol + count
         await ctx.send(
             embed=discord.Embed(title="CyberTron5000 was made with {:,.0f} lines of code!".format(code),
                                 color=0x00dcff))
@@ -263,21 +258,6 @@ class Bot(commands.Cog):
             embed=discord.Embed(title="{}.py has a total of {:,.0f} lines of code!".format(cog.capitalize(), count),
                                 color=0x00dcff))
     
-    @lines.command(invoke_without_command=True, help="Shows total lines in miscellaneous files.")
-    async def misc(self, ctx):
-        try:
-            filename2 = "prefixes.json"
-            nol2 = 0
-            with open(filename2, 'r') as files:
-                for i in files:
-                    nol2 += 1
-            
-            await ctx.send(
-                embed=discord.Embed(title="Miscellaneous files currently have {:,.0f} lines of code!".format(nol2),
-                                    color=0x00dcff))
-        except Exception as error:
-            await ctx.send(error)
-    
     @commands.command(help="Logs CyberTron5000 out.")
     @commands.is_owner()
     async def logout(self, ctx):
@@ -305,12 +285,6 @@ class Bot(commands.Cog):
             with open(filename1, 'r') as files:
                 for i in files:
                     nol += 1
-            
-            filename2 = "prefixes.json"
-            nol2 = 0
-            with open(filename2, 'r') as files:
-                for i in files:
-                    nol2 += 1
             line_count = {}
             directory = "./cogs"
             for filename in os.listdir(directory):
@@ -324,24 +298,12 @@ class Bot(commands.Cog):
                 for ext, count in line_count.items():
                     pass
             
-            code = nol + count + nol2
-            embed = discord.Embed(colour=colour, title=f"About {self.client.user.name}",
-                                  description=f"[`Invite me to your server!`](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)")
-            
-            embed.add_field(name="General",
-                            value=f"**Guilds**: {len(self.client.guilds):,} \n**Members**: {len(self.client.users):,}"
-                                  f"\n **Emojis**: {len(self.client.emojis):,}")
-            embed.add_field(name="Bot Info",
-                            value=f"**Cogs**: {len(self.client.cogs)} "
-                                  f"\n**Commands and Subcommands**: {len(self.client.commands)}\n**Cached Messages**: {len(self.client.cached_messages)}")
-            embed.add_field(name=f"\u200b",
-                            value=f"About **{round(int(len(self.client.users))/int(len(self.client.guilds))):,}** users per guild\n**Lines of Code**: {code:,} | <:dpy:708479036518694983><:python:706850228652998667><:JSON:710927078513442857>\n**Want more info?** [Join the CT5k support server!](https://discord.gg/aa9p43W)\nOr star [the repo on GitHub!](https://github.com/niztg/CyberTron5000)",
-                            inline=False)
-            embed.set_thumbnail(
-                url=self.client.user.avatar_url)
+            code = nol + count
+            embed = discord.Embed(colour=colour, title=f"About {self.client.user.name}", description=f"{self.client.user.name} CyberTron5000 is a general purpose discord bot, and the best one! This project was started in April, around **{humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}**.\n\n• **[Invite me to your server!](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)**\n• **[Join our help server!](https://discord.gg/2fxKxJH)**\n<:github:724036339426787380> **[Support this project on GitHub!](https://github.com/niztg/CyberTron5000)**")
+            embed.add_field(name="_Statistics_", value=f"**{len(self.client.users):,}** users, **{len(self.client.guilds):,}** guilds • About **{round(len(self.client.users)/len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands, **{len(self.client.cogs)}** cogs • About **{round(len(self.client.commands)/len(self.client.cogs)):,}** commands per cog\n**{code:,}** lines of code • <:dpy:708479036518694983>|<:python:706850228652998667>|<:JSON:710927078513442857>")
+            embed.set_thumbnail(url=self.client.user.avatar_url_as(static_format="png"))
             embed.set_footer(text=f"discord.py {discord.__version__} • {self.version}")
-            embed.set_author(name=f"Developed by {owner}",
-                             icon_url=owner.avatar_url)
+            embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
             await ctx.send(embed=embed)
         except Exception as error:
             print(error)
