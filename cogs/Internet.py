@@ -225,7 +225,7 @@ class Internet(commands.Cog):
             deph = str(defin).replace("[", "_")
             deph2 = str(deph).replace("]", "_")
             await ctx.send(
-                embed=discord.Embed(title=terms, description=trom2 + f"\n\n{deph2}", colour=colour))
+                embed=discord.Embed(title=terms, description=trom2[:2000] + f"\n\n{deph2}", colour=colour))
         except Exception as error:
             await ctx.send(error)
             
