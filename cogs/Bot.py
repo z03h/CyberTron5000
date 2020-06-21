@@ -172,15 +172,27 @@ class Bot(commands.Cog):
         await message.edit(embed=embe1d)
     
     @commands.command(aliases=["sourcecode", "src"], help="Shows source code for a given command")
-    async def source(self, ctx, *, command):
-        try:
+    async def source(self, ctx, *, command=None):
+        """cmd = self.client.get_command(command).callback
+        src = str(inspect.getsource(cmd)).replace("```", "``")
+        await ctx.send(f"```py\n{src}\n```")"""
+        if command is None:
+            return await ctx.send(embed=discord.Embed(title="Check out the full source code for this bot on GitHub!", url="https://github.com/niztg/CyberTron5000/", colour=colour))
+        cmd = self.client.get_command(command).callback
+        src = str(inspect.getsource(cmd)).replace("```", "``")
+        if len(src) > 2000:
             cmd = self.client.get_command(command).callback
-            src = inspect.getsource(cmd)
-            real_src = str(src).replace("`", "'")
-            await ctx.send(f" Showing source for command `{ctx.prefix + command}` (\` have been replaced with ')"
-                           f"\n\n```python\n{real_src}\n```")
-        except Exception:
-            await ctx.send("This command is too long or wasn't found.")
+            file = cmd.__code__.co_filename
+            location = os.path.relpath(file)
+            total, fl = inspect.getsourcelines(cmd)
+            ll = fl + (len(total) - 1)
+            await ctx.send(embed=discord.Embed(description=f"This code was too long for Discord, you can see it instead [on GitHub](<https://github.com/niztg/CyberTron5000/blob/master/{location}#L{fl}-L{ll}>)", colour=colour))
+        else:
+            await ctx.send(f"```py\n{src}\n```")
+           
+            
+            
+    
         
     @commands.group(invoke_without_command=True, help="Shows total lines of code used to make the bot.")
     async def lines(self, ctx):
