@@ -113,13 +113,10 @@ class Bot(commands.Cog):
             '__import__': __import__
         }
         exec(compile(parsed, filename="<ast>", mode="exec"), env)
-        
-        try:
-            await ctx.message.add_reaction(emoji=self.tick)
-            result = (await eval(f"{fn_name}()", env))
-            await ctx.send('{:,.3f}'.format(result))
-        except Exception as error:
-            await ctx.send('{:,.3f}'.format(error))
+
+        await ctx.message.add_reaction(emoji=self.tick)
+        result = (await eval(f"{fn_name}()", env))
+        await ctx.send('{:,.3f}'.format(result))
     
     @eval_fn.command(aliases=["rtrn", "r"], name='return', invoke_without_command=True,
                      help="Evaluates a function and returns output.")
@@ -173,11 +170,9 @@ class Bot(commands.Cog):
     
     @commands.command(aliases=["sourcecode", "src"], help="Shows source code for a given command")
     async def source(self, ctx, *, command=None):
-        """cmd = self.client.get_command(command).callback
-        src = str(inspect.getsource(cmd)).replace("```", "``")
-        await ctx.send(f"```py\n{src}\n```")"""
         if command is None:
-            return await ctx.send(embed=discord.Embed(title="Check out the full source code for this bot on GitHub!", url="https://github.com/niztg/CyberTron5000/", colour=colour))
+            return await ctx.send(embed=discord.Embed(title="Check out the full source code for this bot on GitHub!",
+                                                      url="https://github.com/niztg/CyberTron5000/", colour=colour))
         cmd = self.client.get_command(command).callback
         src = str(inspect.getsource(cmd)).replace("```", "``")
         if len(src) > 2000:
@@ -186,14 +181,12 @@ class Bot(commands.Cog):
             location = os.path.relpath(file)
             total, fl = inspect.getsourcelines(cmd)
             ll = fl + (len(total) - 1)
-            await ctx.send(embed=discord.Embed(description=f"This code was too long for Discord, you can see it instead [on GitHub](<https://github.com/niztg/CyberTron5000/blob/master/{location}#L{fl}-L{ll}>)", colour=colour))
+            await ctx.send(embed=discord.Embed(
+                description=f"This code was too long for Discord, you can see it instead [on GitHub](<https://github.com/niztg/CyberTron5000/blob/master/{location}#L{fl}-L{ll}>)",
+                colour=colour))
         else:
             await ctx.send(f"```py\n{src}\n```")
-           
-            
-            
     
-        
     @commands.group(invoke_without_command=True, help="Shows total lines of code used to make the bot.")
     async def lines(self, ctx):
         global count
@@ -281,45 +274,42 @@ class Bot(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def restart(self, ctx):
-        try:
-            await ctx.message.add_reaction(emoji=self.tick)
-            await self.client.logout()
-            subprocess.call([sys.executable, "ct5k.py"])
-        except Exception as error:
-            await ctx.send(error)
+        await ctx.message.add_reaction(emoji=self.tick)
+        await self.client.logout()
+        subprocess.call([sys.executable, "ct5k.py"])
     
     @commands.command(aliases=['info', 'ab', 'i'], help="Shows info on the bot.")
     async def about(self, ctx):
-        try:
-            owner = self.client.get_user(350349365937700864)
-            global count
-            filename1 = "ct5k.py"
-            nol = 0
-            with open(filename1, 'r') as files:
-                for i in files:
-                    nol += 1
-            line_count = {}
-            directory = "./cogs"
-            for filename in os.listdir(directory):
-                if filename.endswith(".py"):
-                    _, ext = os.path.splitext(filename)
-                    if ext not in line_count:
-                        line_count[ext] = 0
-                    for line in open(os.path.join(directory, filename)):
-                        line_count[ext] += 1
-                
-                for ext, count in line_count.items():
-                    pass
-            
-            code = nol + count
-            embed = discord.Embed(colour=colour, title=f"About {self.client.user.name}", description=f"{self.client.user.name} is a general purpose discord bot, and the best one! This project was started in April, around **{humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}**.\n\n• **[Invite me to your server!](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)**\n• **[Join our help server!](https://discord.gg/2fxKxJH)**\n<:github:724036339426787380> **[Support this project on GitHub!](https://github.com/niztg/CyberTron5000)**")
-            embed.add_field(name="_Statistics_", value=f"**{len(self.client.users):,}** users, **{len(self.client.guilds):,}** guilds • About **{round(len(self.client.users)/len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands, **{len(self.client.cogs)}** cogs • About **{round(len(self.client.commands)/len(self.client.cogs)):,}** commands per cog\n**{code:,}** lines of code • " + '|'.join(self.softwares))
-            embed.set_thumbnail(url=self.client.user.avatar_url_as(static_format="png"))
-            embed.set_footer(text=f"discord.py {discord.__version__} • {self.version}")
-            embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
-            await ctx.send(embed=embed)
-        except Exception as error:
-            print(error)
+        owner = self.client.get_user(350349365937700864)
+        global count
+        filename1 = "ct5k.py"
+        nol = 0
+        with open(filename1, 'r') as files:
+            for i in files:
+                nol += 1
+        line_count = {}
+        directory = "./cogs"
+        for filename in os.listdir(directory):
+            if filename.endswith(".py"):
+                _, ext = os.path.splitext(filename)
+                if ext not in line_count:
+                    line_count[ext] = 0
+                for line in open(os.path.join(directory, filename)):
+                    line_count[ext] += 1
+        
+            for ext, count in line_count.items():
+                pass
+    
+        code = nol + count
+        embed = discord.Embed(colour=colour, title=f"About {self.client.user.name}",
+                              description=f"{self.client.user.name} is a general purpose discord bot, and the best one! This project was started in April, around **{humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}**.\n\n• **[Invite me to your server!](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)**\n• **[Join our help server!](https://discord.gg/2fxKxJH)**\n<:github:724036339426787380> **[Support this project on GitHub!](https://github.com/niztg/CyberTron5000)**")
+        embed.add_field(name="_Statistics_",
+                        value=f"**{len(self.client.users):,}** users, **{len(self.client.guilds):,}** guilds • About **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands, **{len(self.client.cogs)}** cogs • About **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n**{code:,}** lines of code • " + '|'.join(
+                            self.softwares))
+        embed.set_thumbnail(url=self.client.user.avatar_url_as(static_format="png"))
+        embed.set_footer(text=f"discord.py {discord.__version__} • {self.version}")
+        embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
+        await ctx.send(embed=embed)
     
     @commands.group(aliases=["n", "changenickname", "nick"], invoke_without_command=True,
                     help="Change the bot's nickname to a custom one.")
@@ -361,6 +351,7 @@ class Bot(commands.Cog):
                     embed.set_thumbnail(url=self.client.user.avatar_url)
                     embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
                     await message.channel.send(embed=embed)
+
 
 def setup(client):
     client.add_cog(Bot(client))

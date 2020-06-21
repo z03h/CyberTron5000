@@ -85,24 +85,12 @@ async def on_guild_join(guild):
     
     with open("prefixes.json", "w") as f:
         json.dump(prefixes, f, indent=4)
-        
-        online = 0
-        offline = 0
-        idle = 0
-        dnd = 0
-        botno = 0
-        for member in guild.members:
-            if str(member.status) == "online":
-                online += 1
-            elif str(member.status) == "offline":
-                offline += 1
-            elif str(member.status) == "dnd":
-                dnd += 1
-            elif str(member.status) == "idle":
-                idle += 1
-        for member in guild.members:
-            if member.bot is True:
-                botno += 1
+
+        online = len([member for member in guild.members if member.status == discord.Status.online])
+        offline = len([member for member in guild.members if member.status == discord.Status.offline])
+        idle = len([member for member in guild.members if member.status == discord.Status.idle])
+        dnd = len([member for member in guild.members if member.status == discord.Status.dnd])
+        botno = len([member for member in guild.members if member.bot is True])
         text_channels = [text_channel for text_channel in guild.text_channels]
         voice_channels = [voice_channel for voice_channel in guild.voice_channels]
         categories = [category for category in guild.categories]
@@ -128,24 +116,12 @@ async def on_guild_remove(guild):
     
     with open("prefixes.json", "w") as f:
         json.dump(prefixes, f, indent=4)
-    
-    online = 0
-    offline = 0
-    idle = 0
-    dnd = 0
-    botno = 0
-    for member in guild.members:
-        if str(member.status) == "online":
-            online = online + 1
-        elif str(member.status) == "offline":
-            offline = offline + 1
-        elif str(member.status) == "dnd":
-            dnd = dnd + 1
-        elif str(member.status) == "idle":
-            idle = idle + 1
-    for member in guild.members:
-        if member.bot is True:
-            botno = botno + 1
+
+    online = len([member for member in guild.members if member.status == discord.Status.online])
+    offline = len([member for member in guild.members if member.status == discord.Status.offline])
+    idle = len([member for member in guild.members if member.status == discord.Status.idle])
+    dnd = len([member for member in guild.members if member.status == discord.Status.dnd])
+    botno = len([member for member in guild.members if member.bot is True])
     text_channels = [text_channel for text_channel in guild.text_channels]
     voice_channels = [voice_channel for voice_channel in guild.voice_channels]
     categories = [category for category in guild.categories]
@@ -398,11 +374,8 @@ async def on_raw_reaction_remove(payload):
 async def owner(ctx, *, idea):
     """Suggest an idea for the bot."""
     owner = client.get_user(id=350349365937700864)
-    try:
-        await owner.send(f"Idea: ```{idea}```")
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
-    except Exception as error:
-        await ctx.send(error)
+    await owner.send(f"Idea: ```{idea}```")
+    await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
 
 
 @owner.command(invoke_without_command=True)
