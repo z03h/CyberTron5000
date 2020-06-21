@@ -1,1 +1,1 @@
-web: python ct5k.py
+worker: python ct5k.py
