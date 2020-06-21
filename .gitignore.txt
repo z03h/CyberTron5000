@@ -1,5 +1,6 @@
-.txt
-.json
+secrets.txt
+prefixes.json
+secrets.json
 
 
 
