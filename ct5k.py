@@ -8,6 +8,10 @@ from discord.ext import commands
 
 colour = 0x00dcff
 
+token = os.environ.get("TOKEN")
+
+os.environ['TOKEN']
+
 # ⤗
 
 REGIONS = {
@@ -432,5 +436,4 @@ async def reload(ctx, extension=None):
         client.load_extension(f'cogs.{extension}')
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
 
-
-client.run(get_token())
+client.run(token)
