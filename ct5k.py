@@ -8,10 +8,6 @@ from discord.ext import commands
 
 colour = 0x00dcff
 
-token = os.environ.get("TOKEN")
-
-os.environ['TOKEN']
-
 # ⤗
 
 REGIONS = {
@@ -89,7 +85,7 @@ async def on_guild_join(guild):
     
     with open("prefixes.json", "w") as f:
         json.dump(prefixes, f, indent=4)
-
+        
         online = len([member for member in guild.members if member.status == discord.Status.online])
         offline = len([member for member in guild.members if member.status == discord.Status.offline])
         idle = len([member for member in guild.members if member.status == discord.Status.idle])
@@ -120,7 +116,7 @@ async def on_guild_remove(guild):
     
     with open("prefixes.json", "w") as f:
         json.dump(prefixes, f, indent=4)
-
+    
     online = len([member for member in guild.members if member.status == discord.Status.online])
     offline = len([member for member in guild.members if member.status == discord.Status.offline])
     idle = len([member for member in guild.members if member.status == discord.Status.idle])
@@ -319,7 +315,6 @@ async def on_raw_reaction_remove(payload):
         else:
             print("role not found")
     
-    
     elif message_id == 709969815254597703:
         guild_id = payload.guild_id
         guild = discord.utils.find(lambda g: g.id == guild_id, client.guilds)
@@ -370,7 +365,8 @@ async def on_raw_reaction_remove(payload):
                 print("Bruh")
         else:
             print("role not found")
-            
+
+
 # Reaction Roles Finish
 
 
@@ -436,4 +432,5 @@ async def reload(ctx, extension=None):
         client.load_extension(f'cogs.{extension}')
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
 
-client.run(token)
+
+client.run(get_token())

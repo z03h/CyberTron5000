@@ -138,14 +138,13 @@ class Internet(commands.Cog):
     async def compliment(self, ctx, *, user: discord.Member = None):
         try:
             user = user or ctx.message.author
-            user_name, user_discriminator = str(user).split("#")
             async with aiohttp.ClientSession() as cs:
                 async with cs.get("https://complimentr.com/api") as r:
                     comp = await r.json()
                     await cs.close()
             
             await ctx.send(
-                embed=discord.Embed(description=f"{user_name}, {unes(comp['compliment'])}", colour=colour).set_footer(
+                embed=discord.Embed(description=f"{user.name}, {unes(comp['compliment'])}", colour=colour).set_footer(
                     text="https://complimentr.com/api"))
         except Exception as error:
             await ctx.send(f"```py\n{error}```")
