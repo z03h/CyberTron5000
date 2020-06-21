@@ -61,8 +61,11 @@ class Games(commands.Cog):
         member1 = random.choice(ctx.guild.members)
         member2 = random.choice(ctx.guild.members)
         member3 = random.choice(ctx.guild.members)
-        embed = discord.Embed(colour=colour,
-                              description=f"**Would you kiss (😘), marry (👫), or kill(🔪) {member1.display_name}?**")
+        if member1 == member2:
+            member1 = random.choice(ctx.guild.members)
+        elif member3 == member2:
+            member3 = random.choice(ctx.guild.members)
+        embed = discord.Embed(colour=colour, description=f"**Would you kiss (😘), marry (👫), or kill(🔪) {member1.display_name}?**")
         embed.add_field(name=member1.display_name, value="\u200b")
         embed.add_field(name=member2.display_name, value="\u200b")
         embed.add_field(name=member3.display_name, value="\u200b")
