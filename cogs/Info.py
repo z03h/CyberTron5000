@@ -85,7 +85,7 @@ class Info(commands.Cog):
                     alias = cmd_alias_format
                 else:
                     alias = cmd.name if not parent else f'{parent} {cmd.name}'
-                embed = discord.Embed(title=f"{pre}{alias} {cmd.signature}", description=help_msg, colour=colour)
+                embed = discord.Embed(title=f"{alias} {cmd.signature}", description=help_msg, colour=colour)
                 embed.set_footer(text=footer)
                 if isinstance(cmd, commands.Group):
                     sub_cmds = []
@@ -95,9 +95,9 @@ class Info(commands.Cog):
                         else:
                             char = "•"
                         schm = sub_cmd.help or "No help provided for this command"
-                        sub_cmds.append(f"↣ {cmd.name} **{sub_cmd.name}{char}{'•'.join(sub_cmd.aliases)} {sub_cmd.signature}** • {schm}")
+                        sub_cmds.append(f"⤖ {cmd.name} **{sub_cmd.name}{char}{'•'.join(sub_cmd.aliases)} {sub_cmd.signature}** • {schm}")
                     scs = "\n".join(sub_cmds)
-                    await ctx.send(embed=discord.Embed(title=f"{pre}{alias} {cmd.signature}", description=help_msg + "\n\n" + scs, colour=colour).set_footer(text=f"{footer} • ↣ are subcommands"))
+                    await ctx.send(embed=discord.Embed(title=f"{alias} {cmd.signature}", description=help_msg + "\n\n" + scs, colour=colour).set_footer(text=f"{footer} • ⤖ are subcommands"))
                 else:
                     await ctx.send(embed=embed)
             else:
