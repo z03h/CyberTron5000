@@ -56,3 +56,13 @@ def check_guild_and_channel(channel):
             return False
     
     return commands.check(predicate)
+
+
+def codeblock(code):
+    if str(code).startswith("```py") and str(code).endswith("```"):
+        py, c = code.split("```py")
+        return c[:-3]
+    else:
+        return code
+
+
