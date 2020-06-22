@@ -109,6 +109,7 @@ class Moderation(commands.Cog):
             await e.add_reaction(r)
             
     @vote.command(invoke_without_command=True)
+    @commands.is_owner()
     async def ct5k(self, ctx, *, message):
         """Voting only in the CyberTron5000 help server (https://discord.gg/2fxKxJH)"""
         author = ctx.message.author
