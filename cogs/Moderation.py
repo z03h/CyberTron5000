@@ -95,7 +95,7 @@ class Moderation(commands.Cog):
                 await ctx.guild.unban(user)
                 await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
     
-    @commands.command(help="Vote on something.")
+    @commands.group(help="Vote on something.", invoke_without_command=True)
     async def vote(self, ctx, *, message):
         author = ctx.message.author
         embed = discord.Embed(
@@ -104,6 +104,20 @@ class Moderation(commands.Cog):
         embed.set_footer(text=f"Started by {author}", icon_url=author.avatar_url)
         await ctx.message.delete()
         string = str("Vote Here!")
+        e = await ctx.send(string, embed=embed)
+        for r in [':upvote:718895913342337036', ':downvote:718895842404335668']:
+            await e.add_reaction(r)
+            
+    @vote.command(invoke_without_command=True)
+    async def ct5k(self, ctx, *, message):
+        """Voting only in the CyberTron5000 help server (https://discord.gg/2fxKxJH)"""
+        author = ctx.message.author
+        embed = discord.Embed(
+            colour=colour, timestamp=ctx.message.created_at, title="Poll:", description=message
+        )
+        embed.set_footer(text=f"Started by {author}", icon_url=author.avatar_url)
+        await ctx.message.delete()
+        string = str("<@&724429718882877531>")
         e = await ctx.send(string, embed=embed)
         for r in [':upvote:718895913342337036', ':downvote:718895842404335668']:
             await e.add_reaction(r)
