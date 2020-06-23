@@ -93,7 +93,7 @@ class Reddit(commands.Cog):
             message = await ctx.send(embed=embedd)
             embed = discord.Embed(
                 colour=reddit_colour, title=f"u/{k['data']['name']}", url=f"https://reddit.com/user/{user}",
-                description=f"<:karma:704158558547214426> **Karma** • **{k['data']['link_karma'] + k['data']['comment_karma']:,}**\n:link: **Link** • **{k['data']['link_karma']:,}**\n:speech_balloon: **Comment** • **{k['data']['comment_karma']:,}**\n" + " ".join(i)
+                description=f"<:karma:704158558547214426> **Karma** • **{k['data']['link_karma'] + k['data']['comment_karma']:,}**\n:link: **Link** • **{k['data']['link_karma']:,}**\n:speech_balloon: **Comment** • **{k['data']['comment_karma']:,}**\n**Trophies** (Total {len(i)})" + " ".join(i)
             ).set_author(name=k['data']['subreddit']['title'])
             embed.set_footer(text="Account created on " + datetime.datetime.utcfromtimestamp(k['data']['created_utc']).strftime("%B %d, %Y"))
             img, r = str(k['data']['icon_img']).split("?")
