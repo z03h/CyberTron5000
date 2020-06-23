@@ -234,10 +234,11 @@ class VibeSchool(commands.Cog):
         embed.set_thumbnail(url=member.avatar_url)
         embed.set_author(name=f"Ascension initiated by {ctx.message.author}", icon_url=ctx.message.author.avatar_url)
         embed.add_field(name=f"**Roles ({len(roles) - 1})**",
-                        value=" • ".join([role.mention for role in roles if role.id != ctx.guild.id]), inline=False)
+                        value=" • ".join([role.mention for role in roles[::-1][:10] if role.id != ctx.guild.id]),
+                        inline=False)
         embed.add_field(name="**Joined Guild**", value=f"{member.joined_at.strftime('%B %d, %Y')} ", inline=False)
         message = await ctx.send(message, embed=embed)
-        for r in [':upvote:666047214082195456', ':downvote:666047257312886834']:
+        for r in [':upvote:718895913342337036', ':downvote:718895842404335668']:
             await message.add_reaction(r)
 
 
