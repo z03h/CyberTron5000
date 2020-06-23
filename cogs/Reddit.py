@@ -73,7 +73,7 @@ class Reddit(commands.Cog):
                 async with cs.get(f"https://www.reddit.com/user/{user}/trophies/.json") as r:
                     res = await r.json()
                 for item in res['data']['trophies']:
-                    trophies.append(item['data']['name'])
+                    trophies.append(emotes[str(item['data']['name']).lower()])
             embedd = discord.Embed(
                 colour=reddit_colour, title="Loading..."
             )
