@@ -41,7 +41,7 @@ class Profile(commands.Cog):
             offline = len([member for member in ctx.guild.members if member.status == discord.Status.offline])
             idle = len([member for member in ctx.guild.members if member.status == discord.Status.idle])
             dnd = len([member for member in ctx.guild.members if member.status == discord.Status.dnd])
-            botno = len([member for member in ctx.guild.members if member.bot is True])
+            botno = len([member for member in ctx.guild.members if member.bot])
             guild = ctx.guild
             emojis = [emoji for emoji in ctx.guild.emojis]
             em_list = []
