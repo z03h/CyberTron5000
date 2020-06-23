@@ -96,10 +96,9 @@ class Reddit(commands.Cog):
                 description=f"<:karma:704158558547214426> **Karma** • **{k['data']['link_karma'] + k['data']['comment_karma']:,}**\n:link: **Link** • **{k['data']['link_karma']:,}**\n:speech_balloon: **Comment** • **{k['data']['comment_karma']:,}**\n**Trophies (Total {len(i)})**\n" + "".join(i)
             ).set_author(name=k['data']['subreddit']['title'])
             embed.set_footer(text="Account created on " + datetime.datetime.utcfromtimestamp(k['data']['created_utc']).strftime("%B %d, %Y"))
-            img, r = str(k['data']['icon_img']).split("?")
-            embed.set_thumbnail(url=img)
-            await message.edit(embed=embed)
-            await message.edit(embed=embed)
+            icon = k['data']['icon_img']
+            icon = icon.split("?")[0]
+            embed.set_thumbnail(url=icon)
         except Exception:
             await ctx.send("Redditor not found.")
 
