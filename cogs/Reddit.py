@@ -96,7 +96,6 @@ class Reddit(commands.Cog):
                     description=f"<:karma:704158558547214426> **Karma** • **{int(redditor.link_karma) + int(redditor.comment_karma):,}**\n:link: **Link** • **{int(redditor.link_karma):,}**\n:speech_balloon: **Comment** • **{int(redditor.comment_karma):,}**\n" + " ".join(i)))
             embed.set_thumbnail(url=redditor.icon_img)
             ts = int(redditor.created_utc)
-            
             embed.set_footer(text='Account created on {}'.format(
                 datetime.datetime.fromtimestamp(ts).strftime('%B %d, %Y')))
             await message.edit(embed=embed)
