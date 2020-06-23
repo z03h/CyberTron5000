@@ -69,13 +69,20 @@ class Reddit(commands.Cog):
     @commands.command(aliases=['rs', 'karma'], help="Shows your Reddit Stats.")
     async def redditstats(self, ctx, user):
         trophies = []
+        i = []
         try:
             async with aiohttp.ClientSession() as cs:
                 async with cs.get(f"https://www.reddit.com/user/{user}/trophies/.json") as r:
                     res = await r.json()
                 for item in res['data']['trophies']:
-                    trophies.append(emotes[str(item['data']['name']).lower()])
-            embedd = discord.Embed(
+                    if str(item['data']['name']).lower() in emotes:
+                        trophies.append(emotes[str(item['data']['name']).lower()])
+                    else:
+                        trophies.append(" ")
+                for t in trophies:
+                    if t not in i:
+                        i.append(t)
+                embedd = discord.Embed(
                 colour=reddit_colour, title="Loading..."
             )
             embedd.set_image(
@@ -84,13 +91,9 @@ class Reddit(commands.Cog):
             redditor = self.reddit.redditor(user)
             name = str(redditor.name).replace("_", "\_")
             embed = discord.Embed(
-                colour=reddit_colour, title="u/" + name, url=f"https://reddit.com/user/{redditor}",
-                description=" ".join(trophies)
-            )
-            embed.add_field(name=f'<:karma:704158558547214426> **Karma** • **{int(redditor.link_karma) + int(redditor.comment_karma):,}** Total',
-                            value='**Link**: {:,.0f} \n**Comment**: {:,.0f}'.format(
-                                redditor.link_karma,
-                                redditor.comment_karma))
+                embed=discord.Embed(
+                    colour=reddit_colour, title="u/" + name, url=f"https://reddit.com/user/{redditor}",
+                    description=f"<:karma:704158558547214426> **Karma** • **{int(redditor.link_karma) + int(redditor.comment_karma):,}**\n:link: **Link** • **{int(redditor.link_karma):,}**\n:speech_balloon: **Comment** • **{int(redditor.comment_karma):,}**\n" + " ".join(i)))
             embed.set_thumbnail(url=redditor.icon_img)
             ts = int(redditor.created_utc)
             

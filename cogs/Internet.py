@@ -23,7 +23,6 @@ class Internet(commands.Cog):
     """Interact with various API's"""
     def __init__(self, client):
         self.client = client
-        self.session = aiohttp.ClientSession()
     
     @commands.group(invoke_without_command=True, aliases=['trans'], help="Translate something to English.")
     async def translate(self, ctx, *, message):
@@ -201,8 +200,9 @@ class Internet(commands.Cog):
                 for b in s_s:
                     numlist.append(b['base_stat'])
                 types = " ".join(lst[::-1])
-                async with self.session.get(f"https://pokeapi.co/api/v2/pokemon-species/{res['id']}/") as r:
-                    data = await r.json()
+                async with aiohttp.ClientSession() as cs:
+                    async with cs.get(f"https://pokeapi.co/api/v2/pokemon-species/{res['id']}/") as r:
+                        data = await r.json()
                 embed = discord.Embed(color=colour, title=f"{pokemon.capitalize()} • #{res['id']}",
                                       description=f"{types}\n**Height:** {res['height'] / 10} m\n\n<:pokeball:715599637079130202> {unes(data['flavor_text_entries'][0]['flavor_text'])}")
                 embed.add_field(name="Abilities", value="\n".join(abilities[::-1]), inline=False)
