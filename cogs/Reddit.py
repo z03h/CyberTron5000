@@ -7,6 +7,7 @@ import discord
 import humanize
 import praw
 from discord.ext import commands
+from .utils.lists import emotes
 
 reddit_colour = 0xff5700
 
@@ -84,7 +85,7 @@ class Reddit(commands.Cog):
             name = str(redditor.name).replace("_", "\_")
             embed = discord.Embed(
                 colour=reddit_colour, title="u/" + name, url=f"https://reddit.com/user/{redditor}",
-                description=", ".join(trophies)
+                description=" ".join(trophies)
             )
             embed.add_field(name=f'<:karma:704158558547214426> **Karma** • **{int(redditor.link_karma) + int(redditor.comment_karma):,}** Total',
                             value='**Link**: {:,.0f} \n**Comment**: {:,.0f}'.format(
