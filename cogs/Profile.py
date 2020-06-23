@@ -107,7 +107,7 @@ class Profile(commands.Cog):
             top_role_msg = f"\n**Top Role:** {member.top_role.mention}"
         a = discord.Embed(
             colour=colour, timestamp=ctx.message.created_at, title=f"{member}",
-            description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1:,}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**{top_role_msg}\n{status_list}"
+            description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1:,}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**{top_role_msg}\nGuilds shared with bot: **{len([g for g in self.client.guilds if g.get_member(member.id)])}**\n{status_list}"
         )
         a.set_thumbnail(url=member.avatar_url_as(static_format="png"))
         embedd = discord.Embed(colour=colour, timestamp=ctx.message.created_at,
@@ -170,7 +170,7 @@ class Profile(commands.Cog):
                 top_role_msg = f"\n**Top Role:** {member.top_role.mention}"
             a = discord.Embed(
                 colour=colour, timestamp=ctx.message.created_at, title=f"{member}",
-                description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1:,}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**{top_role_msg}\n{status_list}"
+                description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1:,}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**{top_role_msg}\nGuilds shared with bot: **{len([g for g in self.client.guilds if g.get_member(member.id)])}**\n{status_list}"
             )
             a.set_thumbnail(url=member.avatar_url_as(static_format="png"))
             await ctx.send(embed=a)
