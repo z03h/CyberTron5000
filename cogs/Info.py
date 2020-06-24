@@ -42,15 +42,13 @@ class Info(commands.Cog):
             else:
                 cmd = None
             if not command:
-                embed = discord.Embed(colour=colour, title=f"{self.client.user.name} Help",
-                                      description=f"You can do `{pre}help [category]` for more info on a category.\nYou can also do `{pre}help [command]` for more info on a command.")
+                k = []
                 for cog_name, cog_object in self.client.cogs.items():
                     cmds = []
                     for cmd in cog_object.get_commands():
                         if not cmd.hidden:
                             cmds.append(f"`{cmd.name}`")
-                    embed.add_field(name=f'➤ *{cog_name}*', value='\u200b' + " • ".join(sorted(cmds)), inline=False)
-                    embed.set_footer(text=footer)
+                    k.append(f'➤ **{cog_name}**\n{"•".join(sorted(cmds))}\n')
                 for wc in self.client.walk_commands():
                     if not wc.cog_name and not wc.hidden:
                         if isinstance(wc, commands.Group):
@@ -64,8 +62,9 @@ class Info(commands.Cog):
                         final_walk_command_list.append(item)
                 for thing in final_walk_command_list:
                     format.append(f"`{thing}`")
-                embed.add_field(name="*Uncategorized Commands*", value='\u200b' + " • ".join(sorted(format)))
-                await ctx.send("** **", embed=embed)
+                k.append("**Uncategorized Commands**\n" + " • ".join(sorted(format)))
+                await ctx.send("** **", embed=discord.Embed(colour=colour, title=f"{self.client.user.name} Help",
+                                                            description=f"You can do `{pre}help [category]` for more info on a category.\nYou can also do `{pre}help [command]` for more info on a command.\n\n" + "\n".join(k)))
             elif command in list_of_cogs:
                 i = []
                 cog_doc = self.client.cogs[command].__doc__ or " "
