@@ -416,20 +416,13 @@ class Reddit(commands.Cog):
             await message.edit(embed=embed)
     
     # mod stats
-    
+
     @commands.command(aliases=['ms'])
     async def modstats(self, ctx, user):
         """Shows you the moderated subreddits of a specific user."""
         reddits = []
         numbas = []
         modstats = []
-        zero_subs = 0
-        one_subs = 0
-        hundred_subs = 0
-        thousand_subs = 0
-        hundred_thousand_subs = 0
-        million = 0
-        ten_million = 0
         try:
             async with aiohttp.ClientSession() as cs:
                 async with cs.get(f"https://www.reddit.com/user/{user}/moderated_subreddits/.json") as r:
@@ -445,26 +438,18 @@ class Reddit(commands.Cog):
                 else:
                     rs = reddits
                     msg = f"Moderated Subreddits"
-                
+            
                 for index, sr in enumerate(rs, 1):
                     modstats.append(f"{index}. {sr}")
-                
+            
                 final_ms = "\n".join(modstats)
-                for item in numbas:
-                    if item == 0:
-                        zero_subs += 1
-                    if item == 1:
-                        one_subs += 1
-                    if item >= 100:
-                        hundred_subs += 1
-                    if item >= 1000:
-                        thousand_subs += 1
-                    if item >= 100000:
-                        hundred_thousand_subs += 1
-                    if item >= 1000000:
-                        million += 1
-                    if item >= 10000000:
-                        ten_million += 1
+                zero_subs = len([item for item in numbas if item == 0])
+                one_subs = len([item for item in numbas if item == 1])
+                hundred_subs = len([item for item in numbas if item >= 100])
+                thousand_subs = len([item for item in numbas if item >= 1000])
+                hundred_thousand_subs = len([item for item in numbas if item >= 100_000])
+                million = len([item for item in numbas if item >= 1_000_000])
+                ten_million = len([item for item in numbas if item >= 10_000_000])
                 embed = discord.Embed(
                     description=f"u/{user} mods **{len(reddits):,}** subreddits with **{humanize.intcomma(sum(numbas))}**"
                                 f" total readers\n\n*{msg}*\n\n{final_ms}", colour=reddit_colour)
@@ -475,7 +460,7 @@ class Reddit(commands.Cog):
             await ctx.send(
                 f"Moderator not found/Author not verified. To verify, do `{ctx.prefix}verify [reddit username]`")
             await ctx.send(error)
-    
+
     @commands.command(aliases=['ask'])
     async def askreddit(self, ctx):
         """Ask Reddit..."""
