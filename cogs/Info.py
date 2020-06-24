@@ -62,7 +62,7 @@ class Info(commands.Cog):
                         final_walk_command_list.append(item)
                 for thing in final_walk_command_list:
                     format.append(f"`{thing}`")
-                k.append("**Uncategorized Commands**\n" + " • ".join(sorted(format)))
+                k.append("**Uncategorized Commands**\n" + "•".join(sorted(format)))
                 await ctx.send("** **", embed=discord.Embed(colour=colour, title=f"{self.client.user.name} Help",
                                                             description=f"You can do `{pre}help [category]` for more info on a category.\nYou can also do `{pre}help [command]` for more info on a command.\n\n" + "\n".join(k)))
             elif command in list_of_cogs:
