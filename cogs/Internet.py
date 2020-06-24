@@ -64,9 +64,9 @@ class Internet(commands.Cog):
             async with aiohttp.ClientSession() as cs:
                 async with cs.get('https://aws.random.cat/meow') as r:
                     res = await r.json()
-                    await cs.close()
             em = discord.Embed(colour=colour, title="OwO", url=res['file'])
             em.set_image(url=res['file'])
+            await cs.close()
             em.set_footer(text="https://aws.random.cat/meow")
             await ctx.send(embed=em)
         except Exception as er:
