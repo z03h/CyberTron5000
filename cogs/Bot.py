@@ -265,6 +265,20 @@ class Bot(commands.Cog):
         await ctx.send(
             embed=discord.Embed(title="{}.py has a total of {:,.0f} lines of code!".format(cog.capitalize(), count),
                                 color=0x00dcff))
+        
+    @lines.command(aliases=['cmd'], invoke_without_command=True)
+    async def command(self, ctx, *, command):
+        """Lines for a specific command"""
+        try:
+            cmd = self.client.get_command(command)
+            src_cmd = cmd.callback
+            total, fl = inspect.getsourcelines(src_cmd)
+            ll = fl + (len(total) - 1)
+            await ctx.send(
+                embed=discord.Embed(title="{} command has a total of {:,.0f} lines of code!".format(cmd.name, ll-fl),
+                                    color=0x00dcff))
+        except Exception as err:
+            await ctx.send(err)
     
     @commands.command(help="Logs CyberTron5000 out.")
     @commands.is_owner()
