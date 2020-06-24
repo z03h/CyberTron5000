@@ -64,7 +64,7 @@ class Info(commands.Cog):
                     format.append(f"`{thing}`")
                 k.append("**Uncategorized Commands**\n" + "•".join(sorted(format)))
                 await ctx.send("** **", embed=discord.Embed(colour=colour, title=f"{self.client.user.name} Help",
-                                                            description=f"You can do `{pre}help [category]` for more info on a category.\nYou can also do `{pre}help [command]` for more info on a command.\n\n" + "\n".join(k)))
+                                                            description=f"You can do `{pre}help [command/category]` for more info.\n\n" + "\n".join(k)))
             elif command in list_of_cogs:
                 i = []
                 cog_doc = self.client.cogs[command].__doc__ or " "
