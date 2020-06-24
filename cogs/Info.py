@@ -48,7 +48,7 @@ class Info(commands.Cog):
                     for cmd in cog_object.get_commands():
                         if not cmd.hidden:
                             cmds.append(f"`{cmd.name}`")
-                    k.append(f'➤ **{cog_name}**\n{"•".join(sorted(cmds))}\n')
+                    k.append(f'➤ *{cog_name}*\n{"•".join(sorted(cmds))}')
                 for wc in self.client.walk_commands():
                     if not wc.cog_name and not wc.hidden:
                         if isinstance(wc, commands.Group):
