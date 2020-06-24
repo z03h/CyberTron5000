@@ -48,7 +48,7 @@ class Info(commands.Cog):
                     for cmd in cog_object.get_commands():
                         if not cmd.hidden:
                             cmds.append(f"`{cmd.name}`")
-                    k.append(f'➤ *{cog_name}*\n{"•".join(sorted(cmds))}')
+                    k.append(f'➤ **{cog_name}**\n{"•".join(sorted(cmds))}')
                 for wc in self.client.walk_commands():
                     if not wc.cog_name and not wc.hidden:
                         if isinstance(wc, commands.Group):
@@ -62,7 +62,7 @@ class Info(commands.Cog):
                         final_walk_command_list.append(item)
                 for thing in final_walk_command_list:
                     format.append(f"`{thing}`")
-                k.append("*Uncategorized Commands*\n" + " • ".join(sorted(format)))
+                k.append("**Uncategorized Commands**\n" + " • ".join(sorted(format)))
                 await ctx.send("** **", embed=discord.Embed(colour=colour, title=f"{self.client.user.name} Help",
                                                             description=f"You can do `{pre}help [category]` for more info on a category.\nYou can also do `{pre}help [command]` for more info on a command.\n\n" + "\n".join(k)))
             elif command in list_of_cogs:
