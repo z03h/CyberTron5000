@@ -65,3 +65,14 @@ def codeblock(body):
     else:
         return body
 
+
+class PyFormatter(object):
+    def __init__(self):
+        pass
+    
+    def listify(self, l: list, char='\n', limit: int = None):
+        if not limit:
+            return f"{char}".join(l)
+        else:
+            return f"{char}".join(list[:limit])
+
