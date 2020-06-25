@@ -68,11 +68,18 @@ def codeblock(body):
 
 class PyFormatter(object):
     def __init__(self):
-        pass
+        self.author = 'Niz'
     
     def listify(self, l: list, char='\n', limit: int = None):
         if not limit:
             return f"{char}".join(l)
         else:
             return f"{char}".join(list[:limit])
+    
+    def hyper_replace(self, text, old: list, new: list):
+        msg = str(text)
+        for x, y in zip(old, new):
+            msg = str(msg).replace(x, y)
+        return msg
+
 

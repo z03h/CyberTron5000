@@ -6,6 +6,9 @@ from discord.ext import commands
 from async_timeout import timeout
 
 from .utils.lists import INDICATOR_LETTERS
+from .utils.funcs import PyFormatter
+
+pyf = PyFormatter()
 
 colour = 0x00dcff
 
@@ -18,76 +21,44 @@ class Fun(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.tick = ":GreenTick:707950252434653184"
-    
+
     @commands.group(invoke_without_command=True, help="Replies with what you said and deletes your message.",
                     aliases=['say'])
     async def reply(self, ctx, *, message):
-        if "@everyone" in message:
-            send = str(message).replace("@everyone", "@\u200beveryone")
-            await ctx.message.delete()
-            await ctx.send(send)
-        elif "@here" in message:
-            send = str(message).replace("@here", "@\u200bhere")
-            await ctx.message.delete()
-            await ctx.send(send)
-        else:
-            await ctx.message.delete()
-            await ctx.send(message)
-    
+        await ctx.send(
+            pyf.hyper_replace(text=message, old=['@everyone', '@here'], new=['@\u200beveryone', '@\u200bhere']))
+
     @reply.command(invoke_without_command=True,
                    help="Replies with what you said and deletes your message, but in an embed.")
     async def embed(self, ctx, *, message):
-        await ctx.message.delete()
         await ctx.send(embed=discord.Embed(title=message, colour=colour))
-    
+
     @reply.command(invoke_without_command=True,
                    help="Replies with what you said and deletes your message, but in a different channel.")
     async def echo(self, ctx, channel: discord.TextChannel, *, message):
-        if "@everyone" in message:
-            send = str(message).replace("@everyone", "@\u200beveryone")
-            await channel.send(send)
-        elif "@here" in message:
-            send = str(message).replace("@here", "@\u200bhere")
-            await channel.send(send)
-        else:
-            await channel.send(message)
+        await channel.send(
+            pyf.hyper_replace(text=message, old=['@everyone', '@here'], new=['@\u200beveryone', '@\u200bhere']))
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
-    
-    @reply.command(invoke_without_command=True,
-                   help="Replies with what you said and deletes your message, but UwU.")
+
+    @reply.command(invoke_without_command=True, help="Replies with what you said and deletes your message, but UwU.")
     async def owo(self, ctx, *, message):
-        real_message = str(message).replace("l", "w")
-        real_message2 = str(real_message).replace("r", "w")
-        real_message3 = str(real_message2).replace("L", "W")
-        real_message4 = str(real_message3).replace("R", "W")
-        await ctx.message.delete()
-        await ctx.send(real_message4)
-    
+        await ctx.send(pyf.hyper_replace(text=message, old=['r', 'l', 'R', 'L'], new=['w', 'w', "W", "W"]))
+
     @reply.command(help="🅱", invoke_without_command=True)
     async def b(self, ctx, *, message):
-        message1 = str(message).replace("b", "🅱")
-        message2 = str(message1).replace("d", "🅱")
-        message3 = str(message2).replace("B", "🅱")
-        message4 = str(message3).replace("D", "🅱")
-        await ctx.send(message4)
-    
+        await ctx.send(pyf.hyper_replace(text=message, old=['b', 'B', 'D', 'd'], new=['🅱', '🅱', "🅱", "🅱"]))
+
     @reply.command(aliases=['msg'], help="Message a user something. ", invoke_without_command=True)
     async def message(self, ctx, user: discord.Member, *, message):
         person = self.client.get_user(user.id)
         await person.send(f"{message}\n\n*(Sent by {ctx.message.author})*")
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
-    
+
     @reply.command(help="Spams a message.", invoke_without_command=True)
     async def spam(self, ctx, *, message):
-        if "@everyone" in message:
-            send = str(message).replace("@everyone", "@\u200beveryone")
-            await ctx.send(f"{send} " * 15)
-        elif "@here" in message:
-            send = str(message).replace("@here", "@\u200bhere")
-            await ctx.send(f"{send} " * 15)
-        else:
-            await ctx.send(f'{message} ' * 15)
-    
+        l = ['@u200beveryone', '@\u200bhere']
+        await ctx.send(f"{pyf.hyper_replace(text=message, old=['@everyone', '@here'], new=l)} " * 15)
+
     @reply.command(invoke_without_command=True)
     async def indicator(self, ctx, *, message):
         """reply in emojis"""
