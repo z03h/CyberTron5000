@@ -17,7 +17,8 @@ import time
 import discord
 from discord.ext import commands
 
-from .utils.funcs import insert_returns, check_admin_or_owner, codeblock
+from .utils.funcs import insert_returns, check_admin_or_owner
+from .utils import pyformat as pyf
 
 start_time = time.time()
 colour = 0x00dcff
@@ -95,7 +96,7 @@ class Bot(commands.Cog):
     async def eval_fn(self, ctx, *, cmd):
         fn_name = "_eval_expr"
 
-        cmd = codeblock(cmd)
+        cmd = pyf.codeblock(cmd)
         cmd = cmd.strip("` ")
         cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
         
@@ -126,7 +127,7 @@ class Bot(commands.Cog):
         try:
             fn_name = "_eval_expr"
             
-            cmd = codeblock(cmd)
+            cmd = pyf.codeblock(cmd)
             cmd = cmd.strip("` ")
             cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
             

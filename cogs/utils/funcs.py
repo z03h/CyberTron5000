@@ -58,28 +58,3 @@ def check_guild_and_channel(channel):
     return commands.check(predicate)
 
 
-def codeblock(body):
-    if str(body).startswith("```py") and str(body).endswith("```"):
-        py, c = body.split("```py")
-        return c[:-3]
-    else:
-        return body
-
-
-class PyFormatter(object):
-    def __init__(self):
-        self.author = 'Niz'
-    
-    def listify(self, l: list, char='\n', limit: int = None):
-        if not limit:
-            return f"{char}".join(l)
-        else:
-            return f"{char}".join(list[:limit])
-    
-    def hyper_replace(self, text, old: list, new: list):
-        msg = str(text)
-        for x, y in zip(old, new):
-            msg = str(msg).replace(x, y)
-        return msg
-
-

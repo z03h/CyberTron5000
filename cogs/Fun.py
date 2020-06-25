@@ -6,9 +6,7 @@ from discord.ext import commands
 from async_timeout import timeout
 
 from .utils.lists import INDICATOR_LETTERS
-from .utils.funcs import PyFormatter
-
-pyf = PyFormatter()
+from .utils import pyformat as pyf
 
 colour = 0x00dcff
 
