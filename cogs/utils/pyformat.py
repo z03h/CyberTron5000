@@ -60,5 +60,21 @@ class Discord(object):
     def __init__(self, bot_user_id):
         self.bot_user_id = bot_user_id
     
-    def fieldify(self, limit: int, names: list, values: list):
-        pass
+    def fieldify(self, names: list, values: list, limit: int=None):
+        embed = discord.Embed()
+        counter = 0
+        for name, val in zip(names, values):
+            embed.add_field(name=name, value=val)
+            counter += 1
+            if not limit:
+                pass
+            elif counter > limit:
+                return
+        return embed
+    
+    def codeblock(self, body):
+        if str(body).startswith("```py") and str(body).endswith("```"):
+            py, c = str(body).split("```py")
+            return c[:-3]
+        else:
+            return body

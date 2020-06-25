@@ -18,7 +18,9 @@ import discord
 from discord.ext import commands
 
 from .utils.funcs import insert_returns, check_admin_or_owner
-from .utils import pyformat as pyf
+from .utils import pyformat as pf
+
+pyf = pf.Discord(bot_user_id=697678160577429584)
 
 start_time = time.time()
 colour = 0x00dcff
