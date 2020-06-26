@@ -53,11 +53,7 @@ class Profile(commands.Cog):
                     invoke_without_command=True)
     async def guildinfo(self, ctx):
         try:
-            online = len([member for member in ctx.guild.members if member.status == discord.Status.online])
-            offline = len([member for member in ctx.guild.members if member.status == discord.Status.offline])
-            idle = len([member for member in ctx.guild.members if member.status == discord.Status.idle])
-            dnd = len([member for member in ctx.guild.members if member.status == discord.Status.dnd])
-            botno = len([member for member in ctx.guild.members if member.bot])
+            g = GuildStats(ctx).status_dict
             guild = ctx.guild
             emojis = [emoji for emoji in ctx.guild.emojis]
             em_list = []
@@ -72,7 +68,7 @@ class Profile(commands.Cog):
             role_list = " ".join(role.mention for role in roles[::-1][:10] if role.id != ctx.guild.id)
             embed = discord.Embed(colour=colour, title=f'{guild}',
                                   description=f"**{ctx.guild.id}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
-                                              f"\n<:member:716339965771907099>**{len(ctx.guild.members):,}** | <:online:703903072824459265>**{online:,}** • <:dnd:703903073315192832>**{dnd:,}** • <:idle:703903072836911105>**{idle:,}** • <:offline:703918395518746735>**{offline:,}** | <:bot:703728026512392312> **{botno}**\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}")
+                                              f"\n<:member:716339965771907099>**{len(ctx.guild.members):,}** | <:online:703903072824459265>**{g['online']:,}** • <:dnd:703903073315192832>**{g['dnd']:,}** • <:idle:703903072836911105>**{g['idle']:,}** • <:offline:703918395518746735>**{g['offline']:,}** | <:bot:703728026512392312> **{GuildStats(ctx).num_bot}**\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}")
             embed.set_thumbnail(url=guild.icon_url)
             if len(roles) > 10:
                 msg = "Top 10 roles"
