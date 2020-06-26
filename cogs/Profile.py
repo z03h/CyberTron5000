@@ -224,17 +224,6 @@ class Profile(commands.Cog):
                 description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1:,}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**{top_role_msg}\n{status_list}"
             )
             a.set_thumbnail(url=member.avatar_url_as(static_format="png"))
-            join_position = sorted(ctx.guild.members, key=lambda member: member.joined_at).index(member)
-            status_list = f"{sl[str(member.status)]}{mlsl[str(member.mobile_status)]}{wlsl[str(member.web_status)]}{dlsl[str(member.desktop_status)]}{is_bot}"
-            if member.top_role.id == ctx.guild.id:
-                top_role_msg = "\u200b"
-            else:
-                top_role_msg = f"\n**Top Role:** {member.top_role.mention}"
-            a = discord.Embed(
-                colour=colour, timestamp=ctx.message.created_at, title=f"{member}",
-                description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1:,}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**{top_role_msg}\nGuilds shared with bot: **{len([g for g in self.client.guilds if g.get_member(member.id)])}**\n{status_list}"
-            )
-            a.set_thumbnail(url=member.avatar_url_as(static_format="png"))
             await ctx.send(embed=a)
         except Exception as error:
             await ctx.send(error)
