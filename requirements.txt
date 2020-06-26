@@ -5,3 +5,4 @@ googletrans
 random_word
 praw
 disputils
+matplotlib
