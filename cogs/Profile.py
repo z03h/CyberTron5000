@@ -110,8 +110,10 @@ class Profile(commands.Cog):
                 msg = "Roles"
             embed.set_footer(
                 text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - ctx.guild.created_at)}")
-            embed.add_field(name=f"{msg} (Total {len(roles)})", value=role_list)
-            embed.add_field(name=f"Emojis (Total {len(emojis)})", value=" • ".join(em_list[:24]), inline=False)
+            embed.add_field(name=f"{msg} (Total {len(roles)})", value='\u200b' + role_list)
+            embed.add_field(name=f"Emojis (Total {len(emojis)})", value='\u200b' + " • ".join(em_list[:24]),
+                            inline=False)
+
             await ctx.send(embed=embed)
         except Exception as error:
             await ctx.send(error)
