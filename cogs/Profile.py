@@ -8,12 +8,28 @@ from disputils import BotEmbedPaginator
 
 from .utils.lists import REGIONS, sl, mlsl, wlsl, dlsl
 
-
 colour = 0x00dcff
 
 
-
 # •
+
+class GuildStats:
+    def __init__(self, ctx):
+        self.context = ctx
+    
+    @property
+    def num_bot(self):
+        return len([m for m in self.context.guild.members if m.bot])
+    
+    @property
+    def status_dict(self):
+        return {
+            "online": len([m for m in self.context.guild if m.status == discord.Status.online]),
+            "offline": len([m for m in self.context.guild if m.status == discord.Status.offline]),
+            "idle": len([m for m in self.context.guild if m.status == discord.Status.idle]),
+            "dnd": len([m for m in self.context.guild if m.status == discord.Status.dnd])
+        }
+
 
 class Profile(commands.Cog):
     """Commands interacting with a user or guild's profile."""
@@ -76,10 +92,12 @@ class Profile(commands.Cog):
         try:
             n = "\n"
             owner = ctx.guild.owner.mention
-            admins = [admin for admin in ctx.guild.members if admin.guild_permissions.administrator and admin.bot is False]
+            admins = [admin for admin in ctx.guild.members if
+                      admin.guild_permissions.administrator and admin.bot is False]
             mods = [mod for mod in ctx.guild.members if mod.guild_permissions.kick_members and mod.bot is False]
             mod_bots = [bot for bot in ctx.guild.members if bot.guild_permissions.kick_members and bot.bot is True]
-            await ctx.send(embed=discord.Embed(title=f"🛡 Staff Team for {ctx.guild}", description=f"👑 **OWNER:** {owner}\n"
+            await ctx.send(
+                embed=discord.Embed(title=f"🛡 Staff Team for {ctx.guild}", description=f"👑 **OWNER:** {owner}\n"
                                                                                         f"\n**ADMINS** (Total {len(admins)})\n {f'{n}'.join([f'🛡 {admin.mention} - {admin.top_role.mention}' for admin in admins[:10]])}"
                                                                                         f"\n\n**MODERATORS** (Total {len(mods)})\n {f'{n}'.join([f'🛡 {mod.mention} - {mod.top_role.mention}' for mod in mods[:10]])}"
                                                                                         f"\n\n**MOD BOTS** (Total {len(mod_bots)})\n {f'{n}'.join([f'🛡 {bot.mention} - {bot.top_role.mention}' for bot in mod_bots[:10]])}",
@@ -107,7 +125,7 @@ class Profile(commands.Cog):
             top_role_msg = f"\n**Top Role:** {member.top_role.mention}"
         a = discord.Embed(
             colour=colour, timestamp=ctx.message.created_at, title=f"{member}",
-            description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1:,}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**{top_role_msg}\nGuilds shared with bot: **{len([g for g in self.client.guilds if g.get_member(member.id)])}**\n{status_list}"
+            description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1:,}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**\nGuilds shared with bot: **{len([g for g in self.client.guilds if g.get_member(member.id)])}**{top_role_msg}\n{status_list}"
         )
         a.set_thumbnail(url=member.avatar_url_as(static_format="png"))
         embedd = discord.Embed(colour=colour, timestamp=ctx.message.created_at,
