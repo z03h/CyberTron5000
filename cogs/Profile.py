@@ -24,10 +24,10 @@ class GuildStats:
     @property
     def status_dict(self):
         return {
-            "online": len([m for m in self.context.guild if m.status == discord.Status.online]),
-            "offline": len([m for m in self.context.guild if m.status == discord.Status.offline]),
-            "idle": len([m for m in self.context.guild if m.status == discord.Status.idle]),
-            "dnd": len([m for m in self.context.guild if m.status == discord.Status.dnd])
+            "online": len([m for m in self.context.guild.members if m.status == discord.Status.online]),
+            "offline": len([m for m in self.context.guild.members if m.status == discord.Status.offline]),
+            "idle": len([m for m in self.context.guild.members if m.status == discord.Status.idle]),
+            "dnd": len([m for m in self.context.guild.members if m.status == discord.Status.dnd])
         }
 
 
