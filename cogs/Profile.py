@@ -1,8 +1,13 @@
 import datetime
 import random
 
+import matplotlib
+
+matplotlib.use('Agg')
+
 import discord
 import humanize
+import matplotlib.pyplot as plt
 from discord.ext import commands
 from disputils import BotEmbedPaginator
 
@@ -28,6 +33,35 @@ class GuildStats:
             "offline": len([m for m in self.context.guild.members if m.status == discord.Status.offline]),
             "idle": len([m for m in self.context.guild.members if m.status == discord.Status.idle]),
             "dnd": len([m for m in self.context.guild.members if m.status == discord.Status.dnd])
+        }
+    
+    @property
+    def guild_graph(self):
+        labels = f'Online ({self.status_dict["online"]:,})', f'Do Not Disturb ({self.status_dict["dnd"]:,})', f'Idle ({self.status_dict["idle"]:,})', f'Offline ({self.status_dict["offline"]:,})'
+        sizes = [self.status_dict['online'], self.status_dict['dnd'], self.status_dict['idle'],
+                 self.status_dict['offline']]
+        colors = ['#42B581', '#E34544', '#FAA619', '#747F8D']
+        explode = (0.0, 0, 0, 0)
+        
+        patches, texts = plt.pie(sizes, colors=colors, shadow=False, startangle=90)
+        plt.legend(patches, labels, loc="best")
+        plt.pie(sizes, explode=explode, colors=colors,
+                autopct='%1.1f%%', shadow=False, startangle=140)
+        
+        plt.axis('equal')
+        plt.title(f"Total guild members: {len(self.context.guild.members):,}",
+                  bbox={'facecolor': '0.8', 'pad': 5})
+        fig = plt.savefig("guild.png", transparent=True)
+        plt.close(fig=fig)
+        return discord.File("guild.png", filename="guild.png")
+    
+    @property
+    def emojis_dict(self):
+        return {
+            "animated": len([e for e in self.context.guild.emojis if e.animated]),
+            "still": len([e for e in self.context.guild.emojis if not e.animated]),
+            "total": len(self.context.guild.emojis),
+            "limit": self.context.guild.emoji_limit,
         }
 
 
@@ -68,7 +102,7 @@ class Profile(commands.Cog):
             role_list = " ".join(role.mention for role in roles[::-1][:10] if role.id != ctx.guild.id)
             embed = discord.Embed(colour=colour, title=f'{guild}',
                                   description=f"**{ctx.guild.id}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
-                                              f"\n<:member:716339965771907099>**{len(ctx.guild.members):,}** | <:online:703903072824459265>**{g['online']:,}** • <:dnd:703903073315192832>**{g['dnd']:,}** • <:idle:703903072836911105>**{g['idle']:,}** • <:offline:703918395518746735>**{g['offline']:,}** | <:bot:703728026512392312> **{GuildStats(ctx).num_bot}**\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}")
+                                              f"\n<:member:716339965771907099>**{len(ctx.guild.members):,}** | {sl['online']}**{g['online']:,}** • {sl['dnd']}**{g['dnd']:,}** • {sl['idle']}**{g['idle']:,}** • {sl['offline']}**{g['offline']:,}** | <:bot:703728026512392312> **{GuildStats(ctx).num_bot}**\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}")
             embed.set_thumbnail(url=guild.icon_url)
             if len(roles) > 10:
                 msg = "Top 10 roles"
@@ -100,6 +134,20 @@ class Profile(commands.Cog):
                                     colour=colour).set_thumbnail(url=ctx.guild.icon_url))
         except Exception as error:
             await ctx.send(error)
+    
+    @guildinfo.command(invoke_without_command=True, aliases=['stats'])
+    async def statistics(self, ctx):
+        """Shows you the stats of the guild"""
+        try:
+            gs = GuildStats(ctx)
+            total_mem = ctx.guild.member_count
+            embed = discord.Embed(title=f"Advanced Statistics for {ctx.guild}", colour=colour,
+                                  description=f"Out of **{total_mem:,}** members:\n•{sl['online']} **{gs.status_dict['online']:,} ({round(gs.status_dict['online'] / total_mem * 100, 1):,}%)** are **online**\n•{sl['dnd']} **{gs.status_dict['dnd']:,} ({round(gs.status_dict['dnd'] / total_mem * 100, 1):,}%)** are on **do not disturb**\n•{sl['idle']} **{gs.status_dict['idle']:,} ({round(gs.status_dict['idle'] / total_mem * 100, 1):,}%)** are **idle**\n•{sl['offline']} **{gs.status_dict['offline']:,} ({round(gs.status_dict['offline'] / total_mem * 100, 1):,}%)** are **offline**\n<:bot:703728026512392312> This guild has **{gs.num_bot:,}** bots. **({(round(gs.num_bot / total_mem * 100, 1)):,}%)**\nThis guild has **{gs.emojis_dict['total']:,}** total emojis, **{gs.emojis_dict['animated']}** of which **({round(gs.emojis_dict['animated'] / gs.emojis_dict['total'] * 100, 1):,}%)** are animated.\nOut of this guild's limit of **{gs.emojis_dict['limit']}** for non-animated emojis, it has used **{round(gs.emojis_dict['still'] / gs.emojis_dict['limit'] * 100, 1):,}%** of it. **({gs.emojis_dict['still']}/{gs.emojis_dict['limit']})**")
+            embed.set_thumbnail(url=ctx.guild.icon_url_as(format='png'))
+            embed.set_image(url="attachment://guild.png")
+            await ctx.send(embed=embed, file=gs.guild_graph)
+        except Exception as e:
+            await ctx.send(e)
     
     @commands.command(aliases=['ov'],
                       help="Gets an overview of a user, including their avatar, permissions in the channel and info.")
@@ -210,8 +258,8 @@ class Profile(commands.Cog):
         
         embedd.add_field(name='Has', value='\n'.join(perms), inline=True)
         embedd.add_field(name='Does Not Have', value='\n'.join(negperms), inline=True)
-        await ctx.send(embed=embedd)
 
 
 def setup(client):
     client.add_cog(Profile(client))
+
