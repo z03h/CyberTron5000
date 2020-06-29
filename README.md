@@ -9,6 +9,7 @@
   <li>Games (rockpaperscissors, kissmarrykill)</li>
   <li>Reddit (post, meme, redditstats, modstats, askreddit, showerthought, wiki, moderator, and more!)</li>
 </ul>
+These are only some of all of CyberTron's commands! 
   
 ### <em>Relevant URL's</em>
 <ul>
