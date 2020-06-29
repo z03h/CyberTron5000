@@ -5,56 +5,15 @@ import os
 import discord
 import humanize
 from discord.ext import commands
+from cogs.utils.lists import REGIONS
+from cogs.utils.funcs import check_admin_or_owner
 
 colour = 0x00dcff
-
-# ⤗
-
-REGIONS = {
-    "europe": "Europe",
-    "us-east": "US-East",
-    "india": "India",
-    "brazil": "Brazil",
-    "japan": "Japan",
-    "russia": "Russia",
-    "singapore": "Singapore",
-    "southafrica": "South Africa",
-    "sydney": "Sydney",
-    "hongkong": "Hong Kong",
-    "us-central": "US-Central",
-    "us-south": "US-South",
-    "us-west": "US-West"
-}
-
-
-def check_guild(guild):
-    def predicate(ctx):
-        if ctx.guild.id == guild:
-            return True
-        else:
-            return False
-    
-    return commands.check(predicate)
-
 
 def get_token():
     with open("secrets.txt", "r") as f:
         secrets = f.readlines()
         return secrets[0].strip()
-
-
-def check_admin_or_owner():
-    def predicate(ctx):
-        if ctx.message.author.id == 350349365937700864:
-            return True
-        elif ctx.message.author.permissions_in(channel=ctx.message.channel).administrator:
-            return True
-        elif ctx.message.author.id == 675806911194464306:
-            return False
-        else:
-            return False
-    
-    return commands.check(predicate)
 
 
 def prefix(client, message):
