@@ -8,6 +8,8 @@
   <li>Moderation (ban, kick, user-nick, vote and more!)</li>
   <li>Games (rockpaperscissors, kissmarrykill)</li>
   <li>Reddit (post, meme, redditstats, modstats, askreddit, showerthought, wiki, moderator, and more!)</li>
+  <li>Profile (userinfo, guildinfo, avatar, permissions, guild stats, guild mods and more!)</li>
+  <li>Internet (compliment, trivia, dog, cat, translate, weather, pokédex and more!)</li>
 </ul>
 These are only some of CyberTron's commands! 
   
