@@ -229,7 +229,7 @@ class Profile(commands.Cog):
             await ctx.send(embed=a)
         except Exception as error:
             await ctx.send(error)
-    
+
     @commands.command(aliases=['perms'], help="Gets a user's permissions in the current channel.")
     async def permissions(self, ctx, *, member: discord.Member = None):
         member = member or ctx.message.author
@@ -246,9 +246,10 @@ class Profile(commands.Cog):
             else:
                 value = '<:RedX:707949835960975411>'
                 negperms.append(f'{value}{item}')
-        
+    
         embedd.add_field(name='Has', value='\n'.join(perms), inline=True)
         embedd.add_field(name='Does Not Have', value='\n'.join(negperms), inline=True)
+        await ctx.send(embed=embedd)
 
 
 def setup(client):

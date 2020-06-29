@@ -36,6 +36,8 @@ class Bot(commands.Cog):
         self.client = client
         self.tick = ":GreenTick:707950252434653184"
         self.version = "CyberTron5000 Alpha v2.0.2"
+        self.x = "<:warning:727013811571261540>"
+        self.x_r = ":warning:727013811571261540"
         self.softwares = ['<:dpy:708479036518694983>', '<:python:706850228652998667>', '<:JSON:710927078513442857>']
     
     @commands.command(help="Shows you how long the bot has been up for.")
@@ -45,45 +47,24 @@ class Bot(commands.Cog):
         text = str(datetime.timedelta(seconds=difference))
         e = discord.Embed(color=0x0ff00, title="Bot has been up for:" + f' **{text}**')
         await ctx.send(embed=e)
-    
+
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, discord.ext.commands.CheckFailure):
-            await ctx.message.add_reaction(emoji="⚠")
-            embed = discord.Embed(color=0xff0000)
-            embed.set_author(name=f'{error}')
-            await ctx.send(embed=embed)
-        if isinstance(error, discord.ext.commands.BadArgument):
-            await ctx.message.add_reaction(emoji="⚠")
-            embed = discord.Embed(
-                color=0xff0000
-            )
-            embed.set_author(
-                name=f"{error}. Check for spelling, capitalization, etc.")
-            await ctx.send(embed=embed)
-        if isinstance(error, discord.ext.commands.TooManyArguments):
-            await ctx.message.add_reaction(emoji="⚠")
-            embed = discord.Embed(
-                color=0xff0000
-            )
-            await ctx.send(embed=embed)
-        if isinstance(error, discord.ext.commands.MissingRequiredArgument):
-            embed = discord.Embed(color=0xFF0000)
-            await ctx.message.add_reaction(emoji="⚠")
-            embed.set_author(name=f'{error}')
-            await ctx.send(embed=embed)
-        
-        if isinstance(error, discord.ext.commands.BotMissingPermissions):
-            embed = discord.Embed(color=0xff0000)
-            await ctx.message.add_reaction(emoji="⚠")
-            embed.set_author(name=f'{error}')
-            await ctx.send(embed=embed)
-        
-        if isinstance(error, discord.ext.commands.NSFWChannelRequired):
-            embed = discord.Embed(color=0xff0000)
-            embed.set_author(name=f'{error}')
-            await ctx.send(embed=embed)
+            await ctx.message.add_reaction(emoji=self.x_r)
     
+        if isinstance(error, discord.ext.commands.BadArgument):
+            err = str(error.args[0]).lower()
+            mem, msg = err.split('not')
+            await ctx.send(
+                f"{self.x} **{ctx.author.name}**, I looked where ever I could, but I couldn't find the **{mem}**anywhere!")
+    
+        if isinstance(error, discord.ext.commands.MissingRequiredArgument):
+            await ctx.send(f"{self.x} **{ctx.author.name}**, you're missing the required argument **{error.param}**!")
+    
+        if isinstance(error, discord.ext.commands.MissingPermissions):
+            await ctx.send(f'{self.x} **{ctx.author.name}**, {error}')
+
     @commands.command(help="Fetches the bot's invite link.")
     async def invite(self, ctx):
         embed = discord.Embed(

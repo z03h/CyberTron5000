@@ -261,6 +261,8 @@ async def on_raw_reaction_add(payload):
                 role = discord.utils.get(guild.roles, name="Server Updates")
             elif payload.emoji.name == "PollPings":
                 role = discord.utils.get(guild.roles, name="Poll Pings")
+            elif payload.emoji.name == "websitepings":
+                role = discord.utils.get(guild.roles, name="Website Updates")
             else:
                 role = discord.utils.get(guild.roles, name=payload.emoji.name)
             
@@ -357,6 +359,8 @@ async def on_raw_reaction_remove(payload):
             role = discord.utils.get(guild.roles, name="Server Updates")
         elif payload.emoji.name == "PollPings":
             role = discord.utils.get(guild.roles, name="Poll Pings")
+        elif payload.emoji.name == "websitepings":
+            role = discord.utils.get(guild.roles, name="Website Updates")
         else:
             role = discord.utils.get(guild.roles, name=payload.emoji.name)
         
