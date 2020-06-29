@@ -13,6 +13,7 @@ import subprocess
 import sys
 import humanize
 import time
+import praw
 
 import discord
 from discord.ext import commands
@@ -21,6 +22,10 @@ from .utils.funcs import insert_returns, check_admin_or_owner
 from .utils import pyformat as pf
 
 pyf = pf.Discord(bot_user_id=697678160577429584)
+
+def secrets():
+    with open("secrets.json", "r") as f:
+        return json.load(f)
 
 start_time = time.time()
 colour = 0x00dcff
@@ -73,63 +78,73 @@ class Bot(commands.Cog):
             url="https://discordapp.com/oauth2/authorize?client_id=697678160577429584&permissions=8&scope=bot"
         )
         await ctx.send(embed=embed)
-    
+
     @commands.group(aliases=["e", "evaluate"], name='eval', invoke_without_command=True, help="Evaluates a function.")
     @commands.is_owner()
     async def eval_fn(self, ctx, *, cmd):
         fn_name = "_eval_expr"
-
+    
         cmd = pyf.codeblock(cmd)
         cmd = cmd.strip("` ")
         cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
-        
+    
         body = f"async def {fn_name}():\n{cmd}"
-        
+    
         parsed = ast.parse(body)
         body = parsed.body[0].body
-        
+    
         insert_returns(body)
-        
+    
         env = {
             'client': ctx.bot,
             'discord': discord,
             'commands': commands,
             'ctx': ctx,
-            '__import__': __import__
+            '__import__': __import__,
+            'reddit': praw.Reddit(client_id=secrets()['client_id'],
+                                  client_secret=secrets()['client_secret'],
+                                  username="CyberTron5000",
+                                  password=secrets()['password'],
+                                  user_agent=secrets()['user_agent'])
         }
         exec(compile(parsed, filename="<ast>", mode="exec"), env)
-
+    
         await ctx.message.add_reaction(emoji=self.tick)
         result = (await eval(f"{fn_name}()", env))
         await ctx.send('{:,.3f}'.format(result))
-    
+
     @eval_fn.command(aliases=["rtrn", "r"], name='return', invoke_without_command=True,
                      help="Evaluates a function and returns output.")
     @commands.is_owner()
     async def r(self, ctx, *, cmd):
         try:
             fn_name = "_eval_expr"
-            
+        
             cmd = pyf.codeblock(cmd)
             cmd = cmd.strip("` ")
             cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
-            
+        
             body = f"async def {fn_name}():\n{cmd}"
-            
+        
             parsed = ast.parse(body)
             body = parsed.body[0].body
-            
+        
             insert_returns(body)
-            
+        
             env = {
                 'client': ctx.bot,
                 'discord': discord,
                 'commands': commands,
                 'ctx': ctx,
-                '__import__': __import__
+                '__import__': __import__,
+                'reddit': praw.Reddit(client_id=secrets()['client_id'],
+                                      client_secret=secrets()['client_secret'],
+                                      username="CyberTron5000",
+                                      password=secrets()['password'],
+                                      user_agent=secrets()['user_agent'])
             }
             exec(compile(parsed, filename="<ast>", mode="exec"), env)
-            
+        
             try:
                 result = (await eval(f"{fn_name}()", env))
                 await ctx.send(f'{result}')
@@ -139,7 +154,7 @@ class Bot(commands.Cog):
         except Exception as error:
             await ctx.send(embed=discord.Embed(description=f"\n\n```python\n{error}\n```", color=0x00dcff))
             await ctx.message.add_reaction(emoji="⚠️")
-    
+
     @commands.command(help="Checks the bot's ping.")
     async def ping(self, ctx):
         start = time.perf_counter()
