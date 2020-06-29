@@ -1,3 +1,17 @@
 # CyberTron5000
 
-<p>CyberTron5000 is a general purpose discord bot, and the best one! PM Me on Discord (♿niztg#7532) for more info or join https://discord.gg/aa9p43W !</p>
+<p>CyberTron5000 is a general purpose discord bot, and the best one! With various original and revolutionary features in almost 100 commands, spread across 10 categories and growing, you'll never be bored!</p>
+ 
+<ul> Notable Categories
+  <li>Fun (reply, askouija, coinflip, iq, fight, who, emoji, greentext and more!)</li>
+  <li>Moderation (ban, kick, user-nick, vote and more!)</li>
+  <li>Games (rockpaperscissors, kissmarrykill)</li>
+  <li>Reddit (post, meme, redditstats, modstats, askreddit, showerthought, wiki, moderator, and more!)</li>
+</ul>
+  
+### <em>Relevant URL's</em>
+<ul>
+  <li>[Invite the Bot!](https://cybertron-5k.netlify.app/invite)</li>
+    <li>[Join the Support Server!](https://cybertron-5k.netlify.app/server)</li>
+    <li>[Check out the website!](https://cybertron-5k.netlify.app)</li>
+  </ul>
