@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from discord.ext import commands
 from disputils import BotEmbedPaginator
 
-from .utils.lists import REGIONS, sl, mlsl, wlsl, dlsl
+from .utils.lists import REGIONS, sl, mlsl, wlsl, dlsl, channel_mapping, is_nsfw
 
 colour = 0x00dcff
 
@@ -148,6 +148,28 @@ class Profile(commands.Cog):
             embed.set_thumbnail(url=ctx.guild.icon_url_as(format='png'))
             embed.set_image(url="attachment://guild.png")
             await ctx.send(embed=embed, file=gs.guild_graph)
+        except Exception as e:
+            await ctx.send(e)
+            
+    @guildinfo.command(aliases=['chan'])
+    async def channels(self, ctx):
+        """Shows you the channels of a guild."""
+        try:
+            if ctx.guild.id == 653376332507643914:
+                return await ctx.send("peanut no like :angry:")
+            else:
+                embed = discord.Embed(colour=colour).set_author(icon_url=ctx.guild.icon_url_as(format='png'), name=f"Channels in {ctx.guild}")
+                for c in ctx.guild.categories:
+                    x = []
+                    for i in c.text_channels:
+                        x.append(f"{channel_mapping[str(i.type)]}{i.name}{is_nsfw[i.is_nsfw()]}")
+                    for j in c.voice_channels:
+                        x.append(f"{channel_mapping[str(j.type)]}{j.name}")
+                    embed.add_field(name=f"<:category:716057680548200468> {c}", value='\u200b' + "\n".join(x), inline=False)
+                y = [b for b in ctx.guild.categories]
+                chl = [f"{channel_mapping[str(o.type)]}{o.name}{is_nsfw[o.is_nsfw()]}" for o in ctx.guild.channels if not o.category and o not in y]
+                embed.description = "\n".join(chl)
+                await ctx.send(embed=embed)
         except Exception as e:
             await ctx.send(e)
     
