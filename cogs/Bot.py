@@ -6,7 +6,6 @@ For general bot commands, basic/meta stuff.
 
 import ast
 import datetime
-import inspect
 import json
 import os
 import subprocess
@@ -172,16 +171,17 @@ class Bot(commands.Cog):
     
     @commands.command(aliases=["sourcecode", "src"], help="Shows source code for a given command")
     async def source(self, ctx, *, command=None):
+        i = __import__('inspect')
         if command is None:
             return await ctx.send(embed=discord.Embed(title="Check out the full source code for this bot on GitHub!",
                                                       url="https://github.com/niztg/CyberTron5000/", colour=colour))
         cmd = self.client.get_command(command).callback
-        src = str(inspect.getsource(cmd)).replace("```", "``")
+        src = str(i.getsource(cmd)).replace("```", "``")
         if len(src) > 2000:
             cmd = self.client.get_command(command).callback
             file = cmd.__code__.co_filename
             location = os.path.relpath(file)
-            total, fl = inspect.getsourcelines(cmd)
+            total, fl = i.getsourcelines(cmd)
             ll = fl + (len(total) - 1)
             await ctx.send(embed=discord.Embed(
                 description=f"This code was too long for Discord, you can see it instead [on GitHub](<https://github.com/niztg/CyberTron5000/blob/master/{location}#L{fl}-L{ll}>)",
@@ -272,10 +272,10 @@ class Bot(commands.Cog):
         try:
             cmd = self.client.get_command(command)
             src_cmd = cmd.callback
-            total, fl = inspect.getsourcelines(src_cmd)
+            total, fl = __import__('inspect').getsourcelines(src_cmd)
             ll = fl + (len(total) - 1)
             await ctx.send(
-                embed=discord.Embed(title="{} command has a total of {:,.0f} lines of code!".format(cmd.name, ll-fl),
+                embed=discord.Embed(title="{} command has a total of {:,.0f} lines of code!".format(cmd.name, ll - fl),
                                     color=0x00dcff))
         except Exception as err:
             await ctx.send(err)
