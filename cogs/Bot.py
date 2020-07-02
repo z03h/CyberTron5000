@@ -112,7 +112,7 @@ class Bot(commands.Cog):
     
         await ctx.message.add_reaction(emoji=self.tick)
         result = (await eval(f"{fn_name}()", env))
-        await ctx.send('{:,.3f}'.format(result))
+        await ctx.send('{}'.format(result))
 
     @eval_fn.command(aliases=["rtrn", "r"], name='return', invoke_without_command=True,
                      help="Evaluates a function and returns output.")
