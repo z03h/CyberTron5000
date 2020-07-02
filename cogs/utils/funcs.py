@@ -17,7 +17,7 @@ def check_admin_or_owner():
     def predicate(ctx):
         if ctx.message.author.id == 350349365937700864:
             return True
-        elif ctx.message.author.permissions_in(channel=ctx.message.channel).administrator:
+        elif ctx.message.author.permissions_in(channel=ctx.message.channel).kick_members:
             return True
         else:
             return False

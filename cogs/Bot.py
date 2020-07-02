@@ -27,7 +27,7 @@ def secrets():
     with open("secrets.json", "r") as f:
         return json.load(f)
 
-start_time = time.time()
+start_time = datetime.datetime.utcnow()
 colour = 0x00dcff
 
 
@@ -47,11 +47,12 @@ class Bot(commands.Cog):
     
     @commands.command(help="Shows you how long the bot has been up for.")
     async def uptime(self, ctx):
-        current_time = time.time()
-        difference = int(round(current_time - start_time))
-        text = str(datetime.timedelta(seconds=difference))
-        e = discord.Embed(color=0x0ff00, title="Bot has been up for:" + f' **{text}**')
-        await ctx.send(embed=e)
+        delta_uptime = datetime.datetime.utcnow() - start_time
+        hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        days, hours = divmod(hours, 24)
+        embed = discord.Embed(colour=colour, description=f"I have been up since **{humanize.naturaltime(datetime.datetime.utcnow() - start_time)}!**\n**{days}** days\n**{hours}** hours\n**{minutes}** minutes\n**{seconds}** seconds")
+        await ctx.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
