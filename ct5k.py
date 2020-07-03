@@ -5,7 +5,7 @@ import os
 import discord
 import humanize
 from discord.ext import commands
-from cogs.utils.lists import REGIONS
+from cogs.utils.lists import REGIONS, sl
 from cogs.utils.funcs import check_admin_or_owner
 
 colour = 0x00dcff
@@ -55,13 +55,12 @@ async def on_guild_join(guild):
         categories = [category for category in guild.categories]
         emojis = [emoji for emoji in guild.emojis]
         region = REGIONS[f"{str(guild.region)}"]
-        embed = discord.Embed(colour=0x00ff00, title=f'{guild}', description=f"**{guild.id}**"
-                                                                             f"\n<:member:716339965771907099>**{len(guild.members):,}** | <:online:703903072824459265>**{online:,}** • <:dnd:703903073315192832>**{dnd:,}** • <:idle:703903072836911105>**{idle:,}** • <:offline:703918395518746735>**{offline:,}**\n**Owner:** {guild.owner.mention}\n**Region:** {region}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**\n**Admins:**\n{ml}")
-        
+        embed = discord.Embed(colour=0x00ff00, title=f'{guild}',
+                              description=f"**{guild.id}**"f"\n<:member:716339965771907099>**{len(guild.members):,}** | {sl['online']}**{online:,}** • {sl['dnd']}**{dnd:,}** • {sl['idle']}**{idle:,}** • {sl['offline']}**{offline:,}**\n**Owner:** {guild.owner.mention}\n**Region:** {region}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**\n**Admins:**\n{ml}")
         embed.set_thumbnail(url=guild.icon_url)
         embed.set_footer(
             text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - guild.created_at)}")
-        await c.send(f"Joined Guild! This is guild #**{len(client.guilds)}**", embed=embed)
+        await c.send(f"Joined Guild! This is guild **#{len(client.guilds)}**", embed=embed)
         await guild.me.edit(nick=f"(=) {client.user.name}")
 
 
@@ -86,11 +85,10 @@ async def on_guild_remove(guild):
     categories = [category for category in guild.categories]
     emojis = [emoji for emoji in guild.emojis]
     region = REGIONS[f"{str(guild.region)}"]
-    embed = discord.Embed(colour=0xff000, title=f'{guild}', description=f"**{guild.id}**"
-                                                                        f"\n<:member:716339965771907099>**{len(guild.members):,}** | <:online:703903072824459265>**{online:,}** • <:dnd:703903073315192832>**{dnd:,}** • <:idle:703903072836911105>**{idle:,}** • <:offline:703918395518746735>**{offline:,}**\n**Owner:** {guild.owner.mention}\n**Region:** {region}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**")
+    embed = discord.Embed(colour=discord.Colour.red(), title=f'{guild}',
+                          description=f"**{guild.id}**"f"\n<:member:716339965771907099>**{len(guild.members):,}** | {sl['online']}**{online:,}** • {sl['dnd']}**{dnd:,}** • {sl['idle']}**{idle:,}** • {sl['offline']}**{offline:,}**\n**Owner:** {guild.owner.mention}\n**Region:** {region}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**\n**Admins:**")
     embed.set_thumbnail(url=guild.icon_url)
-    embed.set_footer(
-        text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - guild.created_at)}")
+    embed.set_footer(text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - guild.created_at)}")
     await c.send(f"Left guild. We're down to **{len(client.guilds)}** guilds", embed=embed)
 
 
