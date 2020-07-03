@@ -431,16 +431,9 @@ class Reddit(commands.Cog):
                     reddits.append(
                         f"[{subreddit['sr_display_name_prefixed']}](https://reddit.com{subreddit['url']}) • <:member:716339965771907099> **{subreddit['subscribers']:,}**")
                     numbas.append(subreddit['subscribers'])
-                if len(reddits) > 15:
-                    rs = reddits[:15]
-                    msg = "Top 15 Subreddits"
-                else:
-                    rs = reddits
-                    msg = f"Moderated Subreddits"
-            
-                for index, sr in enumerate(rs, 1):
+                msg = "Top 15 Subreddits" if len(reddits) > 15 else "Moderated Subreddits"
+                for index, sr in enumerate(reddits[:15], 1):
                     modstats.append(f"{index}. {sr}")
-            
                 final_ms = "\n".join(modstats)
                 zero_subs = len([item for item in numbas if item == 0])
                 one_subs = len([item for item in numbas if item == 1])
@@ -463,33 +456,26 @@ class Reddit(commands.Cog):
     @commands.command(aliases=['ask'])
     async def askreddit(self, ctx):
         """Ask Reddit..."""
-        embedd = discord.Embed(
-            colour=reddit_colour, title="Loading..."
-        )
-        embedd.set_image(
-            url=self.loading)
+        embedd = discord.Embed(colour=reddit_colour, title="Loading...")
+        embedd.set_image(url=self.loading)
         message = await ctx.send("** **", embed=embedd)
-        try:
-            posts = []
-            comments = []
-            for submission in self.reddit.subreddit("AskReddit").hot(limit=50):
-                posts.append(submission)
-            final_post = random.choice(posts)
-            if final_post.is_self:
-                embed = discord.Embed(title=final_post.title, url=final_post.url,
-                                      description=final_post.selftext + f"\n**{final_post.score:,}** <:upvote:718895913342337036> **{final_post.num_comments:,}** 💬",
-                                      colour=reddit_colour)
-                embed.set_author(name=final_post.author, icon_url=final_post.author.icon_img)
-                for top_level_comment in final_post.comments:
-                    comments.append(top_level_comment)
-                final_comment = random.choice(comments)
-                embed.add_field(
-                    name=f"{final_comment.author} • **{final_comment.score:,}** <:upvote:718895913342337036> **{len(final_comment.replies):,}** 💬",
-                    value=final_comment.body)
-                await message.edit(embed=embed)
-        except Exception as error:
-            await ctx.send(error)
-            
+        posts = []
+        comments = []
+        for submission in self.reddit.subreddit("AskReddit").hot(limit=50):
+            posts.append(submission)
+        final_post = random.choice(posts)
+        embed = discord.Embed(title=final_post.title, url=final_post.url,
+                              description=final_post.selftext + f"\n**{final_post.score:,}** <:upvote:718895913342337036> **{final_post.num_comments:,}** 💬",
+                              colour=reddit_colour)
+        embed.set_author(name=final_post.author, icon_url=final_post.author.icon_img)
+        for top_level_comment in final_post.comments:
+            comments.append(top_level_comment)
+        final_comment = random.choice(comments)
+        embed.add_field(
+            name=f"{final_comment.author} • **{final_comment.score:,}** <:upvote:718895913342337036> **{len(final_comment.replies):,}** 💬",
+            value=final_comment.body)
+        await message.edit(embed=embed)
+        
     @commands.command()
     async def post(self, ctx, subreddit, sort='hot'):
         """Gets a random post from a subreddit"""
