@@ -1,6 +1,4 @@
 import datetime
-import random
-
 import matplotlib
 
 matplotlib.use('Agg')
@@ -65,23 +63,62 @@ class GuildStats:
         }
 
 
+class uiEmbed:
+    def __init__(self, ctx):
+        self.context = ctx
+    
+    def uiEmbed(self, member: discord.Member, opt: str):
+        member = member or self.context.message.author
+        perms = []
+        negperms = []
+        if opt == "ui":
+            if member.bot is True:
+                is_bot = "<:bot:703728026512392312>"
+            else:
+                is_bot = "\u200b"
+            join_position = sorted(self.context.guild.members, key=lambda member: member.joined_at).index(member)
+            status_list = f"{sl[str(member.status)]}{mlsl[str(member.mobile_status)]}{wlsl[str(member.web_status)]}{dlsl[str(member.desktop_status)]}{is_bot}"
+            if member.top_role.id == self.context.guild.id:
+                top_role_msg = "\u200b"
+            else:
+                top_role_msg = f"\n**Top Role:** {member.top_role.mention}"
+            embed = discord.Embed(
+                colour=colour, timestamp=self.context.message.created_at,
+                description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1:,}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**{top_role_msg}\n{status_list}"
+            )
+            embed.set_author(name=member)
+            embed.set_thumbnail(url=member.avatar_url_as(static_format="png"))
+            return embed
+        elif opt == "perms":
+            embed = discord.Embed(colour=colour, timestamp=self.context.message.created_at,
+                                  description=f"**Channel**: {self.context.channel.mention}")
+            permissions = self.context.channel.permissions_for(member)
+            for item, valueBool in permissions:
+                if valueBool:
+                    value = ":white_check_mark:"
+                    perms.append(f'{value}{item}')
+                else:
+                    value = '<:RedX:707949835960975411>'
+                    negperms.append(f'{value}{item}')
+            embed.set_author(name=f"Permissions for {member}", icon_url=member.avatar_url)
+            embed.add_field(name='Has', value='\n'.join(perms), inline=True)
+            embed.add_field(name='Does Not Have', value='\n'.join(negperms), inline=True)
+            return embed
+        elif opt == "av":
+            embed = discord.Embed(colour=colour).set_image(url=member.avatar_url_as(static_format='png'))
+            embed.set_author(name=f"Showing the profile picture of {member}")
+            return embed
+
+
 class Profile(commands.Cog):
     """Commands interacting with a user or guild's profile."""
     
     def __init__(self, client):
         self.client = client
-    
+
     @commands.command(aliases=["av"], help="Gets the avatar of a user.")
     async def avatar(self, ctx, *, avamember: discord.Member = None):
-        avamember = avamember or ctx.message.author
-        await ctx.send(embed=discord.Embed(
-            color=avamember.color, title=random.choice([
-                "They do be looking cute tho :flushed:",
-                "Very handsome :weary:",
-                "lookin' like a snack:yum:",
-                "a beaut :heart:",
-            ]), timestamp=ctx.message.created_at
-        ).set_image(url=avamember.avatar_url_as(static_format="png", size=2048)))
+        await ctx.send(embed=uiEmbed(ctx).uiEmbed(member=avamember, opt="av"))
     
     @commands.group(aliases=['si', 'serverinfo', 'gi', 'guild', 'server'], help="Gets the guild's info.",
                     invoke_without_command=True)
@@ -172,106 +209,23 @@ class Profile(commands.Cog):
                 await ctx.send(embed=embed)
         except Exception as e:
             await ctx.send(e)
-    
+
     @commands.command(aliases=['ov'],
                       help="Gets an overview of a user, including their avatar, permissions in the channel and info.")
     async def overview(self, ctx, *, member: discord.Member = None):
-        footer = f"You can also do {ctx.prefix}ui, {ctx.prefix}perms, {ctx.prefix}av for each of these."
-        member = member or ctx.message.author
-        perms = []
-        negperms = []
-        member = member or ctx.message.author
-        if member.bot is True:
-            is_bot = "<:bot:703728026512392312>"
-        else:
-            is_bot = "\u200b"
-        join_position = sorted(ctx.guild.members, key=lambda member: member.joined_at).index(member)
-        status_list = f"{sl[str(member.status)]}{mlsl[str(member.mobile_status)]}{wlsl[str(member.web_status)]}{dlsl[str(member.desktop_status)]}{is_bot}"
-        if member.top_role.id == ctx.guild.id:
-            top_role_msg = "\u200b"
-        else:
-            top_role_msg = f"\n**Top Role:** {member.top_role.mention}"
-        a = discord.Embed(
-            colour=colour, timestamp=ctx.message.created_at, title=f"{member}",
-            description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1:,}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**\nGuilds shared with bot: **{len([g for g in self.client.guilds if g.get_member(member.id)])}**{top_role_msg}\n{status_list}"
-        )
-        a.set_thumbnail(url=member.avatar_url_as(static_format="png"))
-        embedd = discord.Embed(colour=colour, timestamp=ctx.message.created_at,
-                               title=f"{member.name}'s permissions for {ctx.guild}",
-                               description=f"**Channel**: <#{ctx.message.channel.id}>")
-        permissions = ctx.channel.permissions_for(member)
-        for item, valueBool in permissions:
-            if valueBool:
-                value = ":white_check_mark:"
-                perms.append(f'{value}{item}')
-            else:
-                value = '<:RedX:707949835960975411>'
-                negperms.append(f'{value}{item}')
-        
-        embedd.add_field(name='Has', value='\n'.join(perms), inline=True)
-        embedd.add_field(name='Does Not Have', value='\n'.join(negperms), inline=True)
-        embedd.set_footer(text=footer)
-        
-        b = discord.Embed(colour=colour, title=f"{member.name}'s profile picture")
-        b.set_image(url=member.avatar_url)
-        b.set_footer(text=footer)
-        
-        embeds = [
-            a,
-            embedd,
-            b,
-            discord.Embed(title="Key:",
-                          description=":track_previous: First page\n:track_next: Last page\n:arrow_backward: "
-                                      "Back one page.\n:arrow_forward: Forward one page\n:stop_button: "
-                                      "Close Paginator.\n",
-                          colour=colour)
-        ]
+        u = uiEmbed(ctx)
+        embeds = [u.uiEmbed(member=member, opt="ui"), u.uiEmbed(member=member, opt="perms"),
+                  u.uiEmbed(member=member, opt="av")]
         paginator = BotEmbedPaginator(ctx, embeds)
         await paginator.run()
-    
+
     @commands.command(aliases=['ui', 'user'], help="Gets a user's info.")
     async def userinfo(self, ctx, *, member: discord.Member = None):
-        try:
-            member = member or ctx.message.author
-            if member.bot is True:
-                is_bot = "<:bot:703728026512392312>"
-            else:
-                is_bot = "\u200b"
-            join_position = sorted(ctx.guild.members, key=lambda member: member.joined_at).index(member)
-            status_list = f"{sl[str(member.status)]}{mlsl[str(member.mobile_status)]}{wlsl[str(member.web_status)]}{dlsl[str(member.desktop_status)]}{is_bot}"
-            if member.top_role.id == ctx.guild.id:
-                top_role_msg = "\u200b"
-            else:
-                top_role_msg = f"\n**Top Role:** {member.top_role.mention}"
-            a = discord.Embed(
-                colour=colour, timestamp=ctx.message.created_at, title=f"{member}",
-                description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1:,}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**{top_role_msg}\n{status_list}"
-            )
-            a.set_thumbnail(url=member.avatar_url_as(static_format="png"))
-            await ctx.send(embed=a)
-        except Exception as error:
-            await ctx.send(error)
+        await ctx.send(embed=uiEmbed(ctx).uiEmbed(member=member, opt="ui"))
 
     @commands.command(aliases=['perms'], help="Gets a user's permissions in the current channel.")
     async def permissions(self, ctx, *, member: discord.Member = None):
-        member = member or ctx.message.author
-        perms = []
-        negperms = []
-        embedd = discord.Embed(colour=colour, timestamp=ctx.message.created_at,
-                               title=f"{member.display_name}'s permissions for {ctx.guild}",
-                               description=f"**Channel**: <#{ctx.message.channel.id}>")
-        permissions = ctx.channel.permissions_for(member)
-        for item, valueBool in permissions:
-            if valueBool:
-                value = ":white_check_mark:"
-                perms.append(f'{value}{item}')
-            else:
-                value = '<:RedX:707949835960975411>'
-                negperms.append(f'{value}{item}')
-    
-        embedd.add_field(name='Has', value='\n'.join(perms), inline=True)
-        embedd.add_field(name='Does Not Have', value='\n'.join(negperms), inline=True)
-        await ctx.send(embed=embedd)
+        await ctx.send(embed=uiEmbed(ctx).uiEmbed(member=member, opt="perms"))
 
 
 def setup(client):

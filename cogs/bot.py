@@ -252,7 +252,7 @@ class Bot(commands.Cog):
         line_count = {}
         directory = "./cogs"
         for filename in os.listdir(directory):
-            if str(filename) == f"{cog.capitalize()}.py":
+            if str(filename) == f"{cog.lower()}.py":
                 _, ext = os.path.splitext(filename)
                 if ext not in line_count:
                     line_count[ext] = 0
@@ -263,7 +263,7 @@ class Bot(commands.Cog):
                 pass
         
         await ctx.send(
-            embed=discord.Embed(title="{}.py has a total of {:,.0f} lines of code!".format(cog.capitalize(), count),
+            embed=discord.Embed(title="{}.py has a total of {:,.0f} lines of code!".format(cog.lower(), count),
                                 color=0x00dcff))
         
     @lines.command(aliases=['cmd'], invoke_without_command=True)
