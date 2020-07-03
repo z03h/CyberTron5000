@@ -183,9 +183,9 @@ class Reddit(commands.Cog):
                                  icon_url=submission.subreddit.icon_img)
     
             await message.edit(embed=embed)
-    
+
     @commands.command(aliases=['iu'], help="Shows you the banner or icon of a subreddit (on old Reddit).")
-    async def icon(self, ctx, subreddit, banner_or_img=None):
+    async def icon(self, ctx, subreddit, banner_or_img="img"):
         embedd = discord.Embed(
             colour=reddit_colour, title="Loading..."
         )
@@ -200,7 +200,6 @@ class Reddit(commands.Cog):
                 if s is None:
                     a.add_field(name="Subreddit does not have Icon.", value="rip")
                     await message.edit(embed=a)
-                
                 else:
                     a.set_image(url=b)
                     await message.edit(embed=a)
@@ -217,7 +216,7 @@ class Reddit(commands.Cog):
                 if s is None:
                     a.add_field(name="Subreddit does not have Banner.", value="rip")
                     await message.edit(embed=a)
-                
+            
                 else:
                     a.set_image(url=b)
                     await message.edit(embed=a)

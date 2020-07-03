@@ -72,10 +72,7 @@ class uiEmbed:
         perms = []
         negperms = []
         if opt == "ui":
-            if member.bot is True:
-                is_bot = "<:bot:703728026512392312>"
-            else:
-                is_bot = "\u200b"
+            is_bot = "<:bot:703728026512392312>" if member.bot else "\u200b"
             join_position = sorted(self.context.guild.members, key=lambda member: member.joined_at).index(member)
             status_list = f"{sl[str(member.status)]}{mlsl[str(member.mobile_status)]}{wlsl[str(member.web_status)]}{dlsl[str(member.desktop_status)]}{is_bot}"
             if member.top_role.id == self.context.guild.id:
