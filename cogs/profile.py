@@ -116,38 +116,24 @@ class Profile(commands.Cog):
     @commands.command(aliases=["av"], help="Gets the avatar of a user.")
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         await ctx.send(embed=uiEmbed(ctx).uiEmbed(member=avamember, opt="av"))
-    
-    @commands.group(aliases=['si', 'serverinfo', 'gi', 'guild', 'server'], help="Gets the guild's info.",
-                    invoke_without_command=True)
+
+    @commands.group(aliases=['si', 'serverinfo', 'gi', 'guild', 'server'], help="Gets the guild's info.", invoke_without_command=True)
     async def guildinfo(self, ctx):
         try:
             g = GuildStats(ctx).status_dict
+            n = '\n'
             guild = ctx.guild
-            emojis = [emoji for emoji in ctx.guild.emojis]
-            em_list = []
-            for emoji in emojis:
-                em_list.append(str(emoji))
+            people = [f"<:member:716339965771907099>**{len(ctx.guild.members):,}**", f"{sl['online']}**{g['online']:,}**", f"{sl['dnd']}**{g['dnd']:,}**", f"{sl['idle']}**{g['idle']:,}**", "{sl['offline']}**{g['offline']:,}**", f"<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**"]
             text_channels = [text_channel for text_channel in guild.text_channels]
             voice_channels = [voice_channel for voice_channel in guild.voice_channels]
             categories = [category for category in guild.categories]
-            emojis = [emoji for emoji in guild.emojis]
             region = REGIONS[f"{str(guild.region)}"]
-            roles = [role for role in ctx.guild.roles]
-            role_list = " ".join(role.mention for role in roles[::-1][:10] if role.id != ctx.guild.id)
-            embed = discord.Embed(colour=colour, title=f'{guild}',
+            embed = discord.Embed(colour=colour,
                                   description=f"**{ctx.guild.id}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
-                                              f"\n<:member:716339965771907099>**{len(ctx.guild.members):,}** | {sl['online']}**{g['online']:,}** • {sl['dnd']}**{g['dnd']:,}** • {sl['idle']}**{g['idle']:,}** • {sl['offline']}**{g['offline']:,}** | <:bot:703728026512392312> **{GuildStats(ctx).num_bot}**\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}")
-            embed.set_thumbnail(url=guild.icon_url)
-            if len(roles) > 10:
-                msg = "Top 10 roles"
-            else:
-                msg = "Roles"
+                                              f"{f'{n}'.join(people)}\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}")
+            embed.set_author(name=guild, icon_url=guild.icon_url)
             embed.set_footer(
                 text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - ctx.guild.created_at)}")
-            embed.add_field(name=f"{msg} (Total {len(roles)})", value='\u200b' + role_list)
-            embed.add_field(name=f"Emojis (Total {len(emojis)})", value='\u200b' + " • ".join(em_list[:24]),
-                            inline=False)
-
             await ctx.send(embed=embed)
         except Exception as error:
             await ctx.send(error)
@@ -174,16 +160,16 @@ class Profile(commands.Cog):
     @guildinfo.command(invoke_without_command=True, aliases=['stats'])
     async def statistics(self, ctx):
         """Shows you the stats of the guild"""
-        try:
-            gs = GuildStats(ctx)
-            total_mem = ctx.guild.member_count
-            embed = discord.Embed(title=f"Advanced Statistics for {ctx.guild}", colour=colour,
-                                  description=f"Out of **{total_mem:,}** members:\n•{sl['online']} **{gs.status_dict['online']:,} ({round(gs.status_dict['online'] / total_mem * 100, 1):,}%)** are **online**\n•{sl['dnd']} **{gs.status_dict['dnd']:,} ({round(gs.status_dict['dnd'] / total_mem * 100, 1):,}%)** are on **do not disturb**\n•{sl['idle']} **{gs.status_dict['idle']:,} ({round(gs.status_dict['idle'] / total_mem * 100, 1):,}%)** are **idle**\n•{sl['offline']} **{gs.status_dict['offline']:,} ({round(gs.status_dict['offline'] / total_mem * 100, 1):,}%)** are **offline**\n<:bot:703728026512392312> This guild has **{gs.num_bot:,}** bots. **({(round(gs.num_bot / total_mem * 100, 1)):,}%)**\n\nThis guild has **{gs.emojis_dict['total']:,}** total emojis, **{gs.emojis_dict['animated']}** of which **({round(gs.emojis_dict['animated'] / gs.emojis_dict['total'] * 100, 1):,}%)** are animated.\nOut of this guild's limit of **{gs.emojis_dict['limit']}** for non-animated emojis, it has used **{round(gs.emojis_dict['still'] / gs.emojis_dict['limit'] * 100, 1):,}%** of it. **({gs.emojis_dict['still']}/{gs.emojis_dict['limit']})**\n\n<:boost:726151031322443787> This guild has **{ctx.guild.premium_subscription_count}** Nitro Boosts and is Tier **{ctx.guild.premium_tier}**")
-            embed.set_thumbnail(url=ctx.guild.icon_url_as(format='png'))
-            embed.set_image(url="attachment://guild.png")
-            await ctx.send(embed=embed, file=gs.guild_graph)
-        except Exception as e:
-            await ctx.send(e)
+        role_list = " ".join(role.mention for role in ctx.guild.roles[::-1][:10] if role.id != ctx.guild.id)
+        gs = GuildStats(ctx)
+        msg = "Top 10 Roles" if len([r for r in ctx.guild.roles]) > 10 else "Roles"
+        total_mem = ctx.guild.member_count
+        embed = discord.Embed(colour=colour, description=f"Out of **{total_mem:,}** members:\n•{sl['online']} **{gs.status_dict['online']:,} ({round(gs.status_dict['online'] / total_mem * 100, 1):,}%)** are **online**\n•{sl['dnd']} **{gs.status_dict['dnd']:,} ({round(gs.status_dict['dnd'] / total_mem * 100, 1):,}%)** are on **do not disturb**\n•{sl['idle']} **{gs.status_dict['idle']:,} ({round(gs.status_dict['idle'] / total_mem * 100, 1):,}%)** are **idle**\n•{sl['offline']} **{gs.status_dict['offline']:,} ({round(gs.status_dict['offline'] / total_mem * 100, 1):,}%)** are **offline**\n<:bot:703728026512392312> This guild has **{gs.num_bot:,}** bots. **({(round(gs.num_bot / total_mem * 100, 1)):,}%)**\n\nThis guild has **{gs.emojis_dict['total']:,}** total emojis, **{gs.emojis_dict['animated']}** of which **({round(gs.emojis_dict['animated'] / gs.emojis_dict['total'] * 100, 1):,}%)** are animated.\nOut of this guild's limit of **{gs.emojis_dict['limit']}** for non-animated emojis, it has used **{round(gs.emojis_dict['still'] / gs.emojis_dict['limit'] * 100, 1):,}%** of it. **({gs.emojis_dict['still']}/{gs.emojis_dict['limit']})**\n\n<:boost:726151031322443787> This guild has **{ctx.guild.premium_subscription_count}** Nitro Boosts and is Tier **{ctx.guild.premium_tier}**").set_author(
+            name=f"Advanced Statistics for {ctx.guild}", icon_url=ctx.guild.icon_url)
+        embed.set_image(url="attachment://guild.png")
+        embed.add_field(name=f"{msg} (Total {len([r for r in ctx.guild.roles])})", value='\u200b' + role_list)
+        embed.add_field(name=f"Emojis (Total {len([e for e in ctx.guild.emojis])})", value='\u200b' + " • ".join([str(a) for a in ctx.guild.emojis][:24]), inline=False)
+        await ctx.send(embed=embed, file=gs.guild_graph)
             
     @guildinfo.command(aliases=['chan'])
     async def channels(self, ctx):
