@@ -131,7 +131,7 @@ async def on_ready():
     print("Online!")
     msg = await c.send("** **")
     await msg.edit(embed=discord.Embed(colour=colour, title=f"CyberTron5000 logging in for {msg.created_at}",
-                                       description=f"Logged in as: {client.user.name}\nDiscriminator: {client.user.discriminator}\nID: {client.user.id}\nVisible Guilds: {len(client.guilds):,}\nVisible Users: {len(client.users):,}\n**LOG COUNT:** 3,243,432"))
+                                       description=f"Logged in as: {client.user.name}\nDiscriminator: {client.user.discriminator}\nID: {client.user.id}\nVisible Guilds: {len(client.guilds):,}\nVisible Users: {len(client.users):,}\n"))
     await client.change_presence(
         activity=discord.Activity(type=discord.ActivityType.watching, name=f"https://cybertron-5k.netlify.app"))
 
