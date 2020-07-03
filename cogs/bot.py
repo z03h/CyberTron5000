@@ -296,7 +296,7 @@ class Bot(commands.Cog):
     
     @commands.command(aliases=['info', 'ab', 'i'], help="Shows info on the bot.")
     async def about(self, ctx):
-        owner = self.client.get_user(350349365937700864)
+        owner = await self.client.fetch_user(350349365937700864)
         global count
         filename1 = "ct5k.py"
         nol = 0
@@ -353,7 +353,7 @@ class Bot(commands.Cog):
     
     @commands.Cog.listener(name="on_message")
     async def on_user_mention(self, message):
-        owner = self.client.get_user(350349365937700864)
+        owner = await self.client.fetch_user(350349365937700864)
         if "<@!697678160577429584>" == message.content:
             with open("prefixes.json", "r") as f:
                 prefix = json.load(f)
