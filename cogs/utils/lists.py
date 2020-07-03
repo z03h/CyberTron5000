@@ -4,6 +4,8 @@ For JSON lists.
 
 """
 
+import discord
+
 STAT_NAMES = {
     "speed": "SPEED",
     "attack": "ATTACK",
@@ -173,4 +175,12 @@ channel_mapping = {
 is_nsfw = {
     True: " <:18:727640468094976042>",
     False: "\u200b"
+}
+
+status_mapping = {
+    discord.ActivityType.listening: "Listening to",
+    discord.ActivityType.watching: "Watching",
+    discord.ActivityType.playing: "Playing",
+    discord.ActivityType.streaming: "Streaming",
+    discord.ActivityType.custom: "\u200b"
 }

@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from discord.ext import commands
 from disputils import BotEmbedPaginator
 
-from .utils.lists import REGIONS, sl, mlsl, wlsl, dlsl, channel_mapping, is_nsfw
+from .utils.lists import REGIONS, sl, mlsl, wlsl, dlsl, channel_mapping, is_nsfw, status_mapping
 
 colour = 0x00dcff
 
@@ -203,7 +203,31 @@ class Profile(commands.Cog):
 
     @commands.command(aliases=['ui', 'user'], help="Gets a user's info.")
     async def userinfo(self, ctx, *, member: discord.Member = None):
-        await ctx.send(embed=uiEmbed(ctx).uiEmbed(member=member, opt="ui"))
+        member = member or ctx.author
+        em = uiEmbed(ctx).uiEmbed(member=member, opt="ui")
+        activities = []
+        m = ctx.guild.get_member(member.id)
+        if not m.activities:
+            pass
+        else:
+            for activity in m.activities:
+                if isinstance(activity, discord.Spotify):
+                    activity = 'Listening to **Spotify**'
+                else:
+                    emoji = ''
+                    if activity.emoji:
+                        emoji = ':thinking:' if activity.emoji.is_custom_emoji() and not self.client.get_emoji(activity.emoji.id) else activity.emoji
+                        if str(emoji) == ":thinking:":
+                            em.set_footer(text="🤔 indicates a custom emoji")
+                    char = "\u200b" if activity.type == discord.ActivityType.custom else " "
+                    if str(activity.name) == "None":
+                        ac = "\u200b"
+                    else:
+                        ac = str(activity.name)
+                    activity = f'{emoji} {status_mapping[activity.type]}{char}**{ac}**'
+                activities.append(activity)
+            em.add_field(name="Activities", value="\n".join(activities))
+        await ctx.send(embed=em)
 
     @commands.command(aliases=['perms'], help="Gets a user's permissions in the current channel.")
     async def permissions(self, ctx, *, member: discord.Member = None):
