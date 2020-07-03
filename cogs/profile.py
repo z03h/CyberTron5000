@@ -213,10 +213,15 @@ class Profile(commands.Cog):
             for activity in m.activities:
                 if isinstance(activity, discord.Spotify):
                     activity = 'Listening to **Spotify**'
+                elif isinstance(activity, discord.Game):
+                    activity = f'Playing **{activity.name}**'
+                elif isinstance(activity, discord.Streaming):
+                    activity = f'Streaming **{activity.name}**'
                 else:
                     emoji = ''
                     if activity.emoji:
-                        emoji = ':thinking:' if activity.emoji.is_custom_emoji() and not self.client.get_emoji(activity.emoji.id) else activity.emoji
+                        emoji = ':thinking:' if activity.emoji.is_custom_emoji() and not self.client.get_emoji(
+                            activity.emoji.id) else activity.emoji
                         if str(emoji) == ":thinking:":
                             em.set_footer(text="🤔 indicates a custom emoji")
                     char = "\u200b" if activity.type == discord.ActivityType.custom else " "
