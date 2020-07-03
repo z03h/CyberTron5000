@@ -491,107 +491,28 @@ class Reddit(commands.Cog):
             await ctx.send(error)
             
     @commands.command()
-    async def post(self, ctx, subreddit, sort=None):
+    async def post(self, ctx, subreddit, sort='hot'):
         """Gets a random post from a subreddit"""
         message = await ctx.send(embed=discord.Embed(colour=reddit_colour, title="Loading...").set_image(url=self.loading))
         posts = []
         reddit = self.reddit.subreddit(subreddit)
-        if not sort:
-            for post in reddit.hot(limit=50):
-                posts.append(post)
-        elif sort == "top":
-            for post in reddit.top(limit=100):
-                posts.append(post)
-        elif sort == "hot":
-            for post in reddit.hot(limit=50):
-                posts.append(post)
-        elif sort == "new":
-            for post in reddit.new(limit=50):
-                posts.append(post)
-        elif sort == "rising":
-            for post in reddit.rising(limit=50):
-                posts.append(post)
-        elif sort == 'controversial':
-            for post in reddit.controversial(limit=50):
-                posts.append(post)
-        elif sort == "topever":
-            for post in reddit.top(limit=1):
-                posts.append(post)
-        elif sort == "controversialever":
-            for post in reddit.controversial(limit=1):
-                posts.append(post)
+        sorts = ['new', 'controversial', 'rising', 'top', 'topever', 'hot', 'controversialever']
+        reddits = [reddit.new(limit=50), reddit.controversial(limit=50), reddit.rising(limit=50), reddit.top(limit=150), reddit.top(limit=1), reddit.hot(limit=80), reddit.controversial(limit=1)]
+        if sort in sorts:
+            for x in reddits[sorts.index(sort)]:
+                posts.append(x)
         else:
-            await ctx.message.add_reaction(emoji="⚠")
-            await message.edit(embed=discord.Embed(colour=reddit_colour, description=
-                f'That is not a valid sort! Valid sorts include: `new`, `controversial`, `rising`, `hot`, `top`, '
-                f'`topever`, `controversialever`'))
+            return await ctx.send(f"<:warning:727013811571261540> **{ctx.author.name}**, that isn't a valid sort! Valid sorts include {', '.join(sorts)}.")
         submission = random.choice(posts)
-        if submission.over_18:
-            if ctx.message.channel.is_nsfw():
-                if submission.is_self:
-                    embed = discord.Embed(title=submission.title,
-                                          url=f'https://www.reddit.com{submission.permalink}',
-                                          colour=reddit_colour,
-                                          description="{}\n**{:,.0f}** <:upvote:718895913342337036> **{:,.0f}** 💬"
-                                          .format(submission.selftext, submission.score,
-                                                  submission.num_comments))
-                    ts = submission.created_utc
-            
-                    embed.set_author(name=submission.author.name, icon_url=submission.author.icon_img)
-                    embed.set_footer(
-                        text=f"r/{submission.subreddit} • {datetime.datetime.fromtimestamp(ts).strftime('%B %d, %Y')}",
-                        icon_url=submission.subreddit.icon_img)
-                    await message.edit(embed=embed)
-                else:
-                    ts = int(submission.created_utc)
-                    embed = discord.Embed(title=submission.title,
-                                          url=f'https://www.reddit.com{submission.permalink}',
-                                          colour=reddit_colour,
-                                          description="**{:,.0f}** <:upvote:718895913342337036> **{:,.0f}** 💬"
-                                          .format(submission.score, submission.num_comments))
-            
-                    embed.set_image(url=submission.url)
-                    embed.set_author(name=f"{submission.author.name}", icon_url=submission.author.icon_img)
-                    embed.set_footer(text='r/{} • {}'.format(submission.subreddit,
-                                                             datetime.datetime.fromtimestamp(ts).strftime(
-                                                                 '%B %d, %Y')),
-                                     icon_url=submission.subreddit.icon_img)
-        
-                await message.edit(embed=embed)
-            else:
-                await message.edit(
-                    embed=discord.Embed(colour=reddit_colour).set_author(name="NSFW Channel required for this!"))
+        if submission.is_self:
+            embed = discord.Embed(title=submission.title, url=f'https://www.reddit.com{submission.permalink}', colour=reddit_colour, description="{}\n**{:,.0f}** <:upvote:718895913342337036> **{:,.0f}** 💬".format(submission.selftext, submission.score, submission.num_comments))
         else:
-            if submission.is_self:
-                embed = discord.Embed(title=submission.title,
-                                      url=f'https://www.reddit.com{submission.permalink}',
-                                      colour=reddit_colour,
-                                      description="{}\n**{:,.0f}** <:upvote:718895913342337036> **{:,.0f}** 💬"
-                                      .format(submission.selftext, submission.score,
-                                              submission.num_comments))
-                ts = submission.created_utc
-        
-                embed.set_author(name=submission.author.name, icon_url=submission.author.icon_img)
-                embed.set_footer(
-                    text=f"r/{submission.subreddit} • {datetime.datetime.fromtimestamp(ts).strftime('%B %d, %Y')}",
-                    icon_url=submission.subreddit.icon_img)
-                await message.edit(embed=embed)
-            else:
-                ts = int(submission.created_utc)
-                embed = discord.Embed(title=submission.title,
-                                      url=f'https://www.reddit.com{submission.permalink}',
-                                      colour=reddit_colour,
-                                      description="**{:,.0f}** <:upvote:718895913342337036> **{:,.0f}** 💬"
-                                      .format(submission.score, submission.num_comments))
-        
-                embed.set_image(url=submission.url)
-                embed.set_author(name=f"{submission.author.name}", icon_url=submission.author.icon_img)
-                embed.set_footer(text='r/{} • {}'.format(submission.subreddit,
-                                                         datetime.datetime.fromtimestamp(ts).strftime(
-                                                             '%B %d, %Y')),
-                                 icon_url=submission.subreddit.icon_img)
-    
-            await message.edit(embed=embed)
+            embed = discord.Embed(title=submission.title, url=f'https://www.reddit.com{submission.permalink}', colour=reddit_colour, description="**{:,.0f}** <:upvote:718895913342337036> **{:,.0f}** 💬".format(submission.score, submission.num_comments))
+            embed.set_image(url=submission.url)
+        ts = int(submission.created_utc)
+        embed.set_author(name=f"{submission.author.name}", icon_url=submission.author.icon_img)
+        embed.set_footer(text='r/{} • {}'.format(submission.subreddit, datetime.datetime.fromtimestamp(ts).strftime('%B %d, %Y')), icon_url=submission.subreddit.icon_img)
+        await message.edit(embed=embed) if not submission.over_18 or submission.over_18 and ctx.channel.is_nsfw() else await ctx.send(f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
             
 def setup(client):
     client.add_cog(Reddit(client))
