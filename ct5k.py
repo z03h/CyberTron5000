@@ -133,7 +133,7 @@ async def on_ready():
                                        description=f"Logged in as: {client.user.name}\nDiscriminator: {client.user.discriminator}\nID: {client.user.id}\nVisible Guilds: {len(client.guilds):,}\nVisible Users: {len(client.users):,}\n"))
     await client.change_presence(
         activity=discord.Activity(type=discord.ActivityType.listening,
-                                  name=f"to {len(client.users)} users in {len(client.guilds)} guilds"))
+                                  name=f"to {len(client.users):,} users in {len(client.guilds):,} guilds"))
 
 
 @client.group(invoke_without_command=True)
