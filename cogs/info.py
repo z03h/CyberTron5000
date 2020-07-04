@@ -51,8 +51,8 @@ class CyberTronHelpCommand(commands.HelpCommand):
         entries = await self.filter_commands(cog.get_commands(), sort=True)
         foo = "\n".join([f"→ `{c.name} {c.signature}` • {c.help}" for c in entries])
         await self.context.send(embed=discord.Embed(description=f"{cog_doc}\n\n{foo}", colour=colour).set_author(
-            name=f"{cog.qualified_name} Cog"))
-    
+            name=f"{cog.qualified_name} Commands (Total {len(entries)})"))
+
     async def send_command_help(self, command):
         embed = discord.Embed(title=self.get_command_signature(command), colour=colour,
                               description=command.help or "No help provided for this command.")
