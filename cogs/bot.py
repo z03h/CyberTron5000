@@ -175,7 +175,7 @@ class Bot(commands.Cog):
         if command is None:
             return await ctx.send(embed=discord.Embed(title="Check out the full source code for this bot on GitHub!", url="https://github.com/niztg/CyberTron5000/", colour=colour))
         elif command == "help":
-            await ctx.send(embed=discord.Embed(description=f"This code was too long for Discord, you can see it instead [on GitHub](https://github.com/niztg/CyberTron5000/blob/master/cogs/info.py#L9-L73)", colour=colour))
+            await ctx.send(embed=discord.Embed(description=f"This code was too long for Discord, you can see it instead [on GitHub](https://github.com/niztg/CyberTron5000/blob/master/cogs/info.py#L9-L109)", colour=colour))
         else:
             cmd = self.client.get_command(command).callback
             src = str(i.getsource(cmd)).replace("```", "``")
