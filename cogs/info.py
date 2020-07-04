@@ -7,7 +7,14 @@ colour = 0x00dcff
 
 
 class CyberTronHelpCommand(commands.HelpCommand):
+    """
+    Subclassed help FTW!
+    """
+    
     def __init__(self):
+        """
+        Sets some attributes.
+        """
         super().__init__(
             command_attrs={
                 'help': 'Shows info about the bot, a command, or a category'
@@ -15,6 +22,12 @@ class CyberTronHelpCommand(commands.HelpCommand):
         )
     
     def get_command_signature(self, command):
+        """
+        Copied from R.Danny ;picardy;
+        Formats the command signature for command help.
+        :param command:
+        :return:
+        """
         parent = command.full_parent_name
         if len(command.aliases) > 0:
             aliases = '•'.join(command.aliases)
@@ -27,9 +40,20 @@ class CyberTronHelpCommand(commands.HelpCommand):
         return f'{alias} {command.signature}'
     
     def command_not_found(self, string):
+        """
+        Just makes a custom error when command is not found.
+        :param string:
+        :return:
+        """
         return f"Command/category `{string}` not found!"
     
     async def send_bot_help(self, mapping):
+        """
+        Sends the actual help message
+        :param mapping:
+        :return:
+        """
+        
         def key(c):
             return c.cog_name or '\u200bUncategorized Commands'
         
@@ -47,18 +71,33 @@ class CyberTronHelpCommand(commands.HelpCommand):
         await self.context.send(embed=embed)
     
     async def send_cog_help(self, cog):
+        """
+        Help for a cog.
+        :param cog:
+        :return:
+        """
         cog_doc = cog.__doc__ or " "
         entries = await self.filter_commands(cog.get_commands(), sort=True)
         foo = "\n".join([f"→ `{c.name} {c.signature}` • {c.help}" for c in entries])
         await self.context.send(embed=discord.Embed(description=f"{cog_doc}\n\n{foo}", colour=colour).set_author(
             name=f"{cog.qualified_name} Commands (Total {len(entries)})"))
-
+    
     async def send_command_help(self, command):
+        """
+        Help for a command.
+        :param command:
+        :return:
+        """
         embed = discord.Embed(title=self.get_command_signature(command), colour=colour,
                               description=command.help or "No help provided for this command.")
         await self.context.send(embed=embed)
     
     async def send_group_help(self, group):
+        """
+        Help for a subcommand group.
+        :param group:
+        :return:
+        """
         sc = []
         u = '\u200b'
         entries = await self.filter_commands(group.commands)
@@ -74,12 +113,20 @@ class Info(commands.Cog):
     """Help Commands"""
     
     def __init__(self, client):
+        """
+        Sets up the whole help command thing
+        :param client:
+        """
         self.client = client
         self._original_help_command = client.help_command
         client.help_command = CyberTronHelpCommand()
         client.help_command.cog = self
     
     def cog_unload(self):
+        """
+        ah yes, this.
+        :return:
+        """
         self.client.help_command = self._original_help_command
     
     @commands.command()
@@ -95,3 +142,4 @@ class Info(commands.Cog):
 
 def setup(client):
     client.add_cog(Info(client))
+
