@@ -356,6 +356,14 @@ class Bot(commands.Cog):
                     embed.set_thumbnail(url=self.client.user.avatar_url)
                     embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
                     await message.channel.send(embed=embed)
+                    
+    @commands.command()
+    async def github(self, ctx, limit: int=5):
+        """Shows you recent github commits"""
+        try:
+            await ctx.send(embed=discord.Embed(description="\n".join(await self.get_commits(limit)), colour=colour).set_author(name="GitHub Commits for CyberTron5000", icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png", url="https://github.com/niztg/CyberTron5000"))
+        except Exception as e:
+            await ctx.send(e)
 
 
 def setup(client):
