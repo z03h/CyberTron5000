@@ -69,21 +69,29 @@ class NativePython(object):
             return f"{percent}% {filled * total_filled}{empty * total_empty} 100.0%"
 
 
-
 class Discord(object):
     def __init__(self, bot_user_id):
         self.bot_user_id = bot_user_id
     
-    def fieldify(self, names: list, values: list, limit: int=None):
+    async def fieldify(self, names: list, values: list, inline: bool, limit: int = None):
+        """Easy embed fieldification
+        :returns embed:
+        """
         embed = discord.Embed()
-        counter = 0
-        for name, val in zip(names, values):
-            embed.add_field(name=name, value=val)
-            counter += 1
-            if not limit:
-                pass
-            elif counter > limit:
-                return
+        if not limit:
+            for name, val in zip(names, values):
+                embed.add_field(name=name, value=val, inline=inline)
+
+        elif limit:
+            counter = 0
+            for name, val in zip(names, values):
+                embed.add_field(name=name, value=val, inline=inline)
+                counter += 1
+                if counter >= limit:
+                    return embed
+                else:
+                    continue
+
         return embed
     
     def codeblock(self, body):
