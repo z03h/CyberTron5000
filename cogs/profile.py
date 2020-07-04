@@ -117,26 +117,28 @@ class Profile(commands.Cog):
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         await ctx.send(embed=uiEmbed(ctx).uiEmbed(member=avamember, opt="av"))
 
-    @commands.group(aliases=['si', 'serverinfo', 'gi', 'guild', 'server'], help="Gets the guild's info.",
-                    invoke_without_command=True)
+    @commands.group(aliases=['si', 'serverinfo', 'gi', 'guild', 'server'], help="Gets the guild's info.", invoke_without_command=True)
     async def guildinfo(self, ctx):
-        g = GuildStats(ctx).status_dict
-        n = '\n'
-        guild = ctx.guild
-        people = [f"<:member:716339965771907099>**{len(ctx.guild.members):,}**", f"{sl['online']}**{g['online']:,}**",
-                  f"{sl['dnd']}**{g['dnd']:,}**", f"{sl['idle']}**{g['idle']:,}**",
-                  f"{sl['offline']}**{g['offline']:,}**", f"<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**"]
-        text_channels = [text_channel for text_channel in guild.text_channels]
-        voice_channels = [voice_channel for voice_channel in guild.voice_channels]
-        categories = [category for category in guild.categories]
-        region = REGIONS[f"{str(guild.region)}"]
-        embed = discord.Embed(colour=colour,
-                              description=f"**{ctx.guild.id}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
-                                          f"\n{f'{n}'.join(people)}\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}")
-        embed.set_author(name=guild, icon_url=guild.icon_url)
-        embed.set_footer(
-            text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - ctx.guild.created_at)}")
-        await ctx.send(embed=embed)
+        try:
+            g = GuildStats(ctx).status_dict
+            n = '\n'
+            guild = ctx.guild
+            people = [f"<:member:716339965771907099>**{len(ctx.guild.members):,}**", f"{sl['online']}**{g['online']:,}**",
+                      f"{sl['dnd']}**{g['dnd']:,}**", f"{sl['idle']}**{g['idle']:,}**",
+                      f"{sl['offline']}**{g['offline']:,}**", f"<:status_streaming:596576747294818305> **{len([m for m in ctx.guild.members if m.activity and m.activity.type == discord.ActivityType.streaming])}**", f"<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**", ]
+            text_channels = [text_channel for text_channel in guild.text_channels]
+            voice_channels = [voice_channel for voice_channel in guild.voice_channels]
+            categories = [category for category in guild.categories]
+            region = REGIONS[f"{str(guild.region)}"]
+            embed = discord.Embed(colour=colour,
+                                  description=f"**{ctx.guild.id}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
+                                              f"\n{f'{n}'.join(people)}\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}")
+            embed.set_author(name=guild, icon_url=guild.icon_url)
+            embed.set_footer(
+                text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - ctx.guild.created_at)}")
+            await ctx.send(embed=embed)
+        except Exception as er:
+            await ctx.send(er)
 
     @guildinfo.command(aliases=['mods'], invoke_without_command=True)
     async def staff(self, ctx):
