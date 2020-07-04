@@ -73,8 +73,12 @@ class uiEmbed:
         negperms = []
         if opt == "ui":
             is_bot = "<:bot:703728026512392312>" if member.bot else "\u200b"
+            if self.context.guild.get_member(member.id).activity and self.context.guild.get_member(member.id).activity.type == discord.ActivityType.streaming:
+                streaming_em = "<:status_streaming:596576747294818305>"
+            else:
+                streaming_em = "\u200b"
             join_position = sorted(self.context.guild.members, key=lambda member: member.joined_at).index(member)
-            status_list = f"{sl[str(member.status)]}{mlsl[str(member.mobile_status)]}{wlsl[str(member.web_status)]}{dlsl[str(member.desktop_status)]}{is_bot}"
+            status_list = f"{streaming_em}{sl[str(member.status)]}{mlsl[str(member.mobile_status)]}{wlsl[str(member.web_status)]}{dlsl[str(member.desktop_status)]} {is_bot}"
             if member.top_role.id == self.context.guild.id:
                 top_role_msg = "\u200b"
             else:
