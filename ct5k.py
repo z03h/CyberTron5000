@@ -57,7 +57,7 @@ async def on_guild_join(guild):
         emojis = [emoji for emoji in guild.emojis]
         region = REGIONS[f"{str(guild.region)}"]
         embed = discord.Embed(colour=0x00ff00, title=f'{guild}',
-                              description=f"**{guild.id}**"f"\n<:member:716339965771907099>**{len(guild.members):,}** | {sl['online']}**{online:,}** • {sl['dnd']}**{dnd:,}** • {sl['idle']}**{idle:,}** • {sl['offline']}**{offline:,}**\n**Owner:** {guild.suggest.mention}\n**Region:** {region}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**\n**Admins:**\n{ml}")
+                              description=f"**{guild.id}**"f"\n<:member:716339965771907099>**{len(guild.members):,}** | {sl['online']}**{online:,}** • {sl['dnd']}**{dnd:,}** • {sl['idle']}**{idle:,}** • {sl['offline']}**{offline:,}**\n**Owner:** {guild.owner.mention}\n**Region:** {region}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**\n**Admins:**\n{ml}")
         embed.set_thumbnail(url=guild.icon_url)
         embed.set_footer(
             text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - guild.created_at)}")
@@ -87,7 +87,7 @@ async def on_guild_remove(guild):
     emojis = [emoji for emoji in guild.emojis]
     region = REGIONS[f"{str(guild.region)}"]
     embed = discord.Embed(colour=discord.Colour.red(), title=f'{guild}',
-                          description=f"**{guild.id}**"f"\n<:member:716339965771907099>**{len(guild.members):,}** | {sl['online']}**{online:,}** • {sl['dnd']}**{dnd:,}** • {sl['idle']}**{idle:,}** • {sl['offline']}**{offline:,}**\n**Owner:** {guild.suggest.mention}\n**Region:** {region}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**\n**Admins:**")
+                          description=f"**{guild.id}**"f"\n<:member:716339965771907099>**{len(guild.members):,}** | {sl['online']}**{online:,}** • {sl['dnd']}**{dnd:,}** • {sl['idle']}**{idle:,}** • {sl['offline']}**{offline:,}**\n**Owner:** {guild.owner.mention}\n**Region:** {region}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**\n**Admins:**")
     embed.set_thumbnail(url=guild.icon_url)
     embed.set_footer(text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - guild.created_at)}")
     await c.send(f"Left guild. We're down to **{len(client.guilds)}** guilds", embed=embed)
@@ -137,14 +137,14 @@ async def on_ready():
 
 
 @client.group(invoke_without_command=True)
-async def suggest(ctx, *, idea):
+async def owner(ctx, *, idea):
     """Suggest an idea for the bot."""
     owner = client.get_user(id=350349365937700864)
     await owner.send(f"Idea: ```{idea}```")
     await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
 
 
-@suggest.command(invoke_without_command=True)
+@owner.command(invoke_without_command=True)
 async def error(ctx, *, error):
     """Report an error for this bot."""
     owner = client.get_user(id=350349365937700864)

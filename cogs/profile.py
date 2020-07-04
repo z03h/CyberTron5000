@@ -132,7 +132,7 @@ class Profile(commands.Cog):
         region = REGIONS[f"{str(guild.region)}"]
         embed = discord.Embed(colour=colour,
                               description=f"**{ctx.guild.id}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
-                                          f"\n{f'{n}'.join(people)}\n**Owner:** {ctx.guild.suggest.mention}\n**Region:** {region}")
+                                          f"\n{f'{n}'.join(people)}\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}")
         embed.set_author(name=guild, icon_url=guild.icon_url)
         embed.set_footer(
             text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - ctx.guild.created_at)}")
@@ -142,7 +142,7 @@ class Profile(commands.Cog):
     async def staff(self, ctx):
         """Shows you the mods of a guild"""
         n = "\n"
-        owner = ctx.guild.suggest.mention
+        owner = ctx.guild.owner.mention
         members = [m for m in ctx.guild.members]
         admins = [admin for admin in members if admin.guild_permissions.administrator and admin.bot is False]
         mods = [mod for mod in members if mod.guild_permissions.kick_members and mod.bot is False]
