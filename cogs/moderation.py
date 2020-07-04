@@ -15,6 +15,7 @@ class Moderation(commands.Cog):
         self.client = client
     
     @commands.command(aliases=['clear'])
+    @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx, amount=5):
         """ Purges a given amount of messages with the default being 5 """
         await ctx.message.delete()
@@ -145,7 +146,6 @@ class Moderation(commands.Cog):
     async def leave(self, ctx):
         """Makes bot leave server"""
         leave = self.client.get_guild(ctx.guild.id)
-        await ctx.message.add_reaction(emoji=self.tick)
         await leave.leave()
 
 
