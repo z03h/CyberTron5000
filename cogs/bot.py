@@ -59,7 +59,7 @@ class Bot(commands.Cog):
             await ctx.message.add_reaction(emoji=self.x_r)
     
         if isinstance(error, discord.ext.commands.BadArgument):
-            err = str(error.args[0]).lower()
+            err = str(error.args[0])
             mem, msg = err.split('not')
             await ctx.send(
                 f"{self.x} **{ctx.author.name}**, I looked where ever I could, but I couldn't find the **{mem}**anywhere!")
