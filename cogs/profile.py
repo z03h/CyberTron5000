@@ -10,7 +10,7 @@ from discord.ext import commands
 from disputils import BotEmbedPaginator
 
 from .utils.lists import REGIONS, sl, mlsl, wlsl, dlsl, channel_mapping, is_nsfw, status_mapping
-from .utils import funcs
+from .utils import pyformat
 
 colour = 0x00dcff
 
@@ -74,11 +74,12 @@ class uiEmbed:
         negperms = []
         if opt == "ui":
             is_bot = "<:bot:703728026512392312>" if member.bot else "\u200b"
-            if self.context.guild.get_member(member.id).activity and self.context.guild.get_member(member.id).activity.type == discord.ActivityType.streaming:
+            join_position = sorted(self.context.guild.members, key=lambda member: member.joined_at).index(member)
+            if self.context.guild.get_member(member.id).activity and self.context.guild.get_member(
+                    member.id).activity.type == discord.ActivityType.streaming:
                 streaming_em = "<:status_streaming:596576747294818305>"
             else:
                 streaming_em = "\u200b"
-            join_position = sorted(self.context.guild.members, key=lambda member: member.joined_at).index(member)
             status_list = f"{streaming_em}{sl[str(member.status)]}{mlsl[str(member.mobile_status)]}{wlsl[str(member.web_status)]}{dlsl[str(member.desktop_status)]} {is_bot}"
             if member.top_role.id == self.context.guild.id:
                 top_role_msg = "\u200b"
@@ -117,34 +118,38 @@ class Profile(commands.Cog):
     
     def __init__(self, client):
         self.client = client
-
+    
     @commands.command(aliases=["av"], help="Gets the avatar of a user.")
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         await ctx.send(embed=uiEmbed(ctx).uiEmbed(member=avamember, opt="av"))
-
-    @commands.group(aliases=['si', 'serverinfo', 'gi', 'guild', 'server'], help="Gets the guild's info.", invoke_without_command=True)
+    
+    @commands.group(aliases=['si', 'serverinfo', 'gi', 'guild', 'server'], help="Gets the guild's info.",
+                    invoke_without_command=True)
     async def guildinfo(self, ctx):
         try:
             g = GuildStats(ctx).status_dict
             n = '\n'
             guild = ctx.guild
-            people = [f"<:member:716339965771907099>**{len(ctx.guild.members):,}**", f"{sl['online']}**{g['online']:,}**",
+            people = [f"<:member:716339965771907099>**{len(ctx.guild.members):,}**",
+                      f"{sl['online']}**{g['online']:,}**",
                       f"{sl['dnd']}**{g['dnd']:,}**", f"{sl['idle']}**{g['idle']:,}**",
-                      f"{sl['offline']}**{g['offline']:,}**", f"<:status_streaming:596576747294818305> **{len([m for m in ctx.guild.members if m.activity and m.activity.type == discord.ActivityType.streaming])}**", f"<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**", ]
+                      f"{sl['offline']}**{g['offline']:,}**",
+                      f"<:status_streaming:596576747294818305>**{len([m for m in ctx.guild.members if m.activity and m.activity.type == discord.ActivityType.streaming])}**",
+                      f"<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**", ]
             text_channels = [text_channel for text_channel in guild.text_channels]
             voice_channels = [voice_channel for voice_channel in guild.voice_channels]
             categories = [category for category in guild.categories]
             region = REGIONS[f"{str(guild.region)}"]
             embed = discord.Embed(colour=colour,
                                   description=f"**{ctx.guild.id}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
-                                              f"\n{f'{n}'.join(people)}\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}\n<:boost:726151031322443787> **Nitro Tier: {guild.premium_tier}**\n{funcs.bar(stat=guild.premium_subscription_count, max=30, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>')}")
+                                              f"\n{f'{n}'.join(people)}\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}\n<:boost:726151031322443787> **Nitro Tier: {guild.premium_tier}**\n{pyformat.NativePython().bar(stat=guild.premium_subscription_count, max=30, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>')}")
             embed.set_author(name=guild, icon_url=guild.icon_url)
             embed.set_footer(
                 text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - ctx.guild.created_at)}")
             await ctx.send(embed=embed)
         except Exception as er:
             await ctx.send(er)
-
+    
     @guildinfo.command(aliases=['mods'], invoke_without_command=True)
     async def staff(self, ctx):
         """Shows you the mods of a guild"""
@@ -161,7 +166,7 @@ class Profile(commands.Cog):
                                             f"\n\n**MOD BOTS** (Total {len(mod_bots)})\n {f'{n}'.join([f'🛡 {bot.mention} - {bot.top_role.mention}' for bot in mod_bots[:10]])}",
                                 colour=colour).set_author(name=f"Staff Team for {ctx.guild}",
                                                           icon_url=ctx.guild.icon_url))
-
+    
     @guildinfo.command(invoke_without_command=True, aliases=['stats'])
     async def statistics(self, ctx):
         """Shows you the stats of the guild"""
@@ -177,37 +182,35 @@ class Profile(commands.Cog):
         embed.add_field(name=f"Emojis (Total {len([e for e in ctx.guild.emojis])})",
                         value='\u200b' + " • ".join([str(a) for a in ctx.guild.emojis][:24]), inline=False)
         await ctx.send(embed=embed, file=gs.guild_graph)
-
+    
     @guildinfo.command(aliases=['chan'])
     async def channels(self, ctx):
         """Shows you the channels of a guild."""
-        if ctx.guild.id == 653376332507643914:
-            return await ctx.send("peanut no like :angry:")
-        else:
-            embed = discord.Embed(colour=colour).set_author(icon_url=ctx.guild.icon_url_as(format='png'),
-                                                            name=f"Channels in {ctx.guild}")
-            for c in ctx.guild.categories:
-                x = []
-                for i in c.text_channels:
-                    x.append(f"{channel_mapping[str(i.type)]}{i.name}{is_nsfw[i.is_nsfw()]}")
-                for j in c.voice_channels:
-                    x.append(f"{channel_mapping[str(j.type)]}{j.name}")
-                embed.add_field(name=f"{c}", value='\u200b' + "\n".join(x),
-                                inline=False)
-            y = [b for b in ctx.guild.categories]
-            chl = [f"{channel_mapping[str(o.type)]}{o.name}{is_nsfw[o.is_nsfw()]}" for o in ctx.guild.channels if
-                   not o.category and o not in y]
-            embed.description = "\n".join(chl)
-            await ctx.send(embed=embed)
-
+        embed = discord.Embed(colour=colour).set_author(icon_url=ctx.guild.icon_url_as(format='png'),
+                                                        name=f"Channels in {ctx.guild}")
+        for c in ctx.guild.categories:
+            x = []
+            for i in c.text_channels:
+                x.append(f"{channel_mapping[str(i.type)]}{i.name}{is_nsfw[i.is_nsfw()]}")
+            for j in c.voice_channels:
+                x.append(f"{channel_mapping[str(j.type)]}{j.name}")
+            embed.add_field(name=f"{c}", value='\u200b' + "\n".join(x),
+                            inline=False)
+        y = [b for b in ctx.guild.categories]
+        chl = [f"{channel_mapping[str(o.type)]}{o.name}{is_nsfw[o.is_nsfw()]}" for o in ctx.guild.channels if
+               not o.category and o not in y]
+        embed.description = "\n".join(chl)
+        await ctx.send("peanut no like :angry:") if ctx.guild.id == 653376332507643914 else await ctx.send(embed=embed)
+    
     @commands.command(aliases=['ov'],
                       help="Gets an overview of a user, including their avatar, permissions in the channel and info.")
     async def overview(self, ctx, *, member: discord.Member = None):
         u = uiEmbed(ctx)
-        embeds = [u.uiEmbed(member=member, opt="ui"), u.uiEmbed(member=member, opt="perms"), u.uiEmbed(member=member, opt="av")]
+        embeds = [u.uiEmbed(member=member, opt="ui"), u.uiEmbed(member=member, opt="perms"),
+                  u.uiEmbed(member=member, opt="av")]
         paginator = BotEmbedPaginator(ctx, embeds)
         await paginator.run()
-
+    
     @commands.command(aliases=['ui', 'user'], help="Gets a user's info.")
     async def userinfo(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
@@ -240,7 +243,7 @@ class Profile(commands.Cog):
                 activities.append(activity)
             em.add_field(name="Activities", value="\n".join(activities))
         await ctx.send(embed=em)
-
+    
     @commands.command(aliases=['perms'], help="Gets a user's permissions in the current channel.")
     async def permissions(self, ctx, *, member: discord.Member = None):
         await ctx.send(embed=uiEmbed(ctx).uiEmbed(member=member, opt="perms"))

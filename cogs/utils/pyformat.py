@@ -54,6 +54,20 @@ class NativePython(object):
             return true
         else:
             return false
+    
+    def bar(self, stat: int, max: int, filled: str, empty: str):
+        percent = round((stat / max) * 100, 1)
+        if percent > 100:
+            bar = f"{percent}% {filled * 10} 100.0%"
+            return bar
+        elif percent <= 0:
+            bar = f"{percent}% {empty * 10} 100.0%"
+            return bar
+        else:
+            total_filled = round(percent / 10)
+            total_empty = 10 - (round(percent / 10))
+            return f"{percent}% {filled * total_filled}{empty * total_empty} 100.0%"
+
 
 
 class Discord(object):
