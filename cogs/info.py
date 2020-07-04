@@ -47,15 +47,11 @@ class CyberTronHelpCommand(commands.HelpCommand):
         await self.context.send(embed=embed)
     
     async def send_cog_help(self, cog):
-        i = []
         cog_doc = cog.__doc__ or " "
-        for cmd in cog.get_commands():
-            char = "\u200b" if not cmd.aliases else "•"
-            help_msg = cmd.help or "No help provided for this command"
-            i.append(f"→ `{cmd.name}{char}{'•'.join(cmd.aliases)} {cmd.signature}` • {help_msg}")
-        await self.context.send(
-            embed=discord.Embed(colour=colour, description=cog_doc + "\n\n" + "\n".join(i)).set_author(
-                name=f"{cog.qualified_name} Cog"))
+        entries = await self.filter_commands(cog.get_commands(), sort=True)
+        foo = "\n".join([f"→ `{c.name} {c.signature}` • {c.help}" for c in entries])
+        await self.context.send(embed=discord.Embed(description=f"{cog_doc}\n\n{foo}", colour=colour).set_author(
+            name=f"{cog.qualified_name} Cog"))
     
     async def send_command_help(self, command):
         embed = discord.Embed(title=self.get_command_signature(command), colour=colour,
@@ -65,8 +61,9 @@ class CyberTronHelpCommand(commands.HelpCommand):
     async def send_group_help(self, group):
         sc = []
         u = '\u200b'
+        entries = await self.filter_commands(group.commands)
         embed = discord.Embed(title=self.get_command_signature(group), colour=colour)
-        for c in group.commands:
+        for c in entries:
             char = "\u200b" if not c.aliases else "•"
             sc.append(f"→ `{group.name} {c.name}{char}{'•'.join(c.aliases)} {c.signature or f'{u}'}` • {c.help}")
         embed.description = f"{group.help}\n\n" + "\n".join(sc)
