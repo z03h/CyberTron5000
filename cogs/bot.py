@@ -173,21 +173,23 @@ class Bot(commands.Cog):
     async def source(self, ctx, *, command=None):
         i = __import__('inspect')
         if command is None:
-            return await ctx.send(embed=discord.Embed(title="Check out the full source code for this bot on GitHub!",
-                                                      url="https://github.com/niztg/CyberTron5000/", colour=colour))
-        cmd = self.client.get_command(command).callback
-        src = str(i.getsource(cmd)).replace("```", "``")
-        if len(src) > 2000:
-            cmd = self.client.get_command(command).callback
-            file = cmd.__code__.co_filename
-            location = os.path.relpath(file)
-            total, fl = i.getsourcelines(cmd)
-            ll = fl + (len(total) - 1)
-            await ctx.send(embed=discord.Embed(
-                description=f"This code was too long for Discord, you can see it instead [on GitHub](<https://github.com/niztg/CyberTron5000/blob/master/{location}#L{fl}-L{ll}>)",
-                colour=colour))
+            return await ctx.send(embed=discord.Embed(title="Check out the full source code for this bot on GitHub!", url="https://github.com/niztg/CyberTron5000/", colour=colour))
+        elif command == "help":
+            await ctx.send(embed=discord.Embed(description=f"This code was too long for Discord, you can see it instead [on GitHub](https://github.com/niztg/CyberTron5000/blob/master/cogs/info.py#L9-L73)", colour=colour))
         else:
-            await ctx.send(f"```py\n{src}\n```")
+            cmd = self.client.get_command(command).callback
+            src = str(i.getsource(cmd)).replace("```", "``")
+            if len(src) > 2000:
+                cmd = self.client.get_command(command).callback
+                file = cmd.__code__.co_filename
+                location = os.path.relpath(file)
+                total, fl = i.getsourcelines(cmd)
+                ll = fl + (len(total) - 1)
+                await ctx.send(embed=discord.Embed(
+                    description=f"This code was too long for Discord, you can see it instead [on GitHub](<https://github.com/niztg/CyberTron5000/blob/master/{location}#L{fl}-L{ll}>)",
+                    colour=colour))
+            else:
+                await ctx.send(f"```py\n{src}\n```")
     
     @commands.group(invoke_without_command=True, help="Shows total lines of code used to make the bot.")
     async def lines(self, ctx):
