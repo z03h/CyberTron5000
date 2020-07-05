@@ -295,13 +295,10 @@ class Bot(commands.Cog):
         subprocess.call([sys.executable, "ct5k.py"])
     
     async def get_commits(self, limit: int = 3):
-        commits = []
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://api.github.com/repos/niztg/CyberTron5000/commits") as r:
                 res = await r.json()
-            for item in res:
-                commits.append(
-                    f"[`{item['sha'][0:7]}`](https://github.com/niztg/CyberTron5000/commit/{item['sha']}) → {item['commit']['message']} - {item['commit']['committer']['name']}")
+            commits = [f"[`{item['sha'][0:7]}`](https://github.com/niztg/CyberTron5000/commit/{item['sha']}) → {item['commit']['message']} - {item['commit']['committer']['name']}" for item in res]
             return commits[:limit]
     
     @commands.command(aliases=['info', 'ab', 'i'], help="Shows info on the bot.")
