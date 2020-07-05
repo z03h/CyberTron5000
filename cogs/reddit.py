@@ -270,21 +270,15 @@ class Reddit(commands.Cog):
     @commands.command(aliases=['ms'])
     async def modstats(self, ctx, user):
         """Shows you the moderated subreddits of a specific user."""
-        reddits = []
-        numbas = []
-        modstats = []
         try:
             async with aiohttp.ClientSession() as cs:
                 async with cs.get(f"https://www.reddit.com/user/{user}/moderated_subreddits/.json") as r:
                     res = await r.json()
                 subreddits = res['data']
-                for subreddit in subreddits:
-                    reddits.append(
-                        f"[{subreddit['sr_display_name_prefixed']}](https://reddit.com{subreddit['url']}) • <:member:716339965771907099> **{subreddit['subscribers']:,}**")
-                    numbas.append(subreddit['subscribers'])
+                reddits = [f"[{subreddit['sr_display_name_prefixed']}](https://reddit.com{subreddit['url']}) • <:member:716339965771907099> **{subreddit['subscribers']:,}**"for subreddit in subreddits]
+                numbas = [s['subscribers'] for s in subreddits]
                 msg = "Top 15 Subreddits" if len(reddits) > 15 else "Moderated Subreddits"
-                for index, sr in enumerate(reddits[:15], 1):
-                    modstats.append(f"{index}. {sr}")
+                modstats = [f"{i}. {v}" for i, v in enumerate(reddits, 1)]
                 final_ms = "\n".join(modstats)
                 zero_subs = len([item for item in numbas if item == 0])
                 one_subs = len([item for item in numbas if item == 1])
@@ -293,11 +287,8 @@ class Reddit(commands.Cog):
                 hundred_thousand_subs = len([item for item in numbas if item >= 100_000])
                 million = len([item for item in numbas if item >= 1_000_000])
                 ten_million = len([item for item in numbas if item >= 10_000_000])
-                embed = discord.Embed(
-                    description=f"u/{user} mods **{len(reddits):,}** subreddits with **{humanize.intcomma(sum(numbas))}**"
-                                f" total readers\n\n*{msg}*\n\n{final_ms}", colour=reddit_colour)
-                embed.add_field(name="Advanced Statistics",
-                                value=f"Subreddits with 0 subscribers: **{zero_subs}**\nSubreddits with 1 subscriber: **{one_subs}**\nSubreddits with 100 or more subscribers: **{hundred_subs}**\nSubreddits with 1,000 or more subscribers: **{thousand_subs}**\nSubreddits with 100,000 or more subscribers: **{hundred_thousand_subs}**\nSubreddits with 1,000,000 or more subscribers: **{million}**\nSubreddits with 10,000,000 or more subscribers: **{ten_million}**\n\nAverage Subscribers Per Subreddit: **{humanize.intcomma(round(sum(numbas) / len(numbas)))}**")
+                embed = discord.Embed(description=f"u/{user} mods **{len(reddits):,}** subreddits with **{humanize.intcomma(sum(numbas))}** total readers\n\n*{msg}*\n\n{final_ms}", colour=reddit_colour)
+                embed.add_field(name="Advanced Statistics", value=f"Subreddits with 0 subscribers: **{zero_subs}**\nSubreddits with 1 subscriber: **{one_subs}**\nSubreddits with 100 or more subscribers: **{hundred_subs}**\nSubreddits with 1,000 or more subscribers: **{thousand_subs}**\nSubreddits with 100,000 or more subscribers: **{hundred_thousand_subs}**\nSubreddits with 1,000,000 or more subscribers: **{million}**\nSubreddits with 10,000,000 or more subscribers: **{ten_million}**\n\nAverage Subscribers Per Subreddit: **{humanize.intcomma(round(sum(numbas) / len(numbas)))}**")
             await ctx.send(embed=embed)
         except Exception as error:
             await ctx.send(
