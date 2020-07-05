@@ -17,7 +17,8 @@ class CyberTronHelpCommand(commands.HelpCommand):
         """
         super().__init__(
             command_attrs={
-                'help': 'Shows info about the bot, a command, or a category'
+                'help': 'Shows info about the bot, a command, or a category',
+                'aliases': ['?']
             }
         )
     
