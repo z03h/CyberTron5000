@@ -260,11 +260,9 @@ class VibeSchool(commands.Cog):
                 embed.set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
                 await ctx.send(embed=embed)
                 if p:
-                    role = discord.utils.get(ctx.guild.roles, name="Vibe")
-                    a_role = discord.utils.get(ctx.guild.roles, name="Vibe Apprentice")
+                    role = discord.utils.get(ctx.guild.roles, name="Vibe Adults")
                     await ctx.author.add_roles(role)
-                    await ctx.author.remove_roles(a_role)
-                    await ctx.send("Congrats! You have been given the `Vibe` role!")
+                    await ctx.send("Congrats! You have been given the `Vibe Adults` role!")
                 elif not p:
                     await ctx.send("Sorry, you failed. Try again next time!")
             elif message.content.lower().startswith('n'):
