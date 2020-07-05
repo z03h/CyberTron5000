@@ -1,9 +1,6 @@
 import datetime
 
 import matplotlib
-
-matplotlib.use('Agg')
-
 import discord
 import collections
 import humanize
@@ -13,6 +10,8 @@ from disputils import BotEmbedPaginator
 
 from .utils.lists import REGIONS, sl, mlsl, wlsl, dlsl, channel_mapping, is_nsfw, status_mapping
 from .utils import pyformat
+
+matplotlib.use('Agg')
 
 colour = 0x00dcff
 
@@ -78,7 +77,7 @@ class uiEmbed:
                 streaming_em = "<:status_streaming:596576747294818305>"
             else:
                 streaming_em = "\u200b"
-            status_list = f"{streaming_em}{sl[str(member.status)]}{mlsl[str(member.mobile_status)]}{wlsl[str(member.web_status)]}{dlsl[str(member.desktop_status)]} {is_bot}"
+            status_list = f"{streaming_em}{sl[member.status]}{mlsl[str(member.mobile_status)]}{wlsl[str(member.web_status)]}{dlsl[str(member.desktop_status)]} {is_bot}"
             if member.top_role.id == self.context.guild.id:
                 top_role_msg = "\u200b"
             else:
@@ -212,36 +211,39 @@ class Profile(commands.Cog):
     
     @commands.command(aliases=['ui', 'user'], help="Gets a user's info.")
     async def userinfo(self, ctx, *, member: discord.Member = None):
-        member = member or ctx.author
-        em = uiEmbed(ctx).uiEmbed(member=member, opt="ui")
-        activities = []
-        m = ctx.guild.get_member(member.id)
-        if not m.activities:
-            pass
-        else:
-            for activity in m.activities:
-                if isinstance(activity, discord.Spotify):
-                    activity = 'Listening to **Spotify**'
-                elif isinstance(activity, discord.Game):
-                    activity = f'Playing **{activity.name}**'
-                elif isinstance(activity, discord.Streaming):
-                    activity = f'Streaming **{activity.name}**'
-                else:
-                    emoji = ''
-                    if activity.emoji:
-                        emoji = ':thinking:' if activity.emoji.is_custom_emoji() and not self.client.get_emoji(
-                            activity.emoji.id) else activity.emoji
-                        if str(emoji) == ":thinking:":
-                            em.set_footer(text="🤔 indicates a custom emoji")
-                    char = "\u200b" if activity.type == discord.ActivityType.custom else " "
-                    if str(activity.name) == "None":
-                        ac = "\u200b"
+        try:
+            member = member or ctx.author
+            em = uiEmbed(ctx).uiEmbed(member=member, opt="ui")
+            activities = []
+            m = ctx.guild.get_member(member.id)
+            if not m.activities:
+                pass
+            else:
+                for activity in m.activities:
+                    if isinstance(activity, discord.Spotify):
+                        activity = 'Listening to **Spotify**'
+                    elif isinstance(activity, discord.Game):
+                        activity = f'Playing **{activity.name}**'
+                    elif isinstance(activity, discord.Streaming):
+                        activity = f'Streaming **{activity.name}**'
                     else:
-                        ac = str(activity.name)
-                    activity = f'{emoji} {status_mapping[activity.type]}{char}**{ac}**'
-                activities.append(activity)
-            em.add_field(name="Activities", value="\n".join(activities))
-        await ctx.send(embed=em)
+                        emoji = ''
+                        if activity.emoji:
+                            emoji = ':thinking:' if activity.emoji.is_custom_emoji() and not self.client.get_emoji(
+                                activity.emoji.id) else activity.emoji
+                            if str(emoji) == ":thinking:":
+                                em.set_footer(text="🤔 indicates a custom emoji")
+                        char = "\u200b" if activity.type == discord.ActivityType.custom else " "
+                        if str(activity.name) == "None":
+                            ac = "\u200b"
+                        else:
+                            ac = str(activity.name)
+                        activity = f'{emoji} {status_mapping[activity.type]}{char}**{ac}**'
+                    activities.append(activity)
+                em.add_field(name="Activities", value="\n".join(activities))
+            await ctx.send(embed=em)
+        except Exception as er:
+            await ctx.send(er)
     
     @commands.command(aliases=['perms'], help="Gets a user's permissions in the current channel.")
     async def permissions(self, ctx, *, member: discord.Member = None):
