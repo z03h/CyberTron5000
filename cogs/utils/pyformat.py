@@ -55,18 +55,18 @@ class NativePython(object):
         else:
             return false
     
-    def bar(self, stat: int, max: int, filled: str, empty: str):
+    def bar(self, stat: int, max: int, filled: str, empty: str, show_stat: bool = False):
         percent = round((stat / max) * 100, 1)
         if percent > 100:
-            bar = f"{percent}% {filled * 10} 100.0%"
+            bar = f"{percent}% {filled * 10} 100.0%" if not show_stat else f"{stat} {filled * 10} {max}"
             return bar
         elif percent <= 0:
-            bar = f"{percent}% {empty * 10} 100.0%"
+            bar = f"{percent}% {empty * 10} 100.0%" if not show_stat else f"{stat} {empty * 10} {max}"
             return bar
         else:
             total_filled = round(percent / 10)
             total_empty = 10 - (round(percent / 10))
-            return f"{percent}% {filled * total_filled}{empty * total_empty} 100.0%"
+            return f"{str(percent)}% {filled * total_filled}{empty * total_empty} {max}%" if not show_stat else f"{str(stat)} {filled * total_filled}{empty * total_empty} {max}"
 
 
 class Discord(object):

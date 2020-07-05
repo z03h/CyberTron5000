@@ -142,7 +142,7 @@ class Profile(commands.Cog):
             region = REGIONS[f"{str(guild.region)}"]
             embed = discord.Embed(colour=colour,
                                   description=f"**{ctx.guild.id}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
-                                              f"\n{f'{n}'.join(people)}\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}\n<:boost:726151031322443787> **Nitro Tier: {guild.premium_tier}**\n{pyformat.NativePython().bar(stat=guild.premium_subscription_count, max=30, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>')}")
+                                              f"\n{f'{n}'.join(people)}\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}\n<:boost:726151031322443787> **Nitro Tier: {guild.premium_tier}**\n{pyformat.NativePython().bar(stat=guild.premium_subscription_count, max=30,filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>', show_stat=True)}")
             embed.set_author(name=guild, icon_url=guild.icon_url)
             embed.set_footer(
                 text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - ctx.guild.created_at)}")
