@@ -3,7 +3,7 @@ import itertools
 import discord
 from discord.ext import commands
 
-colour = discord.Colour.purple()
+colour = 0x00dcff
 
 
 class CyberTronHelpCommand(commands.HelpCommand):

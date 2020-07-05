@@ -14,7 +14,7 @@ from disputils import BotEmbedPaginator
 from .utils.lists import REGIONS, sl, mlsl, wlsl, dlsl, channel_mapping, is_nsfw, status_mapping
 from .utils import pyformat
 
-colour = discord.Colour.purple()
+colour = 0x00dcff
 
 
 # •

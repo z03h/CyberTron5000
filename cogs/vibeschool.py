@@ -8,7 +8,7 @@ from discord.ext import commands
 
 from .utils.funcs import check_guild_and_channel, check_guild, check_guild_and_admin
 
-colour = discord.Colour.purple()
+colour = 0x00dcff
 
 
 # ≫

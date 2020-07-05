@@ -25,7 +25,7 @@ from .utils.funcs import insert_returns, check_admin_or_owner
 pyf = pf.Discord(bot_user_id=697678160577429584)
 
 start_time = datetime.datetime.utcnow()
-colour = discord.Colour.purple()
+colour = 0x00dcff
 
 
 # ≫

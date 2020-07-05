@@ -5,7 +5,7 @@ import discord
 from async_timeout import timeout
 from discord.ext import commands
 
-colour = discord.Colour.purple()
+colour = 0x00dcff
 
 
 class Games(commands.Cog):

@@ -3,7 +3,7 @@ from discord.ext import commands
 
 from .utils.funcs import check_admin_or_owner
 
-colour = discord.Colour.purple()
+colour = 0x00dcff
 
 
 # ≫

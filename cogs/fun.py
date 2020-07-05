@@ -10,7 +10,7 @@ from .utils.lists import INDICATOR_LETTERS
 
 pyf = pf.NativePython()
 
-colour = discord.Colour.purple()
+colour = 0x00dcff
 
 
 # ≫
