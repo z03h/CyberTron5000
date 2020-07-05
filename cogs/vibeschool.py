@@ -1,7 +1,7 @@
 """Vibe School is the best Discord Server. Join today!"""
 
-
 import discord
+import asyncio, random
 from discord.ext import commands
 
 from .utils.funcs import check_guild_and_channel, check_guild, check_guild_and_admin
@@ -13,6 +13,7 @@ colour = discord.Colour.purple()
 
 class VibeSchool(commands.Cog):
     """The best Discord Server. Join today!"""
+    
     def __init__(self, client):
         self.client = client
     
@@ -93,44 +94,6 @@ class VibeSchool(commands.Cog):
                                                        "\n`!vibecheck` - Checks your vibe\n`!rank` - Check your level.",
                                            color=ctx.message.author.color))
     
-    @commands.command(
-        help="Fetch a link and some info about your next quiz. `ty = The Young`, `va = Vibe Apprentice`, `ad = Vibe Adult`")
-    @check_guild(guild=vibe)
-    async def quiz(self, ctx, quiz=None):
-        if quiz is None:
-            await ctx.send(embed=discord.Embed(title=f"QUIZ INBOX", description="**It is __imperative__ that you use "
-                                                                                "<#694316034110390343> to submit your "
-                                                                                "quizzes.**\n_Here's how to do "
-                                                                                "that._\n "
-                                                                                "\n**1)** You take a test [The Young, "
-                                                                                "Vibe Apprentice, Vibe Adult] "
-                                                                                "\n**2)** If you are taking The Young or Vibe Adult quiz: remember your score, go to <#694316034110390343>, and format a message like so:\n"
-                                                                                f"\n`{ctx.prefix}quizs [the quiz you took][your score]`\n"
-                                                                                "\nFor example, if I got 4/6 on my Young Quiz, I would format it like so:"
-                                                                                f"\n`{ctx.prefix}quizs TY 4/6`"
-                                                                                f"\nIf I had submitted my apprentice quiz, I would format the command like this."
-                                                                                f"\n`{ctx.prefix}quizs VA submitted`\n"
-                                                                                f"\nThat's it.",
-                                               color=ctx.message.author.color))
-        elif quiz == "ty":
-            youngEmbed = discord.Embed(color=0x00c78a, title="The Young",
-                                       description=f"[Here's a link, good luck!](https://docs.google.com/forms/d/e/1FAIpQLScvdoivkqYXBjh-o3pnoYvPryQiFELmRwTVad9an1V8CnwX5w/viewform)")
-            youngEmbed.add_field(name="**Info**",
-                                 value=f"**Level Required**: 0\n**Study**: `{ctx.prefix}vinfo`, `{ctx.prefix}rules`, `{ctx.prefix}cmds`\n**Upgrade after passing**: Acquire <@&687817754798981227> role")
-            await ctx.send(embed=youngEmbed)
-        elif quiz == "va":
-            youngEmbed = discord.Embed(color=0x00ffe3, title="Vibe Apprentice",
-                                       description=f"[Here's a link, good luck!](https://docs.google.com/forms/d/e/1FAIpQLSe4PBF0M5KcWVcuaEmVsiXf4Q7YDVQ8mqj7n-tFcHPzOaAPNA/viewform)")
-            youngEmbed.add_field(name="**Info**",
-                                 value=f"**Level Required**: 2\n**Study**: Don't study; just take it.\n**Upgrade after passing**: Acquire <@&687817437214670868> role")
-            await ctx.send(embed=youngEmbed)
-        elif quiz == "ad":
-            youngEmbed = discord.Embed(color=0xa30533, title="Vibe Adulthood",
-                                       description=f"[Here's a link, good luck!](https://docs.google.com/forms/d/e/1FAIpQLSemcwfhuliBEy2y1fYVtgBDhdZpYBGQWtN00H_O06kxBBhbUw/viewform)")
-            youngEmbed.add_field(name="**Info**",
-                                 value=f"**Level Required**: 7\n**Study**: `{ctx.prefix}adinfo`.\n**Upgrade after passing**: Graduate to Vibe Adulthood and choose a Junior Vibe role.")
-            await ctx.send(embed=youngEmbed)
-    
     @commands.command(help="Gets you info about Vibe Adulthood")
     @check_guild(guild=vibe)
     async def adinfo(self, ctx):
@@ -175,6 +138,141 @@ class VibeSchool(commands.Cog):
                           value="While not a closed role necessarily, only becomes open once the current HEAD COUNCIL resigns. When that happens, a way to organize the next one will be made, but for now, know that this guy is the boss of The Council, and also gets final say on pretty much everything. Currently, it is YeetVegetabales.",
                           inline=False)
         await ctx.send(embed=adEmbed)
+
+    @commands.group(invoke_without_command=True, aliases=['q', 'tq'])
+    @check_guild(guild=vibe)
+    async def take_quiz(self, ctx):
+        cmds = [f"→ `{ctx.prefix}take_quiz {c.name}` - {c.help}" for c in self.client.get_command("take_quiz").commands]
+        await ctx.send("**Quizzes Commands**\n" + "\n".join(cmds))
+
+    @take_quiz.command(aliases=['young', 'ty'], invoke_without_command=True)
+    @check_guild_and_channel(channel=687818177773568090)
+    async def the_young(self, ctx):
+        """Quiz for which you can study in <#687817303177691373> and take in <#687818177773568090>"""
+        try:
+            ty_questions = ['Who are the Seito?', 'What is the highest role on the Discord server?',
+                            'What are two rules?', 'Who is currently occupying the HEAD COUNCIL role?',
+                            'What roles do you get after passing Vibe School?',
+                            'What is one of the commands that MEE6 can perform?']
+            ty_correct = ['Trustworthy vibers raised by Sensei', 'HEAD COUNCIL', 'No being a jerk, No violence',
+                          'YeetVegetabales', 'Alumni, Vibe', '!yv']
+            ty_wrong = [['Role given after you finish vibe school', 'The second highest ranking role', 'You\'re mom'],
+                        ['Sensei', 'The Council', 'discount sensei'],
+                        ['No violence, No pinging Sensei', 'No horny-ness, No being stupid',
+                         'No violence, No pinging The Council'], ['Sensei Niz', 'kalmdown1', 'Cookie'],
+                        ['Vibe', 'Vibe Adult', 'Vibe, Vibe Adult'], ['!sensei', '!senseiniz', '!vibe-check']]
+            await ctx.send("You are about to take **The Young Quiz**. Do you wish to proceed? **[yes/no]**")
+            message = await self.client.wait_for('message', timeout=30.0, check=lambda m: m.author == ctx.author)
+            index = 0
+            total = 0
+            sleep = 0.5
+            if message.content.lower().startswith('y'):
+                for question, answer, incorrect in zip(ty_questions, ty_correct, ty_wrong):
+                    index += 1
+                    pref = "**BONUS:**" if index == len(ty_questions) else f"**Q{index}:**"
+                    answers = [a for a in incorrect]
+                    answers.append(answer)
+                    random.shuffle(answers)
+                    x = []
+                    for i, v in enumerate(answers, start=1):
+                        x.append(f"{i}. **{v}**")
+                    await ctx.send(f"{pref} {question}\n_(Type **only** the number)_\n" + "\n".join(x))
+                    msg = await self.client.wait_for('message', timeout=30.0, check=lambda m: m.author == ctx.author)
+                    if str(answers.index(answer) + 1) == str(msg.content):
+                        await ctx.send("Correct!")
+                        score = 1 if "bonus" not in pref.lower() else 2
+                        total += score
+                        await asyncio.sleep(sleep)
+                        continue
+                    else:
+                        await ctx.send(
+                            f"Sorry, that's wrong. The correct answer is {answers.index(answer) + 1}, _{answer}_.")
+                        await asyncio.sleep(sleep)
+                        continue
+                p = True if round(total / len(ty_questions) * 100) > 70 else False
+                embed = discord.Embed(
+                    description=f"Score: **{total}** out of **{len(ty_questions)}**\nPercent: **{round(total / len(ty_questions) * 100)}%**\nPass? {p}",
+                    colour=colour, title="Test Results").set_footer(text="Note: Bonus questions count as two points.")
+                embed.set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
+                await ctx.send(embed=embed)
+                if p:
+                    role = discord.utils.get(ctx.guild.roles, name="The Young")
+                    a_role = discord.utils.get(ctx.guild.roles, name="Visitors")
+                    await ctx.author.add_roles(role)
+                    await ctx.author.remove_roles(a_role)
+                    await ctx.send("Congrats! You have been given `The Young` role!")
+                elif not p:
+                    await ctx.send("Sorry, you failed. Try again next time!")
+            elif message.content.lower().startswith('n'):
+                return await ctx.send("Ok, aborted.")
+            else:
+                await ctx.send("Booo! Restart!")
+        except Exception as er:
+            await ctx.send(er)
+
+    @take_quiz.command(aliases=['ad', 'adulthood'], invoke_without_command=True)
+    @check_guild_and_channel(channel=687821074200526873)
+    async def vibe_adult(self, ctx):
+        """Quiz for which you can study in <#687821074200526873> and take in <#687821074200526873>"""
+        try:
+            ty_questions = ['Who is/are the boss(es) of The Council?',
+                            f'Which role manages the Discord server and uses {self.client.user.mention}?',
+                            'Who manage the Subreddit?', 'What colour does the Vibe Mentor role get?',
+                            'What job is on the bottom of the hierarchy?', 'What is the job of The Council?']
+            ty_correct = ['HEAD COUNCIL', 'Moderator', 'Subreddit Manager', 'Blue', 'Vibe Mentor',
+                          'To decide who moves up to what role']
+            ty_wrong = [['Sensei', 'Moderator', 'Vibe'], ['Subreddit Manager', 'Subreddit Boss', 'HEAD COUNCIL'],
+                        ['The Council', 'Sensei', 'Vibe Adult'], ['Red', 'Purple', 'Peach'],
+                        ['Moderator', 'Subreddit Boss', 'Queue Manager'],
+                        ['To teach you how to vibe', 'To promote the Discord', 'To promote the subreddit']]
+            await ctx.send("You are about to take **Vibe Adulthood Quiz**. Do you wish to proceed? **[yes/no]**")
+            message = await self.client.wait_for('message', timeout=30.0, check=lambda m: m.author == ctx.author)
+            index = 0
+            total = 0
+            sleep = 0.5
+            if message.content.lower().startswith('y'):
+                for question, answer, incorrect in zip(ty_questions, ty_correct, ty_wrong):
+                    index += 1
+                    pref = "**BONUS:**" if index == len(ty_questions) else f"**Q{index}:**"
+                    answers = [a for a in incorrect]
+                    answers.append(answer)
+                    random.shuffle(answers)
+                    x = []
+                    for i, v in enumerate(answers, start=1):
+                        x.append(f"{i}. **{v}**")
+                    await ctx.send(f"{pref} {question}\n_(Type **only** the number)_\n" + "\n".join(x))
+                    msg = await self.client.wait_for('message', timeout=30.0, check=lambda m: m.author == ctx.author)
+                    if str(answers.index(answer) + 1) == str(msg.content):
+                        await ctx.send("Correct!")
+                        score = 1 if "bonus" not in pref.lower() else 2
+                        total += score
+                        await asyncio.sleep(sleep)
+                        continue
+                    else:
+                        await ctx.send(
+                            f"Sorry, that's wrong. The correct answer is {answers.index(answer) + 1}, _{answer}_.")
+                        await asyncio.sleep(sleep)
+                        continue
+                p = True if round(total / len(ty_questions) * 100) > 70 else False
+                embed = discord.Embed(
+                    description=f"Score: **{total}** out of **{len(ty_questions)}**\nPercent: **{round(total / len(ty_questions) * 100)}%**\nPass? {p}",
+                    colour=colour, title="Test Results").set_footer(text="Note: Bonus questions count as two points.")
+                embed.set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
+                await ctx.send(embed=embed)
+                if p:
+                    role = discord.utils.get(ctx.guild.roles, name="Vibe")
+                    a_role = discord.utils.get(ctx.guild.roles, name="Vibe Apprentice")
+                    await ctx.author.add_roles(role)
+                    await ctx.author.remove_roles(a_role)
+                    await ctx.send("Congrats! You have been given the `Vibe` role!")
+                elif not p:
+                    await ctx.send("Sorry, you failed. Try again next time!")
+            elif message.content.lower().startswith('n'):
+                return await ctx.send("Ok, aborted.")
+            else:
+                await ctx.send("Booo! Restart!")
+        except Exception as er:
+            await ctx.send(er)
     
     @commands.command(help="the eppicest server in the land")
     async def vibeschool(self, ctx):

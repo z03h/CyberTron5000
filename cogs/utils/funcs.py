@@ -50,7 +50,7 @@ def check_guild_and_admin(guild):
 
 def check_guild_and_channel(channel):
     def predicate(ctx):
-        if ctx.channel.id == channel and ctx.message.author.permissions_in(channel=ctx.message.channel).administrator:
+        if ctx.channel.id == channel:
             return True
         else:
             return False
