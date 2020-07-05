@@ -128,16 +128,14 @@ class Info(commands.Cog):
         :return:
         """
         self.client.help_command = self._original_help_command
-    
+
     @commands.command()
     async def cogs(self, ctx):
         """Shows you every cog"""
-        cogs = []
-        for x in self.client.cogs:
-            cogs.append(f"`{x}` • {self.client.cogs[x].description}")
         await ctx.send(embed=discord.Embed(colour=colour, title=f"All Cogs ({len(self.client.cogs)})",
                                            description=f"Do `{ctx.prefix}help <cog>` to know more about them!" + "\n\n" + "\n".join(
-                                               cogs)))
+                                               [f"`{cog}` • {self.client.cogs[cog].__doc__}" for cog in
+                                                self.client.cogs])))
 
 
 def setup(client):
