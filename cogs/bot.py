@@ -10,20 +10,19 @@ import json
 import os
 import subprocess
 import sys
-import humanize
 import time
-import psutil
-import praw
-import aiohttp
 
+import aiohttp
 import discord
+import humanize
+import praw
+import psutil
 from discord.ext import commands
 
-from .utils.funcs import insert_returns, check_admin_or_owner
 from .utils import pyformat as pf
+from .utils.funcs import insert_returns, check_admin_or_owner
 
 pyf = pf.Discord(bot_user_id=697678160577429584)
-
 
 start_time = datetime.datetime.utcnow()
 colour = discord.Colour.purple()
@@ -298,7 +297,9 @@ class Bot(commands.Cog):
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://api.github.com/repos/niztg/CyberTron5000/commits") as r:
                 res = await r.json()
-            commits = [f"[`{item['sha'][0:7]}`](https://github.com/niztg/CyberTron5000/commit/{item['sha']}) → {item['commit']['message']} - {item['commit']['committer']['name']}" for item in res]
+            commits = [
+                f"[`{item['sha'][0:7]}`](https://github.com/niztg/CyberTron5000/commit/{item['sha']}) → {item['commit']['message']} - {item['commit']['committer']['name']}"
+                for item in res]
             return commits[:limit]
     
     @commands.command(aliases=['info', 'ab', 'i'], help="Shows info on the bot.")
@@ -354,18 +355,18 @@ class Bot(commands.Cog):
                     embed.set_thumbnail(url=self.client.user.avatar_url)
                     embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
                     await message.channel.send(embed=embed)
-                    
+    
     @commands.command(aliases=['commits', 'git'])
-    async def github(self, ctx, limit: int=5):
+    async def github(self, ctx, limit: int = 5):
         """Shows you recent github commits"""
         await ctx.send(
             embed=discord.Embed(description="\n".join(await self.get_commits(limit)), colour=colour).set_author(
                 name="GitHub Commits for CyberTron5000",
                 icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png",
                 url="https://github.com/niztg/CyberTron5000"))
-    
+
+
 def setup(client):
     client.add_cog(Bot(client))
-
 
 #

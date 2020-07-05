@@ -1,7 +1,9 @@
 """Vibe School is the best Discord Server. Join today!"""
 
+import asyncio
+import random
+
 import discord
-import asyncio, random
 from discord.ext import commands
 
 from .utils.funcs import check_guild_and_channel, check_guild, check_guild_and_admin
@@ -138,13 +140,13 @@ class VibeSchool(commands.Cog):
                           value="While not a closed role necessarily, only becomes open once the current HEAD COUNCIL resigns. When that happens, a way to organize the next one will be made, but for now, know that this guy is the boss of The Council, and also gets final say on pretty much everything. Currently, it is YeetVegetabales.",
                           inline=False)
         await ctx.send(embed=adEmbed)
-
+    
     @commands.group(invoke_without_command=True, aliases=['q', 'tq'])
     @check_guild(guild=vibe)
     async def take_quiz(self, ctx):
         cmds = [f"→ `{ctx.prefix}take_quiz {c.name}` - {c.help}" for c in self.client.get_command("take_quiz").commands]
         await ctx.send("**Quizzes Commands**\n" + "\n".join(cmds))
-
+    
     @take_quiz.command(aliases=['young', 'ty'], invoke_without_command=True)
     @check_guild_and_channel(channel=687818177773568090)
     async def the_young(self, ctx):
@@ -209,7 +211,7 @@ class VibeSchool(commands.Cog):
                 await ctx.send("Booo! Restart!")
         except Exception as er:
             await ctx.send(er)
-
+    
     @take_quiz.command(aliases=['ad', 'adulthood'], invoke_without_command=True)
     @check_guild_and_channel(channel=687821074200526873)
     async def vibe_adult(self, ctx):

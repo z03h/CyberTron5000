@@ -2,17 +2,16 @@
 
 import argparse
 import code
+import gzip
+import ssl
 import sys
 import threading
 import time
-import ssl
-import gzip
 import zlib
 
 import six
-from six.moves.urllib.parse import urlparse
-
 import websocket
+from six.moves.urllib.parse import urlparse
 
 try:
     import readline
@@ -33,7 +32,7 @@ ENCODING = get_encoding()
 
 
 class VAction(argparse.Action):
-
+    
     def __call__(self, parser, args, values, option_string=None):
         if values is None:
             values = "1"
@@ -53,7 +52,7 @@ def parse_args():
     parser.add_argument("-v", "--verbose", default=0, nargs='?', action=VAction,
                         dest="verbose",
                         help="set verbose mode. If set to 1, show opcode. "
-                        "If set to 2, enable to trace  websocket module")
+                             "If set to 2, enable to trace  websocket module")
     parser.add_argument("-n", "--nocert", action='store_true',
                         help="Ignore invalid SSL cert")
     parser.add_argument("-r", "--raw", action="store_true",
@@ -70,46 +69,46 @@ def parse_args():
                         help="Print timings in seconds")
     parser.add_argument("--headers",
                         help="Set custom headers. Use ',' as separator")
-
+    
     return parser.parse_args()
 
 
 class RawInput:
-
+    
     def raw_input(self, prompt):
         if six.PY3:
             line = input(prompt)
         else:
             line = raw_input(prompt)
-
+        
         if ENCODING and ENCODING != "utf-8" and not isinstance(line, six.text_type):
             line = line.decode(ENCODING).encode("utf-8")
         elif isinstance(line, six.text_type):
             line = line.encode("utf-8")
-
+        
         return line
 
 
 class InteractiveConsole(RawInput, code.InteractiveConsole):
-
+    
     def write(self, data):
         sys.stdout.write("\033[2K\033[E")
         # sys.stdout.write("\n")
         sys.stdout.write("\033[34m< " + data + "\033[39m")
         sys.stdout.write("\n> ")
         sys.stdout.flush()
-
+    
     def read(self):
         return self.raw_input("> ")
 
 
 class NonInteractive(RawInput):
-
+    
     def write(self, data):
         sys.stdout.write(data)
         sys.stdout.write("\n")
         sys.stdout.flush()
-
+    
     def read(self):
         return self.raw_input("")
 
@@ -139,7 +138,7 @@ def main():
     else:
         console = InteractiveConsole()
         print("Press Ctrl+C to quit")
-
+    
     def recv():
         try:
             frame = ws.recv_frame()
@@ -155,16 +154,16 @@ def main():
         elif frame.opcode == websocket.ABNF.OPCODE_PING:
             ws.pong(frame.data)
             return frame.opcode, frame.data
-
+        
         return frame.opcode, frame.data
-
+    
     def recv_ws():
         while True:
             opcode, data = recv()
             msg = None
             if six.PY3 and opcode == websocket.ABNF.OPCODE_TEXT and isinstance(data, bytes):
                 data = str(data, "utf-8")
-            if isinstance(data, bytes) and len(data)>2 and data[:2] == b'\037\213':  # gzip magick
+            if isinstance(data, bytes) and len(data) > 2 and data[:2] == b'\037\213':  # gzip magick
                 try:
                     data = "[gzip] " + str(gzip.decompress(data), "utf-8")
                 except:
@@ -174,31 +173,31 @@ def main():
                     data = "[zlib] " + str(zlib.decompress(data, -zlib.MAX_WBITS), "utf-8")
                 except:
                     pass
-
+            
             if isinstance(data, bytes):
                 data = repr(data)
-
+            
             if args.verbose:
                 msg = "%s: %s" % (websocket.ABNF.OPCODE_MAP.get(opcode), data)
             else:
                 msg = data
-
+            
             if msg is not None:
                 if args.timings:
                     console.write(str(time.time() - start_time) + ": " + msg)
                 else:
                     console.write(msg)
-
+            
             if opcode == websocket.ABNF.OPCODE_CLOSE:
                 break
-
+    
     thread = threading.Thread(target=recv_ws)
     thread.daemon = True
     thread.start()
-
+    
     if args.text:
         ws.send(args.text)
-
+    
     while True:
         try:
             message = console.read()

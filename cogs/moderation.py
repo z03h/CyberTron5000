@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+
 from .utils.funcs import check_admin_or_owner
 
 colour = discord.Colour.purple()
@@ -102,6 +103,7 @@ class Moderation(commands.Cog):
     async def leave(self, ctx):
         """Makes bot leave server"""
         await self.client.get_guild(ctx.guild.id).leave()
+
 
 def setup(client):
     client.add_cog(Moderation(client))

@@ -81,7 +81,7 @@ class Discord(object):
         if not limit:
             for name, val in zip(names, values):
                 embed.add_field(name=name, value=val, inline=inline)
-
+        
         elif limit:
             counter = 0
             for name, val in zip(names, values):
@@ -91,7 +91,7 @@ class Discord(object):
                     return embed
                 else:
                     continue
-
+        
         return embed
     
     def codeblock(self, body):

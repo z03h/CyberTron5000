@@ -21,6 +21,7 @@ colour = discord.Colour.purple()
 
 class Internet(commands.Cog):
     """Interact with various API's"""
+    
     def __init__(self, client):
         self.client = client
         self.pypi = "https://raw.githubusercontent.com/github/explore/666de02829613e0244e9441b114edb85781e972c/topics/pip/pip.png"
@@ -127,7 +128,8 @@ class Internet(commands.Cog):
                         elif str(letter_ans) == m.content:
                             await ctx.send("Correct!")
                         else:
-                            await ctx.send(f"Incorrect! The correct answer was {letter_ans}, {unes(data['correct_answer'])}.")
+                            await ctx.send(
+                                f"Incorrect! The correct answer was {letter_ans}, {unes(data['correct_answer'])}.")
                     except Exception as error:
                         await ctx.send(error)
         except (asyncio.TimeoutError, asyncio.CancelledError):
@@ -232,7 +234,7 @@ class Internet(commands.Cog):
                     embed=discord.Embed(title=terms, description=trom2[:2000] + f"\n\n{deph2}", colour=colour))
         except Exception as error:
             await ctx.send(error)
-            
+    
     @commands.command()
     async def fact(self, ctx):
         """Random fact"""
@@ -241,7 +243,7 @@ class Internet(commands.Cog):
                 res = await r.json()
                 await cs.close()
         await ctx.send(embed=discord.Embed(title=res['data'], colour=colour))
-        
+    
     @commands.command()
     async def pypi(self, ctx, *, package):
         requires = []
@@ -254,7 +256,9 @@ class Internet(commands.Cog):
                 char = '\u200b'
             else:
                 char = f' • {res["info"]["author_email"]}'
-            embed = discord.Embed(title=res['info']['name'], url=res['info']['project_url'], colour=colour, description=f"> {res['info']['summary']}\n:scales: **{res['info']['license']}**\n[Home Page]({res['info']['home_page']})\n[Package URL]({res['info']['package_url']})", timestamp=ctx.message.created_at)
+            embed = discord.Embed(title=res['info']['name'], url=res['info']['project_url'], colour=colour,
+                                  description=f"> {res['info']['summary']}\n:scales: **{res['info']['license']}**\n[Home Page]({res['info']['home_page']})\n[Package URL]({res['info']['package_url']})",
+                                  timestamp=ctx.message.created_at)
             embed.set_footer(text=f"{res['info']['name']} version {res['info']['version']}")
             embed.set_author(name=res['info']['author'] + char, icon_url=self.pypi)
             if not res['info']['requires_dist']:
@@ -272,6 +276,7 @@ class Internet(commands.Cog):
             await ctx.send(embed=embed)
         except Exception as error:
             await ctx.send("Package probably not found.")
+
 
 def setup(client):
     client.add_cog(Internet(client))

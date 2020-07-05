@@ -1,12 +1,12 @@
-import random
 import asyncio
+import random
 
 import discord
-from discord.ext import commands
 from async_timeout import timeout
+from discord.ext import commands
 
-from .utils.lists import INDICATOR_LETTERS
 from .utils import pyformat as pf
+from .utils.lists import INDICATOR_LETTERS
 
 pyf = pf.NativePython()
 
@@ -18,47 +18,48 @@ colour = discord.Colour.purple()
 
 class Fun(commands.Cog):
     """Fun commands"""
+    
     def __init__(self, client):
         self.client = client
         self.tick = ":GreenTick:707950252434653184"
-
+    
     @commands.group(invoke_without_command=True, help="Replies with what you said and deletes your message.",
                     aliases=['say'])
     async def reply(self, ctx, *, message):
         await ctx.send(
             pyf.hyper_replace(text=message, old=['@everyone', '@here'], new=['@\u200beveryone', '@\u200bhere']))
-
+    
     @reply.command(invoke_without_command=True,
                    help="Replies with what you said and deletes your message, but in an embed.")
     async def embed(self, ctx, *, message):
         await ctx.send(embed=discord.Embed(title=message, colour=colour))
-
+    
     @reply.command(invoke_without_command=True,
                    help="Replies with what you said and deletes your message, but in a different channel.")
     async def echo(self, ctx, channel: discord.TextChannel, *, message):
         await channel.send(
             pyf.hyper_replace(text=message, old=['@everyone', '@here'], new=['@\u200beveryone', '@\u200bhere']))
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
-
+    
     @reply.command(invoke_without_command=True, help="Replies with what you said and deletes your message, but UwU.")
     async def owo(self, ctx, *, message):
         await ctx.send(pyf.hyper_replace(text=message, old=['r', 'l', 'R', 'L'], new=['w', 'w', "W", "W"]))
-
+    
     @reply.command(help="🅱", invoke_without_command=True)
     async def b(self, ctx, *, message):
         await ctx.send(pyf.hyper_replace(text=message, old=['b', 'B', 'D', 'd'], new=['🅱', '🅱', "🅱", "🅱"]))
-
+    
     @reply.command(aliases=['msg'], help="Message a user something. ", invoke_without_command=True)
     async def message(self, ctx, user: discord.Member, *, message):
         person = self.client.get_user(user.id)
         await person.send(f"{message}\n\n*(Sent by {ctx.message.author})*")
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
-
+    
     @reply.command(help="Spams a message.", invoke_without_command=True)
     async def spam(self, ctx, *, message):
         l = ['@u200beveryone', '@\u200bhere']
         await ctx.send(f"{pyf.hyper_replace(text=message, old=['@everyone', '@here'], new=l)} " * 15)
-
+    
     @reply.command(invoke_without_command=True)
     async def indicator(self, ctx, *, message):
         """reply in emojis"""
@@ -95,7 +96,7 @@ class Fun(commands.Cog):
                 letters.append(INDICATOR_LETTERS[letter])
             elif letter.upper() not in alphabet:
                 letters.append(letter)
-                
+        
         await ctx.send("\u200b".join(letters))
     
     @commands.command(help="Asks the mystical Ouija Board a question...")
@@ -276,13 +277,14 @@ class Fun(commands.Cog):
             await ctx.send(emoji)
         else:
             await ctx.message.add_reaction(emoji=emoji)
-            
+    
     @commands.command(aliases=['gt'])
     async def greentext(self, ctx):
         """Write a greentext story"""
         try:
             story = []
-            await ctx.send("Greentext story starting! Type `quit` or `exit` to stop the session, or `finish` to see your final story!")
+            await ctx.send(
+                "Greentext story starting! Type `quit` or `exit` to stop the session, or `finish` to see your final story!")
             while True:
                 message = await self.client.wait_for('message', check=lambda m: m.author == ctx.author, timeout=500)
                 async with timeout(500):
@@ -301,6 +303,7 @@ class Fun(commands.Cog):
                         await message.add_reaction(emoji=self.tick)
         except asyncio.TimeoutError:
             await ctx.send("You ran out of time!")
+
 
 def setup(client):
     client.add_cog(Fun(client))

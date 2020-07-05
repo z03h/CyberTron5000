@@ -1,4 +1,5 @@
 import datetime
+
 import matplotlib
 
 matplotlib.use('Agg')
@@ -249,4 +250,3 @@ class Profile(commands.Cog):
 
 def setup(client):
     client.add_cog(Profile(client))
-

@@ -7,6 +7,7 @@ import discord
 import humanize
 import praw
 from discord.ext import commands
+
 from .utils.lists import emotes
 
 reddit_colour = 0xff5700
@@ -155,10 +156,13 @@ class Reddit(commands.Cog):
     async def subreddit(self, ctx, subreddit):
         s = self.reddit.subreddit(subreddit)
         ts = s.created_utc
-        message = await ctx.send(embed=discord.Embed(title="Loading...", colour=reddit_colour).set_image(url=self.loading))
+        message = await ctx.send(
+            embed=discord.Embed(title="Loading...", colour=reddit_colour).set_image(url=self.loading))
         mods = [f'[{mod.name}](https://reddit.com/user/{mod.name})' for mod in s.moderator()]
-        embed = discord.Embed(title=f"r/{s.display_name}", url=f'https://reddit.com/r/{subreddit}', colour=reddit_colour, description=s.public_description or " ")
-        embed.add_field(name="General", value=f"Subscribers: **{s.subscribers:,}**\nCreated: **{datetime.datetime.utcfromtimestamp(ts).strftime('%B %d, %Y')}**")
+        embed = discord.Embed(title=f"r/{s.display_name}", url=f'https://reddit.com/r/{subreddit}',
+                              colour=reddit_colour, description=s.public_description or " ")
+        embed.add_field(name="General",
+                        value=f"Subscribers: **{s.subscribers:,}**\nCreated: **{datetime.datetime.utcfromtimestamp(ts).strftime('%B %d, %Y')}**")
         embed.add_field(name=f"Mods (Total {len(mods)})", value="\n".join(mods[:10]), inline=False)
         embed.set_thumbnail(url=s.icon_img)
         await message.edit(embed=embed)
@@ -180,12 +184,16 @@ class Reddit(commands.Cog):
             await message.edit(embed=em)
         except Exception as err:
             await ctx.send(err)
-            
+    
     @commands.command(aliases=['mod'])
     async def moderator(self, ctx, mod, subreddit):
-        message = await ctx.send(embed=discord.Embed(colour=reddit_colour, title="Loading...").set_image(url=self.loading))
+        message = await ctx.send(
+            embed=discord.Embed(colour=reddit_colour, title="Loading...").set_image(url=self.loading))
         perms = [m.mod_permissions for m in self.reddit.subreddit(subreddit).moderator(mod)]
-        await message.edit(embed=discord.Embed(title=f"Mod Perms for {mod}", colour=reddit_colour, description="\n".join([f"• {perm.capitalize()}" for perm in perms[0]])).set_author(name=f"r/{subreddit}", icon_url=self.reddit.subreddit(subreddit).icon_img))
+        await message.edit(embed=discord.Embed(title=f"Mod Perms for {mod}", colour=reddit_colour,
+                                               description="\n".join(
+                                                   [f"• {perm.capitalize()}" for perm in perms[0]])).set_author(
+            name=f"r/{subreddit}", icon_url=self.reddit.subreddit(subreddit).icon_img))
     
     @commands.command(help="hmmmmm <:thonking:667528766439817216>")
     async def thonk(self, ctx):
@@ -223,7 +231,9 @@ class Reddit(commands.Cog):
                 async with cs.get(f"https://www.reddit.com/user/{user}/moderated_subreddits/.json") as r:
                     res = await r.json()
                 subreddits = res['data']
-                reddits = [f"[{subreddit['sr_display_name_prefixed']}](https://reddit.com{subreddit['url']}) • <:member:716339965771907099> **{subreddit['subscribers']:,}**"for subreddit in subreddits]
+                reddits = [
+                    f"[{subreddit['sr_display_name_prefixed']}](https://reddit.com{subreddit['url']}) • <:member:716339965771907099> **{subreddit['subscribers']:,}**"
+                    for subreddit in subreddits]
                 numbas = [s['subscribers'] for s in subreddits]
                 msg = "Top 15 Subreddits" if len(reddits) > 15 else "Moderated Subreddits"
                 modstats = [f"{i}. {v}" for i, v in enumerate(reddits, 1)]
@@ -235,8 +245,11 @@ class Reddit(commands.Cog):
                 hundred_thousand_subs = len([item for item in numbas if item >= 100_000])
                 million = len([item for item in numbas if item >= 1_000_000])
                 ten_million = len([item for item in numbas if item >= 10_000_000])
-                embed = discord.Embed(description=f"u/{user} mods **{len(reddits):,}** subreddits with **{humanize.intcomma(sum(numbas))}** total readers\n\n*{msg}*\n\n{final_ms}", colour=reddit_colour)
-                embed.add_field(name="Advanced Statistics", value=f"Subreddits with 0 subscribers: **{zero_subs}**\nSubreddits with 1 subscriber: **{one_subs}**\nSubreddits with 100 or more subscribers: **{hundred_subs}**\nSubreddits with 1,000 or more subscribers: **{thousand_subs}**\nSubreddits with 100,000 or more subscribers: **{hundred_thousand_subs}**\nSubreddits with 1,000,000 or more subscribers: **{million}**\nSubreddits with 10,000,000 or more subscribers: **{ten_million}**\n\nAverage Subscribers Per Subreddit: **{humanize.intcomma(round(sum(numbas) / len(numbas)))}**")
+                embed = discord.Embed(
+                    description=f"u/{user} mods **{len(reddits):,}** subreddits with **{humanize.intcomma(sum(numbas))}** total readers\n\n*{msg}*\n\n{final_ms}",
+                    colour=reddit_colour)
+                embed.add_field(name="Advanced Statistics",
+                                value=f"Subreddits with 0 subscribers: **{zero_subs}**\nSubreddits with 1 subscriber: **{one_subs}**\nSubreddits with 100 or more subscribers: **{hundred_subs}**\nSubreddits with 1,000 or more subscribers: **{thousand_subs}**\nSubreddits with 100,000 or more subscribers: **{hundred_thousand_subs}**\nSubreddits with 1,000,000 or more subscribers: **{million}**\nSubreddits with 10,000,000 or more subscribers: **{ten_million}**\n\nAverage Subscribers Per Subreddit: **{humanize.intcomma(round(sum(numbas) / len(numbas)))}**")
             await ctx.send(embed=embed)
         except Exception as error:
             await ctx.send(
@@ -303,6 +316,7 @@ class Reddit(commands.Cog):
                 f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
         except Exception as e:
             await ctx.send(e)
-            
+
+
 def setup(client):
     client.add_cog(Reddit(client))
