@@ -13,7 +13,7 @@ from random_word import RandomWords
 
 from .utils.lists import STAT_NAMES, NUMBER_ALPHABET, TYPES
 
-colour = 0x00dcff
+colour = discord.Colour.purple()
 
 
 # ≫

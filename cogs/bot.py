@@ -26,7 +26,7 @@ pyf = pf.Discord(bot_user_id=697678160577429584)
 
 
 start_time = datetime.datetime.utcnow()
-colour = 0x00dcff
+colour = discord.Colour.purple()
 
 
 # ≫

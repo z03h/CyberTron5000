@@ -3,7 +3,7 @@ import json
 import aiohttp
 import discord
 
-colour = 0x00dcff
+colour = discord.Colour.purple()
 
 
 def dagpi():

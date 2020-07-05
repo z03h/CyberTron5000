@@ -10,7 +10,7 @@ from .utils import pyformat as pf
 
 pyf = pf.NativePython()
 
-colour = 0x00dcff
+colour = discord.Colour.purple()
 
 
 # ≫
