@@ -153,38 +153,15 @@ class Reddit(commands.Cog):
     
     @commands.command(help="Shows you info about a subreddit.")
     async def subreddit(self, ctx, subreddit):
-        mods = []
-        try:
-            embedd = discord.Embed(
-                colour=reddit_colour, title="Loading..."
-            )
-            embedd.set_image(
-                url=self.loading)
-            message = await ctx.send(embed=embedd)
-            s = self.reddit.subreddit(subreddit)
-            ts = s.created_utc
-            for moderator in s.moderator():
-                mods.append(f"[{moderator.name}](https://reddit.com/user/{moderator.name})")
-            
-            if s.public_description:
-                redditEmbed = discord.Embed(colour=reddit_colour, title="r/" + s.display_name,
-                                            url=f"https://reddit.com/r/{subreddit}", description=s.public_description,
-                                            timestamp=ctx.message.created_at)
-            else:
-                redditEmbed = discord.Embed(colour=reddit_colour, title="r/" + s.display_name,
-                                            url=f"https://reddit.com/r/{subreddit}", timestamp=ctx.message.created_at)
-            redditEmbed.set_thumbnail(url=s.icon_img)
-            redditEmbed.set_footer(icon_url=s.banner_img, text=s.display_name)
-            redditEmbed.add_field(name=f"**General**",
-                                  value="**Created** {}\n**Subscribers**: {:,.0f}\n**ID**: {}"
-                                  .format(datetime.datetime.fromtimestamp(ts).strftime("%B %d, %Y"), s.subscribers,
-                                          s.id))
-            mod = "\n".join(mods[:10])
-            redditEmbed.add_field(name="<:Mods:713500789670281216> **Mods**",
-                                  value=f"**Total**: {len(mods)}\n**Mods**:\n{mod}", inline=False)
-            await message.edit(embed=redditEmbed)
-        except Exception as error:
-            await ctx.send(error)
+        s = self.reddit.subreddit(subreddit)
+        ts = s.created_utc
+        message = await ctx.send(embed=discord.Embed(title="Loading...", colour=reddit_colour).set_image(url=self.loading))
+        mods = [f'[{mod.name}](https://reddit.com/user/{mod.name})' for mod in s.moderator()]
+        embed = discord.Embed(title=f"r/{s.display_name}", url=f'https://reddit.com/r/{subreddit}', colour=reddit_colour, description=s.public_description or " ")
+        embed.add_field(name="General", value=f"Subscribers: **{s.subscribers:,}**\nCreated: **{datetime.datetime.utcfromtimestamp(ts).strftime('%B %d, %Y')}**")
+        embed.add_field(name=f"Mods (Total {len(mods)})", value="\n".join(mods[:10]), inline=False)
+        embed.set_thumbnail(url=s.icon_img)
+        await message.edit(embed=embed)
     
     @commands.command(help="Shows you a wiki page for a subreddit.")
     async def wiki(self, ctx, subreddit, *, page):
@@ -203,41 +180,12 @@ class Reddit(commands.Cog):
             await message.edit(embed=em)
         except Exception as err:
             await ctx.send(err)
-    
-    @commands.command(aliases=['mod'], help="Shows you moderator permissions for a subreddit.")
-    async def moderator(self, ctx, subreddit, mod):
-        mp = []
-        try:
-            try:
-                embedd = discord.Embed(
-                    colour=reddit_colour, title="Loading..."
-                )
-                embedd.set_image(
-                    url=self.loading)
-                message = await ctx.send(embed=embedd)
-                m = self.reddit.redditor(mod)
-                sub = self.reddit.subreddit(subreddit)
-                for moderator in self.reddit.subreddit(subreddit).moderator(m):
-                    for perm in moderator.mod_permissions:
-                        mp.append(f"• {perm.capitalize()}")
-                    mod_perms = "\n".join(mp)
-                    modEmbed = discord.Embed(title=f"u/{m.name}", url="https://reddit.com/user/{}".format(m.name),
-                                             description=
-                                             f"**Permissions**:\n{mod_perms}", colour=reddit_colour)
-                    modEmbed.set_author(name=f"r/{sub}", icon_url=sub.icon_img)
-                    modEmbed.set_thumbnail(url=m.icon_img)
-                    ts = int(moderator.created_utc)
-                    
-                    modEmbed.set_footer(text='Account created on {}'.format(
-                        datetime.datetime.fromtimestamp(ts).strftime('%B %d, %Y')))
-                    
-                    await message.edit(embed=modEmbed)
-            except Exception as err:
-                await ctx.send(
-                    f"Subreddit not found/Moderator not found/Author not verified. To verify, do `{ctx.prefix}verify [reddit username]`")
-        except Exception as err:
-            await ctx.send(
-                f"Subreddit not found/Moderator not found/Author not verified. To verify, do `{ctx.prefix}verify [reddit username]`")
+            
+    @commands.command(aliases=['mod'])
+    async def moderator(self, ctx, mod, subreddit):
+        message = await ctx.send(embed=discord.Embed(colour=reddit_colour, title="Loading...").set_image(url=self.loading))
+        perms = [m.mod_permissions for m in self.reddit.subreddit(subreddit).moderator(mod)]
+        await message.edit(embed=discord.Embed(title=f"Mod Perms for {mod}", colour=reddit_colour, description="\n".join([f"• {perm.capitalize()}" for perm in perms[0]])).set_author(name=f"r/{subreddit}", icon_url=self.reddit.subreddit(subreddit).icon_img))
     
     @commands.command(help="hmmmmm <:thonking:667528766439817216>")
     async def thonk(self, ctx):
