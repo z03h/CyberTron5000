@@ -4,6 +4,7 @@ import matplotlib
 matplotlib.use('Agg')
 
 import discord
+import collections
 import humanize
 import matplotlib.pyplot as plt
 from discord.ext import commands
@@ -13,6 +14,7 @@ from .utils.lists import REGIONS, sl, mlsl, wlsl, dlsl, channel_mapping, is_nsfw
 from .utils import pyformat
 
 colour = discord.Colour.purple()
+
 
 # •
 
@@ -25,19 +27,15 @@ class GuildStats:
         return len([m for m in self.context.guild.members if m.bot])
     
     @property
-    def status_dict(self):
-        return {
-            "online": len([m for m in self.context.guild.members if m.status == discord.Status.online]),
-            "offline": len([m for m in self.context.guild.members if m.status == discord.Status.offline]),
-            "idle": len([m for m in self.context.guild.members if m.status == discord.Status.idle]),
-            "dnd": len([m for m in self.context.guild.members if m.status == discord.Status.dnd])
-        }
+    def status_counter(self):
+        return collections.Counter([m.status for m in self.context.guild.members])
     
     @property
     def guild_graph(self):
-        labels = f'Online ({self.status_dict["online"]:,})', f'Do Not Disturb ({self.status_dict["dnd"]:,})', f'Idle ({self.status_dict["idle"]:,})', f'Offline ({self.status_dict["offline"]:,})'
-        sizes = [self.status_dict['online'], self.status_dict['dnd'], self.status_dict['idle'],
-                 self.status_dict['offline']]
+        labels = f'Online ({self.status_counter[discord.Status.online]:,})', f'Do Not Disturb ({self.status_counter[discord.Status.dnd]:,})', f'Idle ({self.status_counter[discord.Status.idle]:,})', f'Offline ({self.status_counter[discord.Status.offline]:,})'
+        sizes = [self.status_counter[discord.Status.online], self.status_counter[discord.Status.dnd],
+                 self.status_counter[discord.Status.idle],
+                 self.status_counter[discord.Status.offline]]
         colors = ['#42B581', '#E34544', '#FAA619', '#747F8D']
         explode = (0.0, 0, 0, 0)
         
@@ -126,13 +124,14 @@ class Profile(commands.Cog):
                     invoke_without_command=True)
     async def guildinfo(self, ctx):
         try:
-            g = GuildStats(ctx).status_dict
+            g = GuildStats(ctx).status_counter
             n = '\n'
             guild = ctx.guild
             people = [f"<:member:716339965771907099>**{len(ctx.guild.members):,}**",
-                      f"{sl['online']}**{g['online']:,}**",
-                      f"{sl['dnd']}**{g['dnd']:,}**", f"{sl['idle']}**{g['idle']:,}**",
-                      f"{sl['offline']}**{g['offline']:,}**",
+                      f"{sl[discord.Status.online]}**{g[discord.Status.online]:,}**",
+                      f"{sl[discord.Status.idle]}**{g[discord.Status.idle]:,}**",
+                      f"{sl[discord.Status.dnd]}**{g[discord.Status.dnd]:,}**",
+                      f"{sl[discord.Status.offline]}**{g[discord.Status.offline]:,}**",
                       f"<:status_streaming:596576747294818305>**{len([m for m in ctx.guild.members if m.activity and m.activity.type == discord.ActivityType.streaming])}**",
                       f"<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**", ]
             text_channels = [text_channel for text_channel in guild.text_channels]
@@ -141,7 +140,7 @@ class Profile(commands.Cog):
             region = REGIONS[f"{str(guild.region)}"]
             embed = discord.Embed(colour=colour,
                                   description=f"**{ctx.guild.id}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
-                                              f"\n{f'{n}'.join(people)}\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}\n<:boost:726151031322443787> **Nitro Tier: {guild.premium_tier}**\n{pyformat.NativePython().bar(stat=guild.premium_subscription_count, max=30,filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>', show_stat=True)}")
+                                              f"\n{f'{n}'.join(people)}\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}\n<:boost:726151031322443787> **Nitro Tier: {guild.premium_tier}**\n{pyformat.NativePython().bar(stat=guild.premium_subscription_count, max=30, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>', show_stat=True)}")
             embed.set_author(name=guild, icon_url=guild.icon_url)
             embed.set_footer(
                 text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - ctx.guild.created_at)}")
@@ -174,7 +173,7 @@ class Profile(commands.Cog):
         msg = "Top 10 Roles" if len([r for r in ctx.guild.roles]) > 10 else "Roles"
         total_mem = ctx.guild.member_count
         embed = discord.Embed(colour=colour,
-                              description=f"Out of **{total_mem:,}** members:\n•{sl['online']} **{gs.status_dict['online']:,} ({round(gs.status_dict['online'] / total_mem * 100, 1):,}%)** are **online**\n•{sl['dnd']} **{gs.status_dict['dnd']:,} ({round(gs.status_dict['dnd'] / total_mem * 100, 1):,}%)** are on **do not disturb**\n•{sl['idle']} **{gs.status_dict['idle']:,} ({round(gs.status_dict['idle'] / total_mem * 100, 1):,}%)** are **idle**\n•{sl['offline']} **{gs.status_dict['offline']:,} ({round(gs.status_dict['offline'] / total_mem * 100, 1):,}%)** are **offline**\n<:bot:703728026512392312> This guild has **{gs.num_bot:,}** bots. **({(round(gs.num_bot / total_mem * 100, 1)):,}%)**\n\nThis guild has **{gs.emojis_dict['total']:,}** total emojis, **{gs.emojis_dict['animated']}** of which **({round(gs.emojis_dict['animated'] / gs.emojis_dict['total'] * 100, 1):,}%)** are animated.\nOut of this guild's limit of **{gs.emojis_dict['limit']}** for non-animated emojis, it has used **{round(gs.emojis_dict['still'] / gs.emojis_dict['limit'] * 100, 1):,}%** of it. **({gs.emojis_dict['still']}/{gs.emojis_dict['limit']})**\n\n<:boost:726151031322443787> This guild has **{ctx.guild.premium_subscription_count}** Nitro Boosts and is Tier **{ctx.guild.premium_tier}**").set_author(
+                              description=f"Out of **{total_mem:,}** members:\n•{sl[discord.Status.online]} **{gs.status_counter[discord.Status.online]:,} ({round(gs.status_counter[discord.Status.online] / total_mem * 100, 1):,}%)** are **online**\n•{sl[discord.Status.dnd]} **{gs.status_counter[discord.Status.dnd]:,} ({round(gs.status_counter[discord.Status.dnd] / total_mem * 100, 1):,}%)** are on **do not disturb**\n•{sl[discord.Status.idle]} **{gs.status_counter[discord.Status.idle]:,} ({round(gs.status_counter[discord.Status.idle] / total_mem * 100, 1):,}%)** are **idle**\n•{sl[discord.Status.offline]} **{gs.status_counter[discord.Status.offline]:,} ({round(gs.status_counter[discord.Status.offline] / total_mem * 100, 1):,}%)** are **offline**\n<:bot:703728026512392312> This guild has **{gs.num_bot:,}** bots. **({(round(gs.num_bot / total_mem * 100, 1)):,}%)**\n\nThis guild has **{gs.emojis_dict['total']:,}** total emojis, **{gs.emojis_dict['animated']}** of which **({round(gs.emojis_dict['animated'] / gs.emojis_dict['total'] * 100, 1):,}%)** are animated.\nOut of this guild's limit of **{gs.emojis_dict['limit']}** for non-animated emojis, it has used **{round(gs.emojis_dict['still'] / gs.emojis_dict['limit'] * 100, 1):,}%** of it. **({gs.emojis_dict['still']}/{gs.emojis_dict['limit']})**\n\n<:boost:726151031322443787> This guild has **{ctx.guild.premium_subscription_count}** Nitro Boosts and is Tier **{ctx.guild.premium_tier}**").set_author(
             name=f"Advanced Statistics for {ctx.guild}", icon_url=ctx.guild.icon_url)
         embed.set_image(url="attachment://guild.png")
         embed.add_field(name=f"{msg} (Total {len([r for r in ctx.guild.roles])})", value='\u200b' + role_list)

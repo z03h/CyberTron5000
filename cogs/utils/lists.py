@@ -88,27 +88,27 @@ INDICATOR_LETTERS = {'1': '1️⃣', '2': '2️⃣', '3': '3️⃣',
                      '7': '7️⃣', '8': '8️⃣', '9': '9️⃣'}
 
 sl = {
-    "online": "<:online:726127263401246832>",
-    "offline": "<:offline:726127263203983440>",
-    "idle": "<:idle:726127192165187594>",
-    "dnd": "<:dnd:726127192001478746>"
+    discord.Status.online: "<:online:726127263401246832>",
+    discord.Status.offline: "<:offline:726127263203983440>",
+    discord.Status.idle: "<:idle:726127192165187594>",
+    discord.Status.dnd: "<:dnd:726127192001478746>"
 }
 
 mlsl = {"online": "<:whiteiphone:703726679377575996>",
-      "offline": "\u200b",
-      "idle": "<:whiteiphone:703726679377575996>",
-      "dnd": "<:whiteiphone:703726679377575996>"}
+        "offline": "\u200b",
+        "idle": "<:whiteiphone:703726679377575996>",
+        "dnd": "<:whiteiphone:703726679377575996>"}
 
 wlsl = {"online": "🌐",
-      "offline": "\u200b",
-      "idle": "🌐",
-      "dnd": "🌐"}
- # 🌐
- 
+        "offline": "\u200b",
+        "idle": "🌐",
+        "dnd": "🌐"}
+# 🌐
+
 dlsl = {"online": ":desktop:",
-      "offline": "\u200b",
-      "idle": ":desktop:",
-      "dnd": ":desktop:"}
+        "offline": "\u200b",
+        "idle": ":desktop:",
+        "dnd": ":desktop:"}
 
 emotes = {
     'eight-year club': '<:eightyearclub:702188391961198683>',
