@@ -15,9 +15,10 @@ class Games(commands.Cog):
         self.client = client
     
     # rock paper scissors, shoot
-    
+
     @commands.command(aliases=['rps'], help="Rock paper scissors shoot")
     async def rockpaperscissors(self, ctx):
+        # an outcome of 0 is a win, 1 is a draw and 2 is  a loss.
         choice = random.choice(['rock', 'paper', 'scissors'])
         embed = discord.Embed(colour=colour, description="**Choose one** :point_down:")
         msg = await ctx.send("** **", embed=embed)
@@ -31,28 +32,28 @@ class Games(commands.Cog):
                 check=lambda reaction,
                              user: reaction.emoji
             )
-            
+        
             if str(reaction.emoji) == "🗿":
-                if choice == "paper":
-                    await msg.edit(embed=discord.Embed(description=f"You lost! I drew {choice}!", colour=colour))
-                elif choice == "scissors":
-                    await msg.edit(embed=discord.Embed(description=f"You won! I drew {choice}!", colour=colour))
-                elif choice == "rock":
-                    await msg.edit(embed=discord.Embed(description=f"We drew! I drew {choice}!", colour=colour))
-            if str(reaction.emoji) == "📄":
-                if choice == "scissors":
-                    await msg.edit(embed=discord.Embed(description=f"You lost! I drew {choice}!", colour=colour))
-                elif choice == "rock":
-                    await msg.edit(embed=discord.Embed(description=f"You won! I drew {choice}!", colour=colour))
-                elif choice == "paper":
-                    await msg.edit(embed=discord.Embed(description=f"We drew! I drew {choice}!", colour=colour))
-            if str(reaction.emoji) == "✂":
-                if choice == "rock":
-                    await msg.edit(embed=discord.Embed(description=f"You lost! I drew {choice}!", colour=colour))
-                elif choice == "paper":
-                    await msg.edit(embed=discord.Embed(description=f"You won! I drew {choice}!", colour=colour))
-                elif choice == "scissors":
-                    await msg.edit(embed=discord.Embed(description=f"We drew! I drew {choice}!", colour=colour))
+                if choice == 'scissors':
+                    final_outcome = 0
+                else:
+                    final_outcome = 1 if choice == 'rock' else 2
+            elif str(reaction.emoji) == "📄":
+                if choice == 'rock':
+                    final_outcome = 0
+                else:
+                    final_outcome = 1 if choice == 'paper' else 2
+            elif str(reaction.emoji) == "✂":
+                if choice == 'paper':
+                    final_outcome = 0
+                else:
+                    final_outcome = 1 if choice == 'scissors' else 2
+            if not final_outcome:
+                await msg.edit(embed=discord.Embed(colour=colour).set_author(name=f"You won! I drew {choice}!"))
+            else:
+                await msg.edit(embed=discord.Embed(colour=colour).set_author(
+                    name=f"You lost! I drew {choice}!")) if final_outcome == 2 else await msg.edit(
+                    embed=discord.Embed(colour=colour).set_author(name=f"It was a draw! We both drew {choice}!"))
     
     # kiss marry kill command
     
