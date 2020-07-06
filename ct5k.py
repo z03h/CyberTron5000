@@ -18,15 +18,18 @@ def get_token():
 
 
 def prefix(client, message):
-    with open("prefixes.json", 'r') as f:
-        sad = json.load(f)
-        if str(message.guild.id) in sad:
-            return commands.when_mentioned_or(sad[str(message.guild.id)])(client, message)
-        else:
-            sad[str(message.guild.id)] = "="
-            with open("prefixes.json", "w") as f:
-                a = json.dump(sad, f, indent=4)
-                return commands.when_mentioned_or(a)(client, message)
+    if message.guild:
+        with open("prefixes.json", 'r') as f:
+            sad = json.load(f)
+            if str(message.guild.id) in sad:
+                return sad[str(message.guild.id)]
+            else:
+                sad[str(message.guild.id)] = "="
+                with open("prefixes.json", "w") as f:
+                    a = json.dump(sad, f, indent=4)
+                    return a
+    if not message.guild:
+        return "="
 
 
 client = commands.Bot(command_prefix=prefix, pm_help=None)

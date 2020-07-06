@@ -21,6 +21,7 @@ from discord.ext import commands
 
 from .utils import pyformat as pf
 from .utils.funcs import insert_returns, check_admin_or_owner
+from .utils import lists
 
 pyf = pf.Discord(bot_user_id=697678160577429584)
 
@@ -206,13 +207,7 @@ class Bot(commands.Cog):
         message = await ctx.send("** **")
         end = time.perf_counter()
         duration = round((end - start) * 1000, 3)
-        embe1d = discord.Embed(
-            color=0x00dcff
-        )
-        embe1d.add_field(name='Pong! :ping_pong:',
-                         value='🌐: **{}** ms\n⏱: **{:.3f}** ms'.format(
-                             round(self.client.latency * 1000, 3), duration))
-        await message.edit(embed=embe1d)
+        await message.edit(content=f"<{self.tick}> **{ctx.author.name}**, the current average websocket latency is **{round(self.client.latency * 1000, 3)}** ms • Response Time: **{duration}** ms {lists.sl[discord.Status.online]}")
     
     @commands.command(aliases=["sourcecode", "src"], help="Shows source code for a given command")
     async def source(self, ctx, *, command=None):
