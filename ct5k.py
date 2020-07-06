@@ -31,7 +31,7 @@ def prefix(client, message):
 
 client = commands.Bot(command_prefix=prefix, pm_help=None)
 client.remove_command('help')
-
+client.load_extension("jishaku")
 
 @client.event
 async def on_guild_join(guild):
