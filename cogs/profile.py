@@ -171,14 +171,13 @@ class Profile(commands.Cog):
         role_list = " ".join(role.mention for role in ctx.guild.roles[::-1][:10] if role.id != ctx.guild.id)
         gs = GuildStats(ctx)
         msg = "Top 10 Roles" if len([r for r in ctx.guild.roles]) > 10 else "Roles"
-        total_mem = ctx.guild.member_count
         embed = discord.Embed(colour=colour,
-                              description=f"Out of **{total_mem:,}** members:\n•{sl[discord.Status.online]} **{gs.status_counter[discord.Status.online]:,} ({round(gs.status_counter[discord.Status.online] / total_mem * 100, 1):,}%)** are **online**\n•{sl[discord.Status.dnd]} **{gs.status_counter[discord.Status.dnd]:,} ({round(gs.status_counter[discord.Status.dnd] / total_mem * 100, 1):,}%)** are on **do not disturb**\n•{sl[discord.Status.idle]} **{gs.status_counter[discord.Status.idle]:,} ({round(gs.status_counter[discord.Status.idle] / total_mem * 100, 1):,}%)** are **idle**\n•{sl[discord.Status.offline]} **{gs.status_counter[discord.Status.offline]:,} ({round(gs.status_counter[discord.Status.offline] / total_mem * 100, 1):,}%)** are **offline**\n<:bot:703728026512392312> This guild has **{gs.num_bot:,}** bots. **({(round(gs.num_bot / total_mem * 100, 1)):,}%)**\n\nThis guild has **{gs.emojis_dict['total']:,}** total emojis, **{gs.emojis_dict['animated']}** of which **({round(gs.emojis_dict['animated'] / gs.emojis_dict['total'] * 100, 1):,}%)** are animated.\nOut of this guild's limit of **{gs.emojis_dict['limit']}** for non-animated emojis, it has used **{round(gs.emojis_dict['still'] / gs.emojis_dict['limit'] * 100, 1):,}%** of it. **({gs.emojis_dict['still']}/{gs.emojis_dict['limit']})**\n\n<:boost:726151031322443787> This guild has **{ctx.guild.premium_subscription_count}** Nitro Boosts and is Tier **{ctx.guild.premium_tier}**").set_author(
+                              description=f"This guild has **{gs.emojis_dict['total']:,}** total emojis, **{gs.emojis_dict['animated']}** of which **({round(gs.emojis_dict['animated'] / gs.emojis_dict['total'] * 100, 1):,}%)** are animated.\nOut of this guild's limit of **{gs.emojis_dict['limit']}** for non-animated emojis, it has used **{round(gs.emojis_dict['still'] / gs.emojis_dict['limit'] * 100, 1):,}%** of it. **({gs.emojis_dict['still']}/{gs.emojis_dict['limit']})**\n\n<:boost:726151031322443787> This guild has **{ctx.guild.premium_subscription_count}** Nitro Boosts and is Tier **{ctx.guild.premium_tier}**\n{pyformat.NativePython().bar(stat=ctx.guild.premium_subscription_count, max=30, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>', show_stat=True)}").set_author(
             name=f"Advanced Statistics for {ctx.guild}", icon_url=ctx.guild.icon_url)
         embed.set_image(url="attachment://guild.png")
         embed.add_field(name=f"{msg} (Total {len([r for r in ctx.guild.roles])})", value='\u200b' + role_list)
         embed.add_field(name=f"Emojis (Total {len([e for e in ctx.guild.emojis])})",
-                        value='\u200b' + " • ".join([str(a) for a in ctx.guild.emojis][:24]), inline=False)
+                        value='\u200b' + "|".join([str(a) for a in ctx.guild.emojis][:24]), inline=False)
         await ctx.send(embed=embed, file=gs.guild_graph)
     
     @guildinfo.command(aliases=['chan'])
