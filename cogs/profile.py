@@ -194,7 +194,7 @@ class Profile(commands.Cog):
             embed.add_field(name=f"{c}", value='\u200b' + "\n".join(x),
                             inline=False)
         y = [b for b in ctx.guild.categories]
-        chl = [f"{channel_mapping[str(o.type)]}{o.name}{is_nsfw[o.is_nsfw()]}" for o in ctx.guild.channels if
+        chl = [f"{channel_mapping[str(o.type)]}{o.name}{is_nsfw[o.is_nsfw()]}" for o in ctx.guild.text_channels if
                not o.category and o not in y]
         embed.description = "\n".join(chl)
         await ctx.send("peanut no like :angry:") if ctx.guild.id == 653376332507643914 else await ctx.send(embed=embed)

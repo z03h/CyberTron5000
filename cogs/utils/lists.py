@@ -169,7 +169,8 @@ emotes = {
 
 channel_mapping = {
     "text": "<:text_channel:703726554018086912>",
-    "voice": "<:voice_channel:703726554068418560>"
+    "voice": "<:voice_channel:703726554068418560>",
+    "news": "📰"
 }
 
 is_nsfw = {
