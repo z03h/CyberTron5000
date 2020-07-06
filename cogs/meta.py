@@ -88,21 +88,18 @@ class Meta(commands.Cog):
         self.counter = 0
         self.softwares = ['<:dpy:708479036518694983>', '<:python:706850228652998667>', '<:JSON:710927078513442857>']
     
-    # async def up_time(self):
-    #    delta_uptime = datetime.datetime.utcnow() - start_time
-    #    hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
-    #    minutes, seconds = divmod(remainder, 60)
-    #    days, hours = divmod(hours, 24)
-    #    return f"**{days}** days\n**{hours}** hours\n**{minutes}** minutes\n**{seconds}** seconds"
-    
     @commands.Cog.listener()
     async def on_command_completion(self, ctx):
         self.counter += 1
     
-    # @commands.command(help="Shows you how long the bot has been up for.")
-    # async def uptime(self, ctx):
-    #    embed = discord.Embed(colour=colour, description=f"I have been up since **{humanize.naturaltime(datetime.datetime.utcnow() - start_time)}!**\n{await self.up_time()}")
-    #    await ctx.send(embed=embed)
+    @commands.command()
+    async def uptime(self, ctx):
+        delta_uptime = datetime.datetime.utcnow() - start_time
+        hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        days, hours = divmod(hours, 24)
+        a = f"**{days}** days\n**{hours}** hours\n**{minutes}** minutes\n**{seconds}** seconds"
+        await ctx.send(embed=discord.Embed(description=a, colour=colour).set_author(name=f"I have been up for {str(humanize.naturaltime(datetime.datetime.utcnow() - start_time)).split('ago')[0]}"))
     
     @commands.command(help="Fetches the bot's invite link.")
     async def invite(self, ctx):
@@ -288,11 +285,16 @@ class Meta(commands.Cog):
     
     @commands.command(aliases=['info', 'ab', 'i'], help="Shows info on the bot.")
     async def about(self, ctx):
+        delta_uptime = datetime.datetime.utcnow() - start_time
+        hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        days, hours = divmod(hours, 24)
+        a = f"**{days}** days, **{hours}** hours, **{minutes}** minutes, **{seconds}** seconds"
         owner = await self.client.fetch_user(350349365937700864)
         embed = discord.Embed(colour=colour, title=f"About {self.client.user.name}",
-                              description=f"{self.client.user.name} is a general purpose discord bot, and the best one! This project was started in April, around **{humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}**.\n\n• **[Invite me to your server!](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)**\n• **[Join our help server!](https://discord.gg/2fxKxJH)**\n<:github:724036339426787380> **[Support this project on GitHub!](https://github.com/niztg/CyberTron5000)**\n🌐 **[Check out the website!](https://cybertron-5k.netlify.app/index.html)**\n<:reddit:703931951769190410> **[Join the subreddit!](https://www.reddit.com/r/CyberTron5000/)**")
+                              description=f"{self.client.user.name} is a general purpose discord bot, and the best one! This project was started in April, around **{humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}**.\n\n• **[Invite me to your server!](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)**\n• **[Join our help server!](https://discord.gg/2fxKxJH)**\n<:github:724036339426787380> **[Support this project on GitHub!](https://github.com/niztg/CyberTron5000)**\n🌐 **[Check out the website!](https://cybertron-5k.netlify.app/index.html)**\n<:reddit:703931951769190410> **[Join the subreddit!](https://www.reddit.com/r/CyberTron5000/)**\n\nCommands used since start: **{self.counter}** (cc <@!574870314928832533>)\nUptime: {a}\n")
         embed.add_field(name="_Statistics_",
-                        value=f"Commands used since start: **{self.counter}** (cc <@!574870314928832533>)\nUsed Memory:\n{pf.NativePython().bar(stat=psutil.virtual_memory()[2], max=100, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>')}\n**{len(self.client.users):,}** users, **{len(self.client.guilds):,}** guilds • About **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands, **{len(self.client.cogs)}** cogs • About **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n**{lines_of_code():,}** lines of code • " + '|'.join(
+                        value=f"Used Memory: {pf.NativePython().bar(stat=psutil.virtual_memory()[2], max=100, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>')}\n**{len(self.client.users):,}** users, **{len(self.client.guilds):,}** guilds • About **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands, **{len(self.client.cogs)}** cogs • About **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n**{lines_of_code():,}** lines of code • " + '|'.join(
                             self.softwares))
         embed.set_thumbnail(url=self.client.user.avatar_url_as(static_format="png"))
         embed.add_field(name="_Latest Commits_", value="\n".join(await self.get_commits()), inline=False)
