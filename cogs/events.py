@@ -20,7 +20,7 @@ class Events(commands.Cog):
         
         if isinstance(error, discord.ext.commands.BadArgument):
             err = str(error.args[0])
-            mem, msg = err.split('not')
+            mem, msg = err.split('not')[0]
             await ctx.send(
                 f"{self.x} **{ctx.author.name}**, I looked where ever I could, but I couldn't find the **{mem}**anywhere!")
         
