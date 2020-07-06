@@ -88,21 +88,21 @@ class Bot(commands.Cog):
         self.counter = 0
         self.softwares = ['<:dpy:708479036518694983>', '<:python:706850228652998667>', '<:JSON:710927078513442857>']
         
-    async def up_time(self):
-        delta_uptime = datetime.datetime.utcnow() - start_time
-        hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
-        minutes, seconds = divmod(remainder, 60)
-        days, hours = divmod(hours, 24)
-        return f"**{days}** days\n**{hours}** hours\n**{minutes}** minutes\n**{seconds}** seconds"
+    #async def up_time(self):
+    #    delta_uptime = datetime.datetime.utcnow() - start_time
+    #    hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
+    #    minutes, seconds = divmod(remainder, 60)
+    #    days, hours = divmod(hours, 24)
+    #    return f"**{days}** days\n**{hours}** hours\n**{minutes}** minutes\n**{seconds}** seconds"
     
     @commands.Cog.listener()
     async def on_command_completion(self, ctx):
         self.counter += 1
         
-    @commands.command(help="Shows you how long the bot has been up for.")
-    async def uptime(self, ctx):
-        embed = discord.Embed(colour=colour, description=f"I have been up since **{humanize.naturaltime(datetime.datetime.utcnow() - start_time)}!**\n{await self.up_time()}")
-        await ctx.send(embed=embed)
+    #@commands.command(help="Shows you how long the bot has been up for.")
+    #async def uptime(self, ctx):
+    #    embed = discord.Embed(colour=colour, description=f"I have been up since **{humanize.naturaltime(datetime.datetime.utcnow() - start_time)}!**\n{await self.up_time()}")
+    #    await ctx.send(embed=embed)
     
     @commands.command(help="Fetches the bot's invite link.")
     async def invite(self, ctx):
