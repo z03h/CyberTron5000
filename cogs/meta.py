@@ -326,12 +326,10 @@ class Meta(commands.Cog):
     @commands.command(aliases=['commits', 'git'])
     async def github(self, ctx, limit: int = 5):
         """Shows you recent github commits"""
+        if limit < 1 or limit > 15:
+            return await ctx.send(f"<:warning:727013811571261540> **{ctx.author.name}**, limit must be greater than 0 and less than 16!")
         commits = [f"{index}. {commit}" for index, commit in enumerate(await self.get_commits(limit), 1)]
-        await ctx.send(
-            embed=discord.Embed(description="\n".join(commits), colour=colour).set_author(
-                name=f"Last {limit} GitHub Commit(s) for CyberTron5000",
-                icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png",
-                url="https://github.com/niztg/CyberTron5000"))
+        await ctx.send(embed=discord.Embed(description="\n".join(commits), colour=colour).set_author(name=f"Last {limit} GitHub Commit(s) for CyberTron5000", icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png", url="https://github.com/niztg/CyberTron5000"))
 
 
 def setup(client):
