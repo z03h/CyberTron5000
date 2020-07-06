@@ -78,7 +78,7 @@ def secrets():
         return json.load(f)
 
 
-class Bot(commands.Cog):
+class Meta(commands.Cog):
     """Meta Bot commands"""
     
     def __init__(self, client):
@@ -332,6 +332,6 @@ class Bot(commands.Cog):
                 url="https://github.com/niztg/CyberTron5000"))
 
 def setup(client):
-    client.add_cog(Bot(client))
+    client.add_cog(Meta(client))
 
 #
