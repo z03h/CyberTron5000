@@ -87,8 +87,8 @@ class Meta(commands.Cog):
         self.version = "CyberTron5000 Alpha v2.0.2"
         self.counter = 0
         self.softwares = ['<:dpy:708479036518694983>', '<:python:706850228652998667>', '<:JSON:710927078513442857>']
-        
-    #async def up_time(self):
+    
+    # async def up_time(self):
     #    delta_uptime = datetime.datetime.utcnow() - start_time
     #    hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
     #    minutes, seconds = divmod(remainder, 60)
@@ -98,9 +98,9 @@ class Meta(commands.Cog):
     @commands.Cog.listener()
     async def on_command_completion(self, ctx):
         self.counter += 1
-        
-    #@commands.command(help="Shows you how long the bot has been up for.")
-    #async def uptime(self, ctx):
+    
+    # @commands.command(help="Shows you how long the bot has been up for.")
+    # async def uptime(self, ctx):
     #    embed = discord.Embed(colour=colour, description=f"I have been up since **{humanize.naturaltime(datetime.datetime.utcnow() - start_time)}!**\n{await self.up_time()}")
     #    await ctx.send(embed=embed)
     
@@ -195,7 +195,8 @@ class Meta(commands.Cog):
         message = await ctx.send("** **")
         end = time.perf_counter()
         duration = round((end - start) * 1000, 3)
-        await message.edit(content=f"<{self.tick}> **{ctx.author.name}**, the current average websocket latency is **{round(self.client.latency * 1000, 3)}** ms • Response Time: **{duration}** ms {lists.sl[discord.Status.online]}")
+        await message.edit(
+            content=f"<{self.tick}> **{ctx.author.name}**, the current average websocket latency is **{round(self.client.latency * 1000, 3)}** ms • Response Time: **{duration}** ms {lists.sl[discord.Status.online]}")
     
     @commands.command(aliases=["sourcecode", "src"], help="Shows source code for a given command")
     async def source(self, ctx, *, command=None):
@@ -325,11 +326,13 @@ class Meta(commands.Cog):
     @commands.command(aliases=['commits', 'git'])
     async def github(self, ctx, limit: int = 5):
         """Shows you recent github commits"""
+        commits = [f"{index}. {commit}" for index, commit in enumerate(await self.get_commits(limit), 1)]
         await ctx.send(
-            embed=discord.Embed(description="\n".join(await self.get_commits(limit)), colour=colour).set_author(
-                name="GitHub Commits for CyberTron5000",
+            embed=discord.Embed(description="\n".join(commits), colour=colour).set_author(
+                name=f"Last {limit} GitHub Commits for CyberTron5000",
                 icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png",
                 url="https://github.com/niztg/CyberTron5000"))
+
 
 def setup(client):
     client.add_cog(Meta(client))
