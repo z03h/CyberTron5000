@@ -37,34 +37,29 @@ class Reddit(commands.Cog):
             user_agent=user_agent
         )
         self.client = client
+        self.up = "<:upvote:718895913342337036>"
+        self.share = "<:share:729813718086582402>"
         self.loading = "https://media1.tenor.com/images/8f7a28e62f8242b264c8a39ba8bea261/tenor.gif?itemid=15922897"
     
     @commands.command(aliases=['f'], help="Shows you food")
     async def food(self, ctx):
-        embedd = discord.Embed(
-            colour=reddit_colour, title="Loading..."
-        )
-        embedd.set_image(
-            url=self.loading)
-        message = await ctx.send(embed=embedd)
-        post = []
-        for submission in self.reddit.subreddit(
-                'food+sushi+cheeseburger+pasta+cake+lasagna+burger+pizza+fries+spaghetti+dumplings+rice+noodles+pho').top(
-            'day'):
-            if not submission.stickied:
-                post.append(submission)
-        submission = random.choice(post)
-        ts = int(submission.created_utc)
-        embed = discord.Embed(title=submission.title, url=f'https://www.reddit.com{submission.permalink}',
-                              colour=reddit_colour,
-                              description="**{:,.0f}** <:upvote:718895913342337036> **{:,.0f}** 💬\n{}"
-                              .format(submission.score, submission.num_comments,
-                                      datetime.datetime.fromtimestamp(ts).strftime('%B %d, %Y')),
-                              timestamp=ctx.message.created_at)
-        embed.set_author(name=submission.author.name, icon_url=submission.author.icon_img)
-        embed.set_image(url=submission.url)
-        embed.set_footer(text=f'r/{submission.subreddit}', icon_url=submission.subreddit.icon_img)
-        await message.edit(embed=embed)
+        subreddit = random.choice(['food', 'cheeseburger', 'cake', 'donuts', 'pizza', 'burger'])
+        posts = []
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f"https://www.reddit.com/r/{subreddit}/hot.json") as r:
+                res = await r.json()
+            for i in res['data']['children']:
+                posts.append(i['data'])
+            s = random.choice([p for p in posts if not p['stickied'] or p['is_self']])
+            embed = discord.Embed(title=str(s['title']), colour=reddit_colour,
+                                  url=f"https://reddit.com/{s['permalink']}",
+                                  description=f"{self.up} **{s['score']:,}** :speech_balloon: **{s['num_comments']:,}** {self.share} **{s['num_crossposts']:,}** :medal: **{s['total_awards_received']}**")
+            embed.set_author(name=s['author'])
+            embed.set_footer(text=f"{s['upvote_ratio'] * 100:,}% upvote ratio | posted to r/{s['subreddit']}")
+            embed.set_image(url=s['url'])
+            return await ctx.send(embed=embed) if not s['over_18'] or s[
+                'over_18'] and ctx.channel.is_nsfw() else await ctx.send(
+                f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
     
     # noinspection PyBroadException
     @commands.command(aliases=['rs', 'karma'], help="Shows your Reddit Stats.")
@@ -108,36 +103,27 @@ class Reddit(commands.Cog):
             await ctx.send("Redditor not found.")
             await ctx.send(error)
     
-    @commands.command(aliases=['m'])
+    @commands.command(aliases=['m'], help="Shows you a meme from some of reddit's dankest places (and r/memes)")
     async def meme(self, ctx):
-        """Gets a random meme from some of reddit's dankest places (and r/memes)"""
-        message = await ctx.send(
-            embed=discord.Embed(colour=reddit_colour, title="Loading...").set_image(url=self.loading))
-        reddit = self.reddit.subreddit(
-            'dankmemes+memes+okbuddyretard+comedyheaven+memeeconomy+dankexchange+memes_of_the_dank+pewdiepiesubmissions+dankexchange')
-        reddits = [reddit.new(limit=50), reddit.controversial(limit=50), reddit.rising(limit=50), reddit.top(limit=150),
-                   reddit.top(limit=1), reddit.hot(limit=80), reddit.controversial(limit=1)]
-        posts = [x for x in reddits[5] if not x.stickied]
-        submission = random.choice(posts)
-        if submission.is_self:
-            embed = discord.Embed(title=submission.title, url=f'https://www.reddit.com{submission.permalink}',
-                                  colour=reddit_colour,
-                                  description="{}\n**{:,.0f}** <:upvote:718895913342337036> **{:,.0f}** 💬".format(
-                                      submission.selftext, submission.score, submission.num_comments))
-        else:
-            embed = discord.Embed(title=submission.title, url=f'https://www.reddit.com{submission.permalink}',
-                                  colour=reddit_colour,
-                                  description="**{:,.0f}** <:upvote:718895913342337036> **{:,.0f}** 💬".format(
-                                      submission.score, submission.num_comments))
-            embed.set_image(url=submission.url)
-        ts = int(submission.created_utc)
-        embed.set_author(name=f"{submission.author.name}", icon_url=submission.author.icon_img)
-        embed.set_footer(
-            text='r/{} • {}'.format(submission.subreddit, datetime.datetime.fromtimestamp(ts).strftime('%B %d, %Y')),
-            icon_url=submission.subreddit.icon_img)
-        await message.edit(
-            embed=embed) if not submission.over_18 or submission.over_18 and ctx.channel.is_nsfw() else await ctx.send(
-            f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
+        subreddit = random.choice(
+            ['memes', 'dankmemes', 'okbuddyretard', 'memeeconomy', 'dankexchange', 'pewdiepiesubmissions',
+             'memes_of_the_dank'])
+        posts = []
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f"https://www.reddit.com/r/{subreddit}/hot.json") as r:
+                res = await r.json()
+            for i in res['data']['children']:
+                posts.append(i['data'])
+            s = random.choice([p for p in posts if not p['stickied'] or p['is_self']])
+            embed = discord.Embed(title=str(s['title']), colour=reddit_colour,
+                                  url=f"https://reddit.com/{s['permalink']}",
+                                  description=f"{self.up} **{s['score']:,}** :speech_balloon: **{s['num_comments']:,}** {self.share} **{s['num_crossposts']:,}** :medal: **{s['total_awards_received']}**")
+            embed.set_author(name=s['author'])
+            embed.set_footer(text=f"{s['upvote_ratio'] * 100:,}% upvote ratio | posted to r/{s['subreddit']}")
+            embed.set_image(url=s['url'])
+            return await ctx.send(embed=embed) if not s['over_18'] or s[
+                'over_18'] and ctx.channel.is_nsfw() else await ctx.send(
+                f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
     
     @commands.command(aliases=['iu'], help="Shows you the banner or icon of a subreddit (on old Reddit).")
     async def icon(self, ctx, subreddit, choice="img"):
@@ -170,11 +156,8 @@ class Reddit(commands.Cog):
     @commands.command(help="Shows you a wiki page for a subreddit.")
     async def wiki(self, ctx, subreddit, *, page):
         try:
-            embedd = discord.Embed(
-                colour=reddit_colour, title="Loading..."
-            )
-            embedd.set_image(
-                url=self.loading)
+            embedd = discord.Embed(colour=reddit_colour, title="Loading...")
+            embedd.set_image(url=self.loading)
             message = await ctx.send(embed=embedd)
             s = self.reddit.subreddit(subreddit)
             wikipage = s.wiki[page]
@@ -195,31 +178,23 @@ class Reddit(commands.Cog):
                                                    [f"• {perm.capitalize()}" for perm in perms[0]])).set_author(
             name=f"r/{subreddit}", icon_url=self.reddit.subreddit(subreddit).icon_img))
     
-    @commands.command(help="hmmmmm <:thonking:667528766439817216>")
+    @commands.command(aliases=['showerthought'], help="hmm :thinking:")
     async def thonk(self, ctx):
-        embedd = discord.Embed(colour=reddit_colour, title="Loading...")
-        embedd.set_image(url=self.loading)
-        message = await ctx.send(embed=embedd)
-        post = []
-        for submission in self.reddit.subreddit(
-                "ShowerThoughts").top("day"):
-            if not submission.stickied:
-                post.append(submission)
-        submission = random.choice(post)
-        embed = discord.Embed(title=submission.title,
-                              url=f'https://www.reddit.com{submission.permalink}',
-                              colour=reddit_colour,
-                              description="{}\n**{:,.0f}** <:upvote:718895913342337036> **{:,.0f}** 💬"
-                              .format(submission.selftext, submission.score,
-                                      submission.num_comments))
-        ts = submission.created_utc
-        embed.set_author(name=submission.author.name, icon_url=submission.author.icon_img)
-        embed.set_footer(
-            text=f"r/{submission.subreddit} • {datetime.datetime.fromtimestamp(ts).strftime('%B %d, %Y')}",
-            icon_url=submission.subreddit.icon_img)
-        await message.edit(
-            embed=embed) if not submission.over_18 or submission.over_18 and ctx.channel.is_nsfw() else await ctx.send(
-            f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
+        posts = []
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f"https://www.reddit.com/r/ShowerThoughts/hot.json") as r:
+                res = await r.json()
+            for i in res['data']['children']:
+                posts.append(i['data'])
+            s = random.choice([p for p in posts if not p['stickied']])
+            embed = discord.Embed(title=str(s['title']), colour=reddit_colour,
+                                  url=f"https://reddit.com/{s['permalink']}",
+                                  description=f"{self.up} **{s['score']:,}** :speech_balloon: **{s['num_comments']:,}** {self.share} **{s['num_crossposts']:,}** :medal: **{s['total_awards_received']}**")
+            embed.set_author(name=s['author'])
+            embed.set_footer(text=f"{s['upvote_ratio'] * 100:,}% upvote ratio | posted to r/{s['subreddit']}")
+            return await ctx.send(embed=embed) if not s['over_18'] or s[
+                'over_18'] and ctx.channel.is_nsfw() else await ctx.send(
+                f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
     
     # mod stats
     
@@ -279,43 +254,34 @@ class Reddit(commands.Cog):
             value=final_comment.body)
         await message.edit(embed=embed)
     
-    @commands.command()
+    @commands.command(help="Gets a post from a subreddit of your choosing.")
     async def post(self, ctx, subreddit, sort='hot'):
-        """Gets a random post from a subreddit"""
-        try:
-            message = await ctx.send(
-                embed=discord.Embed(colour=reddit_colour, title="Loading...").set_image(url=self.loading))
-            reddit = self.reddit.subreddit(subreddit)
-            sorts = ['new', 'controversial', 'rising', 'top', 'topever', 'hot', 'controversialever']
-            reddits = [reddit.new(limit=50), reddit.controversial(limit=50), reddit.rising(limit=50),
-                       reddit.top(limit=150), reddit.top(limit=1), reddit.hot(limit=80), reddit.controversial(limit=1)]
-            if sort in sorts:
-                posts = [x for x in reddits[sorts.index(sort)] if not x.stickied]
+        posts = []
+        sorts = ['new', 'hot', 'top', 'rising', 'controversial']
+        if sort not in sorts:
+            return await ctx.send(
+                f"<:warning:727013811571261540> **{ctx.author.name}**, that isn't a valid sort! Valid sorts include {', '.join(sorts)}.")
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f"https://www.reddit.com/r/{subreddit}/{sort}.json") as r:
+                res = await r.json()
+            for i in res['data']['children']:
+                posts.append(i['data'])
+            s = random.choice([p for p in posts if not p['stickied'] or p['is_self']])
+            embed = discord.Embed(title=str(s['title']), colour=reddit_colour,
+                                  url=f"https://reddit.com/{s['permalink']}")
+            embed.set_author(name=s['author'])
+            embed.set_footer(text=f"{s['upvote_ratio'] * 100:,}% upvote ratio | posted to r/{s['subreddit']}")
+            if s['is_self']:
+                embed.description = f"{s['selftext']}\n{self.up} **{s['score']:,}** :speech_balloon: **{s['num_comments']:,}** {self.share} **{s['num_crossposts']:,}** :medal: **{s['total_awards_received']}**"
+                return await ctx.send(embed=embed) if not s['over_18'] or s[
+                    'over_18'] and ctx.channel.is_nsfw() else await ctx.send(
+                    f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
             else:
-                return await ctx.send(
-                    f"<:warning:727013811571261540> **{ctx.author.name}**, that isn't a valid sort! Valid sorts include {', '.join(sorts)}.")
-            submission = random.choice(posts)
-            if submission.is_self:
-                embed = discord.Embed(title=submission.title, url=f'https://www.reddit.com{submission.permalink}',
-                                      colour=reddit_colour,
-                                      description="{}\n**{:,.0f}** <:upvote:718895913342337036> **{:,.0f}** 💬".format(
-                                          submission.selftext, submission.score, submission.num_comments))
-            else:
-                embed = discord.Embed(title=submission.title, url=f'https://www.reddit.com{submission.permalink}',
-                                      colour=reddit_colour,
-                                      description="**{:,.0f}** <:upvote:718895913342337036> **{:,.0f}** 💬".format(
-                                          submission.score, submission.num_comments))
-                embed.set_image(url=submission.url)
-            ts = int(submission.created_utc)
-            embed.set_author(name=f"{submission.author.name}", icon_url=submission.author.icon_img)
-            embed.set_footer(text='r/{} • {}'.format(submission.subreddit,
-                                                     datetime.datetime.fromtimestamp(ts).strftime('%B %d, %Y')),
-                             icon_url=submission.subreddit.icon_img)
-            await message.edit(
-                embed=embed) if not submission.over_18 or submission.over_18 and ctx.channel.is_nsfw() else await ctx.send(
-                f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
-        except Exception as e:
-            await ctx.send(e)
+                embed.set_image(url=s['url'])
+                embed.description = f"{self.up} **{s['score']:,}** :speech_balloon: **{s['num_comments']:,}** {self.share} **{s['num_crossposts']:,}** :medal: **{s['total_awards_received']}**"
+                return await ctx.send(embed=embed) if not s['over_18'] or s[
+                    'over_18'] and ctx.channel.is_nsfw() else await ctx.send(
+                    f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
 
 
 def setup(client):
