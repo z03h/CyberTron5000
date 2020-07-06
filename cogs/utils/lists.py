@@ -69,7 +69,7 @@ TYPES = {
 
 REGIONS = {
     "europe": "Europe",
-    "us-east": "US-East",
+    "us-east": "US East",
     "india": "India",
     "brazil": "Brazil",
     "japan": "Japan",
@@ -78,9 +78,9 @@ REGIONS = {
     "southafrica": "South Africa",
     "sydney": "Sydney",
     "hongkong": "Hong Kong",
-    "us-central": "US-Central",
-    "us-south": "US-South",
-    "us-west": "US-West"
+    "us-central": "US Central",
+    "us-south": "US South",
+    "us-west": "US West"
 }
 
 INDICATOR_LETTERS = {'1': '1️⃣', '2': '2️⃣', '3': '3️⃣',

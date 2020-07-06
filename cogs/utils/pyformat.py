@@ -1,11 +1,5 @@
 """
-
-A python package made to make Python formatting easier for us all.
-Technically useless, aesthetically pleasing.
-
-Made by nizcomix
-Contact on discord ♿niztg#7532 (350349365937700864) for questions
-
+bruh
 """
 
 import discord
@@ -13,9 +7,6 @@ import discord
 
 class NativePython(object):
     """For functions that can help using Native Python"""
-    
-    def __init__(self):
-        pass
     
     def listify(self, list: list, char='\n', limit: int = None):
         """
@@ -58,26 +49,28 @@ class NativePython(object):
     def bar(self, stat: int, max: int, filled: str, empty: str, show_stat: bool = False):
         percent = round((stat / max) * 100, 1)
         if percent > 100:
-            bar = f"{percent}% {filled * 10} 100.0%" if not show_stat else f"{stat} {filled * 10} {max}"
+            bar = f"{percent}% {filled * 10} 100.0%" if not show_stat else f"{stat} {filled * 10} {max:,}"
             return bar
         elif percent <= 0:
-            bar = f"{percent}% {empty * 10} 100.0%" if not show_stat else f"{stat} {empty * 10} {max}"
+            bar = f"{percent}% {empty * 10} 100.0%" if not show_stat else f"{stat} {empty * 10} {max:,}"
             return bar
+        elif 0 < percent < 5:
+            return f"{str(percent)}% {filled * 1}{empty * 9} 100.0%" if not show_stat else f"{str(stat)} {filled * 1}{empty * 9} {max:,}"
         else:
             total_filled = round(percent / 10)
             total_empty = 10 - (round(percent / 10))
-            return f"{str(percent)}% {filled * total_filled}{empty * total_empty} {max}%" if not show_stat else f"{str(stat)} {filled * total_filled}{empty * total_empty} {max}"
+            return f"{str(percent)}% {filled * total_filled}{empty * total_empty} 100.0%" if not show_stat else f"{str(stat)} {filled * total_filled}{empty * total_empty} {max:,}"
 
 
 class Discord(object):
     def __init__(self, bot_user_id):
         self.bot_user_id = bot_user_id
     
-    async def fieldify(self, names: list, values: list, inline: bool, limit: int = None):
+    def fieldify(self, embed: discord.Embed, names: list, values: list, inline: bool = True, limit: int = None):
         """Easy embed fieldification
         :returns embed:
         """
-        embed = discord.Embed()
+        embed = embed
         if not limit:
             for name, val in zip(names, values):
                 embed.add_field(name=name, value=val, inline=inline)
@@ -91,7 +84,6 @@ class Discord(object):
                     return embed
                 else:
                     continue
-        
         return embed
     
     def codeblock(self, body):

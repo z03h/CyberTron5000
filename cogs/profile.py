@@ -124,6 +124,7 @@ class Profile(commands.Cog):
                     invoke_without_command=True)
     async def guildinfo(self, ctx):
         try:
+            bar = pyformat.NativePython()
             g = GuildStats(ctx).status_counter
             n = '\n'
             guild = ctx.guild
@@ -133,15 +134,15 @@ class Profile(commands.Cog):
                       f"{sl[discord.Status.dnd]}**{g[discord.Status.dnd]:,}**",
                       f"{sl[discord.Status.offline]}**{g[discord.Status.offline]:,}**",
                       f"<:status_streaming:596576747294818305>**{len([m for m in ctx.guild.members if m.activity and m.activity.type == discord.ActivityType.streaming])}**",
-                      f"<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**", ]
+                      ]
             text_channels = [text_channel for text_channel in guild.text_channels]
             voice_channels = [voice_channel for voice_channel in guild.voice_channels]
             categories = [category for category in guild.categories]
             region = REGIONS[f"{str(guild.region)}"]
             embed = discord.Embed(colour=colour,
-                                  description=f"**{ctx.guild.id}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
-                                              f"\n{f'{n}'.join(people)}\n**Owner:** {ctx.guild.owner.mention}\n**Region:** {region}\n<:boost:726151031322443787> **Nitro Tier: {guild.premium_tier}**\n{pyformat.NativePython().bar(stat=guild.premium_subscription_count, max=30, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>', show_stat=True)}")
-            embed.set_author(name=guild, icon_url=guild.icon_url)
+                                  description=f"**{guild.id}**\n👑 **{guild.owner}**\n🗺 **{region}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
+                                              f"\n{f'{n}'.join(people)}\n<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**\n{bar.bar(stat=GuildStats(ctx).num_bot, max=ctx.guild.member_count, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>', show_stat=False)}\n<:boost:726151031322443787> **Nitro Tier: {guild.premium_tier}**\n{pyformat.NativePython().bar(stat=guild.premium_subscription_count, max=30, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>', show_stat=True)}")
+            embed.set_author(name=f"{guild}", icon_url=guild.icon_url)
             embed.set_footer(
                 text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - ctx.guild.created_at)}")
             await ctx.send(embed=embed)
@@ -168,11 +169,12 @@ class Profile(commands.Cog):
     @guildinfo.command(invoke_without_command=True, aliases=['stats'])
     async def statistics(self, ctx):
         """Shows you the stats of the guild"""
+        bar = pyformat.NativePython()
         role_list = " ".join(role.mention for role in ctx.guild.roles[::-1][:10] if role.id != ctx.guild.id)
         gs = GuildStats(ctx)
         msg = "Top 10 Roles" if len([r for r in ctx.guild.roles]) > 10 else "Roles"
         embed = discord.Embed(colour=colour,
-                              description=f"This guild has **{gs.emojis_dict['total']:,}** total emojis, **{gs.emojis_dict['animated']}** of which **({round(gs.emojis_dict['animated'] / gs.emojis_dict['total'] * 100, 1):,}%)** are animated.\nOut of this guild's limit of **{gs.emojis_dict['limit']}** for non-animated emojis, it has used **{round(gs.emojis_dict['still'] / gs.emojis_dict['limit'] * 100, 1):,}%** of it. **({gs.emojis_dict['still']}/{gs.emojis_dict['limit']})**\n\n<:boost:726151031322443787> This guild has **{ctx.guild.premium_subscription_count}** Nitro Boosts and is Tier **{ctx.guild.premium_tier}**\n{pyformat.NativePython().bar(stat=ctx.guild.premium_subscription_count, max=30, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>', show_stat=True)}").set_author(
+                              description=f"This guild has **{gs.emojis_dict['total']:,}** total emojis, **{gs.emojis_dict['animated']}** of which **({round(gs.emojis_dict['animated'] / gs.emojis_dict['total'] * 100, 1):,}%)** are animated.\nOut of this guild's limit of **{gs.emojis_dict['limit']}** for non-animated emojis, it has used **{round(gs.emojis_dict['still'] / gs.emojis_dict['limit'] * 100, 1):,}%** of it. **({gs.emojis_dict['still']}/{gs.emojis_dict['limit']})**\n<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**\n{bar.bar(stat=GuildStats(ctx).num_bot, max=ctx.guild.member_count, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>', show_stat=True)}\n<:boost:726151031322443787> This guild has **{ctx.guild.premium_subscription_count}** Nitro Boosts and is Tier **{ctx.guild.premium_tier}**\n{bar.bar(stat=ctx.guild.premium_subscription_count, max=30, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>', show_stat=True)}").set_author(
             name=f"Advanced Statistics for {ctx.guild}", icon_url=ctx.guild.icon_url)
         embed.set_image(url="attachment://guild.png")
         embed.add_field(name=f"{msg} (Total {len([r for r in ctx.guild.roles])})", value='\u200b' + role_list)
