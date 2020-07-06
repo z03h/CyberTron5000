@@ -329,7 +329,7 @@ class Meta(commands.Cog):
         commits = [f"{index}. {commit}" for index, commit in enumerate(await self.get_commits(limit), 1)]
         await ctx.send(
             embed=discord.Embed(description="\n".join(commits), colour=colour).set_author(
-                name=f"Last {limit} GitHub Commits for CyberTron5000",
+                name=f"Last {limit} GitHub Commit(s) for CyberTron5000",
                 icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png",
                 url="https://github.com/niztg/CyberTron5000"))
 
