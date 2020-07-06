@@ -1,11 +1,8 @@
-import datetime
 import json
 import os
 
 import discord
-import humanize
 from discord.ext import commands
-from cogs.utils.lists import REGIONS, sl
 from cogs.utils.funcs import check_admin_or_owner
 
 colour = 0x00dcff
@@ -38,62 +35,20 @@ client.remove_command('help')
 
 @client.event
 async def on_guild_join(guild):
-    c = client.get_channel(727277234666078220)
-    mod_list = [member for member in guild.members if member.guild_permissions.administrator]
-    ml = "\n".join([f"{member.mention} • `{member.top_role.name}`" for member in mod_list if member.bot is False])
     with open("prefixes.json", "r") as f:
         prefixes = json.load(f)
-    
     prefixes[str(guild.id)] = "="
-    
     with open("prefixes.json", "w") as f:
         json.dump(prefixes, f, indent=4)
-        
-        online = len([member for member in guild.members if member.status == discord.Status.online])
-        offline = len([member for member in guild.members if member.status == discord.Status.offline])
-        idle = len([member for member in guild.members if member.status == discord.Status.idle])
-        dnd = len([member for member in guild.members if member.status == discord.Status.dnd])
-        botno = len([member for member in guild.members if member.bot is True])
-        text_channels = [text_channel for text_channel in guild.text_channels]
-        voice_channels = [voice_channel for voice_channel in guild.voice_channels]
-        categories = [category for category in guild.categories]
-        emojis = [emoji for emoji in guild.emojis]
-        region = REGIONS[f"{str(guild.region)}"]
-        embed = discord.Embed(colour=0x00ff00, title=f'{guild}',
-                              description=f"**{guild.id}**"f"\n<:member:716339965771907099>**{len(guild.members):,}** | {sl['online']}**{online:,}** • {sl['dnd']}**{dnd:,}** • {sl['idle']}**{idle:,}** • {sl['offline']}**{offline:,}**\n**Owner:** {guild.owner.mention}\n**Region:** {region}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**\n**Admins:**\n{ml}")
-        embed.set_thumbnail(url=guild.icon_url)
-        embed.set_footer(
-            text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - guild.created_at)}")
-        await c.send(f"Joined Guild! This is guild **#{len(client.guilds)}**", embed=embed)
-        await guild.me.edit(nick=f"(=) {client.user.name}")
 
 
 @client.event
 async def on_guild_remove(guild):
-    c = client.get_channel(727277234666078220)
     with open("prefixes.json", "r") as f:
         prefixes = json.load(f)
-    
     prefixes.pop(str(guild.id))
-    
     with open("prefixes.json", "w") as f:
         json.dump(prefixes, f, indent=4)
-    
-    online = len([member for member in guild.members if member.status == discord.Status.online])
-    offline = len([member for member in guild.members if member.status == discord.Status.offline])
-    idle = len([member for member in guild.members if member.status == discord.Status.idle])
-    dnd = len([member for member in guild.members if member.status == discord.Status.dnd])
-    botno = len([member for member in guild.members if member.bot is True])
-    text_channels = [text_channel for text_channel in guild.text_channels]
-    voice_channels = [voice_channel for voice_channel in guild.voice_channels]
-    categories = [category for category in guild.categories]
-    emojis = [emoji for emoji in guild.emojis]
-    region = REGIONS[f"{str(guild.region)}"]
-    embed = discord.Embed(colour=discord.Colour.red(), title=f'{guild}',
-                          description=f"**{guild.id}**"f"\n<:member:716339965771907099>**{len(guild.members):,}** | {sl['online']}**{online:,}** • {sl['dnd']}**{dnd:,}** • {sl['idle']}**{idle:,}** • {sl['offline']}**{offline:,}**\n**Owner:** {guild.owner.mention}\n**Region:** {region}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**\n**Admins:**")
-    embed.set_thumbnail(url=guild.icon_url)
-    embed.set_footer(text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - guild.created_at)}")
-    await c.send(f"Left guild. We're down to **{len(client.guilds)}** guilds", embed=embed)
 
 
 @client.group(invoke_without_command=True, help="Change the guild's prefix", aliases=['prefix', 'pre'])

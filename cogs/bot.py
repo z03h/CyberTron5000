@@ -85,36 +85,24 @@ class Bot(commands.Cog):
         self.client = client
         self.tick = ":GreenTick:707950252434653184"
         self.version = "CyberTron5000 Alpha v2.0.2"
-        self.x = "<:warning:727013811571261540>"
-        self.x_r = ":warning:727013811571261540"
+        self.counter = 0
         self.softwares = ['<:dpy:708479036518694983>', '<:python:706850228652998667>', '<:JSON:710927078513442857>']
-    
-    @commands.command(help="Shows you how long the bot has been up for.")
-    async def uptime(self, ctx):
+        
+    async def up_time(self):
         delta_uptime = datetime.datetime.utcnow() - start_time
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
-        embed = discord.Embed(colour=colour,
-                              description=f"I have been up since **{humanize.naturaltime(datetime.datetime.utcnow() - start_time)}!**\n**{days}** days\n**{hours}** hours\n**{minutes}** minutes\n**{seconds}** seconds")
-        await ctx.send(embed=embed)
+        return f"**{days}** days\n**{hours}** hours\n**{minutes}** minutes\n**{seconds}** seconds"
     
     @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        if isinstance(error, discord.ext.commands.CheckFailure):
-            await ctx.message.add_reaction(emoji=self.x_r)
+    async def on_command_completion(self, ctx):
+        self.counter += 1
         
-        if isinstance(error, discord.ext.commands.BadArgument):
-            err = str(error.args[0])
-            mem, msg = err.split('not')
-            await ctx.send(
-                f"{self.x} **{ctx.author.name}**, I looked where ever I could, but I couldn't find the **{mem}**anywhere!")
-        
-        if isinstance(error, discord.ext.commands.MissingRequiredArgument):
-            await ctx.send(f"{self.x} **{ctx.author.name}**, you're missing the required argument **{error.param}**!")
-        
-        if isinstance(error, discord.ext.commands.MissingPermissions):
-            await ctx.send(f'{self.x} **{ctx.author.name}**, {error}')
+    @commands.command(help="Shows you how long the bot has been up for.")
+    async def uptime(self, ctx):
+        embed = discord.Embed(colour=colour, description=f"I have been up since **{humanize.naturaltime(datetime.datetime.utcnow() - start_time)}!**\n{await self.up_time()}")
+        await ctx.send(embed=embed)
     
     @commands.command(help="Fetches the bot's invite link.")
     async def invite(self, ctx):
@@ -303,7 +291,7 @@ class Bot(commands.Cog):
         embed = discord.Embed(colour=colour, title=f"About {self.client.user.name}",
                               description=f"{self.client.user.name} is a general purpose discord bot, and the best one! This project was started in April, around **{humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}**.\n\n• **[Invite me to your server!](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)**\n• **[Join our help server!](https://discord.gg/2fxKxJH)**\n<:github:724036339426787380> **[Support this project on GitHub!](https://github.com/niztg/CyberTron5000)**\n🌐 **[Check out the website!](https://cybertron-5k.netlify.app/index.html)**\n<:reddit:703931951769190410> **[Join the subreddit!](https://www.reddit.com/r/CyberTron5000/)**")
         embed.add_field(name="_Statistics_",
-                        value=f"Used Memory:\n{pf.NativePython().bar(stat=psutil.virtual_memory()[2], max=100, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>')}\n**{len(self.client.users):,}** users, **{len(self.client.guilds):,}** guilds • About **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands, **{len(self.client.cogs)}** cogs • About **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n**{lines_of_code():,}** lines of code • " + '|'.join(
+                        value=f"Commands used since start: **{self.counter}** (cc <@!574870314928832533>)\nUsed Memory:\n{pf.NativePython().bar(stat=psutil.virtual_memory()[2], max=100, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>')}\n**{len(self.client.users):,}** users, **{len(self.client.guilds):,}** guilds • About **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands, **{len(self.client.cogs)}** cogs • About **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n**{lines_of_code():,}** lines of code • " + '|'.join(
                             self.softwares))
         embed.set_thumbnail(url=self.client.user.avatar_url_as(static_format="png"))
         embed.add_field(name="_Latest Commits_", value="\n".join(await self.get_commits()), inline=False)
@@ -314,13 +302,13 @@ class Bot(commands.Cog):
     @commands.group(aliases=["n", "changenickname", "nick"], invoke_without_command=True,
                     help="Change the bot's nickname to a custom one.")
     @check_admin_or_owner()
-    async def nickname(self, ctx, *, nickname):
-        name = "({}) {}".format(ctx.prefix, self.client.user.name)
-        await ctx.guild.me.edit(nick=f"({ctx.prefix}) {nickname}")
-        if name:
+    async def nickname(self, ctx, *, nickname=None):
+        if nickname:
+            await ctx.guild.me.edit(nick=f"({ctx.prefix}) {nickname}")
             await ctx.message.add_reaction(emoji=self.tick)
         else:
-            await ctx.send("Successfully removed nickname")
+            await ctx.guild.me.edit(nick=self.client.user.name)
+            await ctx.message.add_reaction(emoji=self.tick)
     
     @nickname.command(invoke_without_command=True, help="Change the bot's nickname back to the default.")
     @check_admin_or_owner()
@@ -334,23 +322,6 @@ class Bot(commands.Cog):
         await ctx.guild.me.edit(nick=self.client.user.name)
         await ctx.message.add_reaction(emoji=self.tick)
     
-    @commands.Cog.listener(name="on_message")
-    async def on_user_mention(self, message):
-        owner = await self.client.fetch_user(350349365937700864)
-        if "<@!697678160577429584>" == message.content:
-            with open("prefixes.json", "r") as f:
-                prefix = json.load(f)
-                if str(message.guild.id) in prefix:
-                    pre = prefix[str(message.guild.id)]
-                    embed = discord.Embed(colour=colour,
-                                          description=f'**My prefix for {message.guild} is** `{pre}`\n\n**Do** '
-                                                      f'`{pre}help` **for a full list of commands.**\n\n'
-                                                      f'[Invite me to your server!]'
-                                                      f'(https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)\n\n[Join our help server!](https://discord.gg/aa9p43W)')
-                    embed.set_thumbnail(url=self.client.user.avatar_url)
-                    embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
-                    await message.channel.send(embed=embed)
-    
     @commands.command(aliases=['commits', 'git'])
     async def github(self, ctx, limit: int = 5):
         """Shows you recent github commits"""
@@ -359,7 +330,6 @@ class Bot(commands.Cog):
                 name="GitHub Commits for CyberTron5000",
                 icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png",
                 url="https://github.com/niztg/CyberTron5000"))
-
 
 def setup(client):
     client.add_cog(Bot(client))

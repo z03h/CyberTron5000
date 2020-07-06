@@ -336,7 +336,7 @@ class VibeSchool(commands.Cog):
                         inline=False)
         embed.add_field(name="**Joined Guild**", value=f"{member.joined_at.strftime('%B %d, %Y')} ", inline=False)
         message = await ctx.send(message, embed=embed)
-        for r in [':upvote:718895913342337036', ':downvote:718895842404335668']:
+        for r in ['⬆️', '⬇️']:
             await message.add_reaction(r)
 
 
