@@ -149,12 +149,21 @@ class Reddit(commands.Cog):
     
     @commands.command(aliases=['mod'])
     async def moderator(self, ctx, mod, subreddit):
-        async with ctx.typing():
-            perms = [m.mod_permissions for m in self.reddit.subreddit(subreddit).moderator(mod)]
-            await ctx.send(embed=discord.Embed(title=f"Mod Perms for {mod}", colour=reddit_colour,
-                                               description="\n".join(
-                                                   [f"• {perm.capitalize()}" for perm in perms[0]])).set_author(
-                name=f"r/{subreddit}", icon_url=self.reddit.subreddit(subreddit).icon_img))
+        try:
+            async with ctx.typing():
+                async with aiohttp.ClientSession() as cs:
+                    async with cs.get(f"https://www.reddit.com/r/{subreddit}/about/moderators.json") as r:
+                        resp = await r.json()
+                    daba = resp['data']
+                    mods = [i for i in daba['children'] if str(i['name']).lower() == str(mod).lower()]
+                    timestamp = [i['date'] for i in mods]
+                    perms = [p['mod_permissions'] for p in mods]
+                    this = [f"{i['name']} | {__import__('html').unescape(i['author_flair_text'])}" for i in mods]
+                    embed = discord.Embed(colour=reddit_colour, description=f"Permissions: {f', '.join(f'**{p.capitalize()}**' for p in perms[0])}\nAdded as Mod: **{datetime.datetime.utcfromtimestamp(timestamp[0]).strftime('%B %d, %Y')}**").set_author(name=this[0])
+                    embed.set_footer(text=f"r/{subreddit}")
+                    await ctx.send(embed=embed)
+        except Exception as er:
+            await ctx.send(er)
     
     @commands.command(aliases=['showerthought'], help="hmm :thinking:")
     async def thonk(self, ctx):
