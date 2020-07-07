@@ -226,14 +226,14 @@ class Reddit(commands.Cog):
                 posts.append(submission)
             final_post = random.choice(posts)
             embed = discord.Embed(title=final_post.title, url=final_post.url,
-                                  description=final_post.selftext + f"\n**{final_post.score:,}** <:upvote:718895913342337036> **{final_post.num_comments:,}** 💬",
+                                  description=final_post.selftext + f"\n<:upvote:718895913342337036> **{final_post.score:,}** 💬 **{final_post.num_comments:,}**",
                                   colour=reddit_colour)
             embed.set_author(name=final_post.author, icon_url=final_post.author.icon_img)
             for top_level_comment in final_post.comments:
                 comments.append(top_level_comment)
             final_comment = random.choice(comments)
             embed.add_field(
-                name=f"{final_comment.author} • **{final_comment.score:,}** <:upvote:718895913342337036> **{len(final_comment.replies):,}** 💬",
+                name=f"{final_comment.author} • <:upvote:718895913342337036> **{final_comment.score:,}** 💬 **{len(final_comment.replies):,}**",
                 value=final_comment.body)
             await ctx.send(embed=embed)
     
