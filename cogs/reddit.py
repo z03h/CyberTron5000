@@ -9,6 +9,7 @@ import praw
 from discord.ext import commands
 
 from .utils.lists import emotes
+from .utils import checks
 
 reddit_colour = 0xff5700
 
@@ -39,27 +40,6 @@ class Reddit(commands.Cog):
         self.client = client
         self.up = "<:upvote:718895913342337036>"
         self.share = "<:share:729813718086582402>"
-    
-    @commands.command(aliases=['f'], help="Shows you food")
-    async def food(self, ctx):
-        async with ctx.typing():
-            subreddit = random.choice(['food', 'cheeseburger', 'cake', 'donuts', 'pizza', 'burger'])
-            posts = []
-            async with aiohttp.ClientSession() as cs:
-                async with cs.get(f"https://www.reddit.com/r/{subreddit}/hot.json") as r:
-                    res = await r.json()
-                for i in res['data']['children']:
-                    posts.append(i['data'])
-                s = random.choice([p for p in posts if not p['stickied'] or p['is_self']])
-                embed = discord.Embed(title=str(s['title']), colour=reddit_colour,
-                                      url=f"https://reddit.com/{s['permalink']}",
-                                      description=f"{self.up} **{s['score']:,}** :speech_balloon: **{s['num_comments']:,}** {self.share} **{s['num_crossposts']:,}** :medal: **{s['total_awards_received']}**")
-                embed.set_author(name=s['author'])
-                embed.set_footer(text=f"{s['upvote_ratio'] * 100:,}% upvote ratio | posted to r/{s['subreddit']}")
-                embed.set_image(url=s['url'])
-                return await ctx.send(embed=embed) if not s['over_18'] or s[
-                    'over_18'] and ctx.channel.is_nsfw() else await ctx.send(
-                    f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
     
     # noinspection PyBroadException
     @commands.command(aliases=['rs', 'karma'], help="Shows your Reddit Stats.")
@@ -110,7 +90,7 @@ class Reddit(commands.Cog):
                     res = await r.json()
                 for i in res['data']['children']:
                     posts.append(i['data'])
-                s = random.choice([p for p in posts if not p['stickied'] or p['is_self']])
+                s = random.choice([p for p in posts if not p['is_self'] and not p['stickied']])
                 embed = discord.Embed(title=str(s['title']), colour=reddit_colour,
                                       url=f"https://reddit.com/{s['permalink']}",
                                       description=f"{self.up} **{s['score']:,}** :speech_balloon: **{s['num_comments']:,}** {self.share} **{s['num_crossposts']:,}** :medal: **{s['total_awards_received']}**")
@@ -154,12 +134,14 @@ class Reddit(commands.Cog):
                 async with aiohttp.ClientSession() as cs:
                     async with cs.get(f"https://www.reddit.com/r/{subreddit}/about/moderators.json") as r:
                         resp = await r.json()
-                    daba = resp['data']
-                    mods = [i for i in daba['children'] if str(i['name']).lower() == str(mod).lower()]
+                    data = resp['data']
+                    mods = [i for i in data['children'] if str(i['name']).lower() == str(mod).lower()]
                     timestamp = [i['date'] for i in mods]
                     perms = [p['mod_permissions'] for p in mods]
                     this = [f"{i['name']} | {__import__('html').unescape(i['author_flair_text'])}" for i in mods]
-                    embed = discord.Embed(colour=reddit_colour, description=f"Permissions: {f', '.join(f'**{p.capitalize()}**' for p in perms[0])}\nAdded as Mod: **{datetime.datetime.utcfromtimestamp(timestamp[0]).strftime('%B %d, %Y')}**").set_author(name=this[0])
+                    embed = discord.Embed(colour=reddit_colour,
+                                          description=f"Permissions: {f', '.join(f'**{p.capitalize()}**' for p in perms[0])}\nAdded as Mod: **{datetime.datetime.utcfromtimestamp(timestamp[0]).strftime('%B %d, %Y')}**").set_author(
+                        name=this[0])
                     embed.set_footer(text=f"r/{subreddit}")
                     await ctx.send(embed=embed)
         except Exception as er:
@@ -254,7 +236,7 @@ class Reddit(commands.Cog):
                     res = await r.json()
                 for i in res['data']['children']:
                     posts.append(i['data'])
-                s = random.choice([p for p in posts if not p['stickied'] or p['is_self']])
+                s = random.choice([p for p in posts if not p['stickied']])
                 embed = discord.Embed(title=str(s['title']), colour=reddit_colour,
                                       url=f"https://reddit.com/{s['permalink']}")
                 embed.set_author(name=s['author'])
@@ -293,7 +275,39 @@ class Reddit(commands.Cog):
                     embed.set_footer(
                         text=f"Subreddit created {datetime.datetime.utcfromtimestamp(data['created_utc']).strftime('%B %d, %Y')}")
                     await ctx.send(embed=embed)
+    
+    @commands.command(aliases=['a'], help="Ask Reddit...", hidden=True)
+    @checks.betasquad()
+    async def bask(self, ctx):
+        try:
+            posts = []
+            async with ctx.typing():
+                async with aiohttp.ClientSession() as cs:
+                    async with cs.get(f"https://www.reddit.com/r/AskReddit/hot.json") as r:
+                        res = await r.json()
+                    for i in res['data']['children']:
+                        posts.append(i['data'])
+                    s = random.choice([p for p in posts if not p['stickied']])
+                    embed = discord.Embed(title=str(s['title']), colour=reddit_colour,
+                                          url=f"https://reddit.com/{s['permalink']}",
+                                          description=f"{self.up} **{s['score']:,}** :speech_balloon: **{s['num_comments']:,}** {self.share} **{s['num_crossposts']:,}** :medal: **{s['total_awards_received']}**")
+                    embed.set_author(name=s['author'])
+                    embed.set_footer(text=f"{s['upvote_ratio'] * 100:,}% upvote ratio | posted to r/{s['subreddit']}")
+                    async with aiohttp.ClientSession() as cs:
+                        async with cs.get(f'https://reddit.com{s["permalink"]}/.json') as r:
+                            resp = await r.json()
+                    a = [i['data'] for i in resp]
+                    b = [(j['children'][0]['data']) for j in a]
+                    print(len(b))
+                    print(b[1]['body'])
+                    print(b[1]['author'])
+                    return await ctx.send(embed=embed) if not s['over_18'] or s[
+                        'over_18'] and ctx.channel.is_nsfw() else await ctx.send(
+                        f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
+        except Exception as er:
+            await ctx.send(er)
 
 
 def setup(client):
     client.add_cog(Reddit(client))
+

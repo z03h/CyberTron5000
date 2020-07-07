@@ -56,3 +56,12 @@ def check_guild_and_channel(channel):
             return False
     
     return commands.check(predicate)
+
+
+def betasquad():
+    def predicate(ctx):
+        if ctx.author.id == 350349365937700864:
+            return True
+        return False
+    
+    return commands.check(predicate)

@@ -20,7 +20,7 @@ import psutil
 from discord.ext import commands
 
 from .utils import pyformat as pf
-from .utils.funcs import insert_returns, check_admin_or_owner
+from .utils.checks import insert_returns, check_admin_or_owner
 from .utils import lists
 
 pyf = pf.Discord(bot_user_id=697678160577429584)

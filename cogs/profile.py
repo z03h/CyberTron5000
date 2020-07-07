@@ -19,6 +19,10 @@ colour = 0x00dcff
 # •
 
 class GuildStats:
+    """
+    Guild Stats
+    """
+    
     def __init__(self, ctx):
         self.context = ctx
     
@@ -62,6 +66,10 @@ class GuildStats:
 
 
 class uiEmbed:
+    """
+    Who wants to make the same thing 4 times
+    """
+    
     def __init__(self, ctx):
         self.context = ctx
     

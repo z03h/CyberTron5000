@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from .utils.funcs import check_admin_or_owner
+from .utils.checks import check_admin_or_owner
 
 colour = 0x00dcff
 

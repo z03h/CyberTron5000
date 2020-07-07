@@ -6,7 +6,7 @@ import random
 import discord
 from discord.ext import commands
 
-from .utils.funcs import check_guild_and_channel, check_guild, check_guild_and_admin
+from .utils.checks import check_guild_and_channel, check_guild, check_guild_and_admin
 
 colour = 0x00dcff
 
