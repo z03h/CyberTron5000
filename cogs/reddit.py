@@ -57,7 +57,9 @@ class Reddit(commands.Cog):
                 embed.set_author(name=s['author'])
                 embed.set_footer(text=f"{s['upvote_ratio'] * 100:,}% upvote ratio | posted to r/{s['subreddit']}")
                 embed.set_image(url=s['url'])
-                return await ctx.send(embed=embed) if not s['over_18'] or s['over_18'] and ctx.channel.is_nsfw() else await ctx.send(f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
+                return await ctx.send(embed=embed) if not s['over_18'] or s[
+                    'over_18'] and ctx.channel.is_nsfw() else await ctx.send(
+                    f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
     
     # noinspection PyBroadException
     @commands.command(aliases=['rs', 'karma'], help="Shows your Reddit Stats.")
@@ -98,7 +100,9 @@ class Reddit(commands.Cog):
     
     @commands.command(aliases=['m'], help="Shows you a meme from some of reddit's dankest places (and r/memes)")
     async def meme(self, ctx):
-        subreddit = random.choice(['memes', 'dankmemes', 'okbuddyretard', 'memeeconomy', 'dankexchange', 'pewdiepiesubmissions', 'memes_of_the_dank'])
+        subreddit = random.choice(
+            ['memes', 'dankmemes', 'okbuddyretard', 'memeeconomy', 'dankexchange', 'pewdiepiesubmissions',
+             'memes_of_the_dank'])
         posts = []
         async with ctx.typing():
             async with aiohttp.ClientSession() as cs:
@@ -113,8 +117,10 @@ class Reddit(commands.Cog):
                 embed.set_author(name=s['author'])
                 embed.set_footer(text=f"{s['upvote_ratio'] * 100:,}% upvote ratio | posted to r/{s['subreddit']}")
                 embed.set_image(url=s['url'])
-                return await ctx.send(embed=embed) if not s['over_18'] or s['over_18'] and ctx.channel.is_nsfw() else await ctx.send(f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
-        
+                return await ctx.send(embed=embed) if not s['over_18'] or s[
+                    'over_18'] and ctx.channel.is_nsfw() else await ctx.send(
+                    f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
+    
     @commands.command(aliases=['iu'], help="Shows you the banner or icon of a subreddit (on old Reddit).")
     async def icon(self, ctx, subreddit, choice="img"):
         async with ctx.typing():
@@ -127,27 +133,14 @@ class Reddit(commands.Cog):
             else:
                 return await ctx.send("Error! Please pick `banner` or `img`.")
     
-    @commands.command(help="Shows you info about a subreddit.")
-    async def subreddit(self, ctx, subreddit):
-        s = self.reddit.subreddit(subreddit)
-        ts = s.created_utc
-        async with ctx.typing():
-            mods = [f'[{mod.name}](https://reddit.com/user/{mod.name})' for mod in s.moderator()]
-            embed = discord.Embed(title=f"r/{s.display_name}", url=f'https://reddit.com/r/{subreddit}',
-                                  colour=reddit_colour, description=s.public_description or " ")
-            embed.add_field(name="General",
-                            value=f"Subscribers: **{s.subscribers:,}**\nCreated: **{datetime.datetime.utcfromtimestamp(ts).strftime('%B %d, %Y')}**")
-            embed.add_field(name=f"Mods (Total {len(mods)})", value="\n".join(mods[:10]), inline=False)
-            embed.set_thumbnail(url=s.icon_img)
-            await ctx.send(embed=embed)
-        
     @commands.command(help="Shows you a wiki page for a subreddit.")
     async def wiki(self, ctx, subreddit, *, page):
         try:
             async with ctx.typing():
                 s = self.reddit.subreddit(subreddit)
                 wikipage = s.wiki[page]
-                em = discord.Embed(title="/{}".format(page), description=(wikipage.content_md[:2000]), colour=reddit_colour,
+                em = discord.Embed(title="/{}".format(page), description=(wikipage.content_md[:2000]),
+                                   colour=reddit_colour,
                                    timestamp=ctx.message.created_at)
                 em.set_footer(text="r/" + s.display_name, icon_url=s.icon_img)
                 await ctx.send(embed=em)
@@ -159,10 +152,10 @@ class Reddit(commands.Cog):
         async with ctx.typing():
             perms = [m.mod_permissions for m in self.reddit.subreddit(subreddit).moderator(mod)]
             await ctx.send(embed=discord.Embed(title=f"Mod Perms for {mod}", colour=reddit_colour,
-                                                   description="\n".join(
-                                                       [f"• {perm.capitalize()}" for perm in perms[0]])).set_author(
+                                               description="\n".join(
+                                                   [f"• {perm.capitalize()}" for perm in perms[0]])).set_author(
                 name=f"r/{subreddit}", icon_url=self.reddit.subreddit(subreddit).icon_img))
-        
+    
     @commands.command(aliases=['showerthought'], help="hmm :thinking:")
     async def thonk(self, ctx):
         posts = []
@@ -178,7 +171,9 @@ class Reddit(commands.Cog):
                                       description=f"{self.up} **{s['score']:,}** :speech_balloon: **{s['num_comments']:,}** {self.share} **{s['num_crossposts']:,}** :medal: **{s['total_awards_received']}**")
                 embed.set_author(name=s['author'])
                 embed.set_footer(text=f"{s['upvote_ratio'] * 100:,}% upvote ratio | posted to r/{s['subreddit']}")
-                return await ctx.send(embed=embed) if not s['over_18'] or s['over_18'] and ctx.channel.is_nsfw() else await ctx.send(f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
+                return await ctx.send(embed=embed) if not s['over_18'] or s[
+                    'over_18'] and ctx.channel.is_nsfw() else await ctx.send(
+                    f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
     
     # mod stats
     
@@ -242,7 +237,8 @@ class Reddit(commands.Cog):
         posts = []
         sorts = ['new', 'hot', 'top', 'rising', 'controversial']
         if sort not in sorts:
-            return await ctx.send(f"<:warning:727013811571261540> **{ctx.author.name}**, that isn't a valid sort! Valid sorts include {', '.join(sorts)}.")
+            return await ctx.send(
+                f"<:warning:727013811571261540> **{ctx.author.name}**, that isn't a valid sort! Valid sorts include {', '.join(sorts)}.")
         async with ctx.typing():
             async with aiohttp.ClientSession() as cs:
                 async with cs.get(f"https://www.reddit.com/r/{subreddit}/{sort}.json") as r:
@@ -256,11 +252,38 @@ class Reddit(commands.Cog):
                 embed.set_footer(text=f"{s['upvote_ratio'] * 100:,}% upvote ratio | posted to r/{s['subreddit']}")
                 if s['is_self']:
                     embed.description = f"{s['selftext']}\n{self.up} **{s['score']:,}** :speech_balloon: **{s['num_comments']:,}** {self.share} **{s['num_crossposts']:,}** :medal: **{s['total_awards_received']}**"
-                    return await ctx.send(embed=embed) if not s['over_18'] or s['over_18'] and ctx.channel.is_nsfw() else await ctx.send(f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
+                    return await ctx.send(embed=embed) if not s['over_18'] or s[
+                        'over_18'] and ctx.channel.is_nsfw() else await ctx.send(
+                        f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
                 else:
                     embed.set_image(url=s['url'])
                     embed.description = f"{self.up} **{s['score']:,}** :speech_balloon: **{s['num_comments']:,}** {self.share} **{s['num_crossposts']:,}** :medal: **{s['total_awards_received']}**"
-                    return await ctx.send(embed=embed) if not s['over_18'] or s['over_18'] and ctx.channel.is_nsfw() else await ctx.send(f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
+                    return await ctx.send(embed=embed) if not s['over_18'] or s[
+                        'over_18'] and ctx.channel.is_nsfw() else await ctx.send(
+                        f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
+    
+    @commands.command(help="Shows info about a subreddit")
+    async def subreddit(self, ctx, subreddit):
+        async with ctx.typing():
+            async with aiohttp.ClientSession() as cs:
+                async with cs.get(f"https://reddit.com/r/{subreddit}/about/.json") as r:
+                    res = await r.json()
+                data = res['data']
+                embed = discord.Embed(
+                    description=f"{data['public_description']}\n**{data['subscribers']:,}** subscribers | **{data['active_user_count']:,}** active users",
+                    colour=reddit_colour).set_author(name=data['display_name_prefixed'],
+                                                     url=f"https://reddit.com/r/{subreddit}")
+                embed.set_thumbnail(url=data['community_icon'].split("?")[0])
+                async with aiohttp.ClientSession() as cs:
+                    async with cs.get(f"https://www.reddit.com/r/{subreddit}/about/moderators.json") as r:
+                        resp = await r.json()
+                    daba = resp['data']
+                    mods = [i for i in daba['children']]
+                    embed.add_field(name=f"Mods (Total {len(mods)})", value="\n".join(
+                        [f"[{mod['name']}](https://reddit.com/user/{mod['name']})" for mod in mods[:10]]))
+                    embed.set_footer(
+                        text=f"Subreddit created {datetime.datetime.utcfromtimestamp(data['created_utc']).strftime('%B %d, %Y')}")
+                    await ctx.send(embed=embed)
 
 
 def setup(client):
