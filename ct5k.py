@@ -114,11 +114,11 @@ async def load(ctx, extension=None):
             if filename.endswith('.py'):
                 client.load_extension(f'cogs.{filename[:-3]}')
         
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.send("\n".join([f":arrow_up: `cogs.{f[:-3]}`" for f in os.listdir("./cogs") if f.endswith(".py")]))
     
     else:
         client.load_extension(f'cogs.{extension}')
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.send(f":arrow_up: `cogs.{extension}`")
 
 
 @client.command(help="Unloads Cogs.")
@@ -129,11 +129,11 @@ async def unload(ctx, extension=None):
             if filename.endswith('.py'):
                 client.unload_extension(f'cogs.{filename[:-3]}')
         
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.send("\n".join([f":arrow_down: `cogs.{f[:-3]}`" for f in os.listdir("./cogs") if f.endswith(".py")]))
     
     else:
         client.unload_extension(f'cogs.{extension}')
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.send(f":arrow_down: `cogs.{extension}`")
 
 
 @client.command(help="Reloads Cogs")
@@ -142,15 +142,13 @@ async def reload(ctx, extension=None):
     if not extension:
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
-                client.unload_extension(f'cogs.{filename[:-3]}')
-                client.load_extension(f'cogs.{filename[:-3]}')
+                client.reload_extension(f'cogs.{filename[:-3]}')
         
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.send("\n".join([f":repeat: `cogs.{f[:-3]}`" for f in os.listdir("./cogs") if f.endswith(".py")]))
     
     else:
-        client.unload_extension(f'cogs.{extension}')
-        client.load_extension(f'cogs.{extension}')
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        client.reload_extension(f'cogs.{extension}')
+        await ctx.send(f":repeat: `cogs.{extension}`")
 
 
 client.run(get_token())
