@@ -49,6 +49,15 @@ class Reddit(commands.Cog):
             async with aiohttp.ClientSession() as cs:
                 async with cs.get(f"https://www.reddit.com/user/{user}/trophies/.json") as r:
                     res = await r.json()
+                async with cs.get(f"https://www.reddit.com/user/{user}/about/.json") as re:
+                    k = await re.json()
+                if r.status != 200 or re.status != 200:
+                    if r.status or re.status == 400:
+                        custom_message = " Redditor not found. "
+                    else:
+                        custom_message = "\u200b"
+                    return await ctx.send(
+                        f"Whoops, something went wrong.{custom_message}Error Codes: {r.status}, {re.status}")
                 for item in res['data']['trophies']:
                     if str(item['data']['name']).lower() in emotes:
                         trophies.append(emotes[str(item['data']['name']).lower()])
@@ -57,9 +66,6 @@ class Reddit(commands.Cog):
                 for t in trophies:
                     if t not in i:
                         i.append(t)
-            async with aiohttp.ClientSession() as cs:
-                async with cs.get(f"https://www.reddit.com/user/{user}/about/.json") as re:
-                    k = await re.json()
             embed = discord.Embed(
                 colour=reddit_colour, title=f"u/{k['data']['name']}", url=f"https://reddit.com/user/{user}",
                 description=f"{k['data']['subreddit']['public_description']}\n\n<:karma:704158558547214426> **Karma** • **{k['data']['link_karma'] + k['data']['comment_karma']:,}**\n:link: **Link** • **{k['data']['link_karma']:,}**\n:speech_balloon: **Comment** • **{k['data']['comment_karma']:,}**\n**Trophies (Total {len(i)})**\n" + "".join(
@@ -71,10 +77,7 @@ class Reddit(commands.Cog):
             icon = k['data']['icon_img']
             icon = icon.split("?")[0]
             embed.set_thumbnail(url=icon)
-            if r.status == 404:
-                await ctx.send('Redditor not found.')
-            else:
-                await ctx.send(embed=embed)
+            return await ctx.send(embed=embed)
     
     @commands.command(aliases=['m'], help="Shows you a meme from some of reddit's dankest places (and r/memes)")
     async def meme(self, ctx):
@@ -225,6 +228,7 @@ class Reddit(commands.Cog):
     async def post(self, ctx, subreddit, sort='hot'):
         posts = []
         sorts = ['new', 'hot', 'top', 'rising', 'controversial']
+        u = '\u200b'
         if sort not in sorts:
             return await ctx.send(
                 f"<:warning:727013811571261540> **{ctx.author.name}**, that isn't a valid sort! Valid sorts include {', '.join(sorts)}.")
@@ -240,7 +244,7 @@ class Reddit(commands.Cog):
                 embed.set_author(name=s['author'])
                 embed.set_footer(text=f"{s['upvote_ratio'] * 100:,}% upvote ratio | posted to r/{s['subreddit']}")
                 if s['is_self']:
-                    embed.description = f"{s['selftext']}\n{self.up} **{s['score']:,}** :speech_balloon: **{s['num_comments']:,}** {self.share} **{s['num_crossposts']:,}** :medal: **{s['total_awards_received']}**"
+                    embed.description = f"{s['selftext'].replace('**', f'{u}')}\n{self.up} **{s['score']:,}** :speech_balloon: **{s['num_comments']:,}** {self.share} **{s['num_crossposts']:,}** :medal: **{s['total_awards_received']}**"
                     return await ctx.send(embed=embed) if not s['over_18'] or s[
                         'over_18'] and ctx.channel.is_nsfw() else await ctx.send(
                         f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")

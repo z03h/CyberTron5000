@@ -19,11 +19,8 @@ import praw
 import psutil
 from discord.ext import commands
 
-from .utils import pyformat as pf
+from .utils import aesthetic
 from .utils.checks import insert_returns, check_admin_or_owner
-from .utils import lists
-
-pyf = pf.Discord(bot_user_id=697678160577429584)
 
 start_time = datetime.datetime.utcnow()
 colour = 0x00dcff
@@ -32,6 +29,10 @@ colour = 0x00dcff
 # ≫
 
 def lines_main():
+    """
+    So I only have to do this once
+    :return:
+    """
     filename1 = "ct5k.py"
     nol = 0
     with open(filename1, 'r') as files:
@@ -41,6 +42,11 @@ def lines_main():
 
 
 def lines_of_code(cog=None):
+    """
+    Same thing
+    :param cog:
+    :return:
+    """
     if not cog:
         global count
         line_count = {}
@@ -91,7 +97,7 @@ class Meta(commands.Cog):
     @commands.Cog.listener()
     async def on_command_completion(self, ctx):
         self.counter += 1
-    
+        
     @commands.command()
     async def uptime(self, ctx):
         delta_uptime = datetime.datetime.utcnow() - start_time
@@ -115,7 +121,7 @@ class Meta(commands.Cog):
     async def eval_fn(self, ctx, *, cmd):
         fn_name = "_eval_expr"
         
-        cmd = pyf.codeblock(cmd)
+        cmd = aesthetic.codeblock(cmd)
         cmd = cmd.strip("` ")
         cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
         
@@ -151,7 +157,7 @@ class Meta(commands.Cog):
         try:
             fn_name = "_eval_expr"
             
-            cmd = pyf.codeblock(cmd)
+            cmd = aesthetic.codeblock(cmd)
             cmd = cmd.strip("` ")
             cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
             
@@ -193,32 +199,30 @@ class Meta(commands.Cog):
         end = time.perf_counter()
         duration = round((end - start) * 1000, 3)
         await message.edit(
-            content=f"<{self.tick}> **{ctx.author.name}**, the current average websocket latency is **{round(self.client.latency * 1000, 3)}** ms • Response Time: **{duration}** ms {lists.sl[discord.Status.online]}")
+            content=f"<{self.tick}> **{ctx.author.name}**, the current average websocket latency is **{round(self.client.latency * 1000, 3)}** ms • Response Time: **{duration}** ms")
     
     @commands.command(aliases=["sourcecode", "src"], help="Shows source code for a given command")
     async def source(self, ctx, *, command=None):
-        i = __import__('inspect')
-        if command is None:
-            return await ctx.send(embed=discord.Embed(title="Check out the full source code for this bot on GitHub!",
-                                                      url="https://github.com/niztg/CyberTron5000/", colour=colour))
+        u = '\u200b'
+        if not command:
+            return await ctx.send(embed=discord.Embed(colour=colour).set_author(name=f"⭐️ Check out the full sourcecode on GitHub!", url=f"https://github.com/niztg/CyberTron5000", icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png"))
         elif command == "help":
             await ctx.send(embed=discord.Embed(
                 description=f"This code was too long for Discord, you can see it instead [on GitHub](https://github.com/niztg/CyberTron5000/blob/master/cogs/info.py#L9-L109)",
                 colour=colour))
         else:
-            cmd = self.client.get_command(command).callback
-            src = str(i.getsource(cmd)).replace("```", "``")
+            src = f"```py\n{str(__import__('inspect').getsource(self.client.get_command('source').callback)).replace('```', f'{u}')}```"
             if len(src) > 2000:
                 cmd = self.client.get_command(command).callback
                 file = cmd.__code__.co_filename
                 location = os.path.relpath(file)
-                total, fl = i.getsourcelines(cmd)
+                total, fl = __import__('inspect').getsourcelines(cmd)
                 ll = fl + (len(total) - 1)
                 await ctx.send(embed=discord.Embed(
                     description=f"This code was too long for Discord, you can see it instead [on GitHub](<https://github.com/niztg/CyberTron5000/blob/master/{location}#L{fl}-L{ll}>)",
                     colour=colour))
             else:
-                await ctx.send(f"```py\n{src}\n```")
+                await ctx.send(src)
     
     @commands.group(invoke_without_command=True, help="Shows total lines of code used to make the bot.")
     async def lines(self, ctx):
@@ -294,7 +298,7 @@ class Meta(commands.Cog):
         embed = discord.Embed(colour=colour, title=f"About {self.client.user.name}",
                               description=f"{self.client.user.name} is a general purpose discord bot, and the best one! This project was started in April, around **{humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}**.\n\n• **[Invite me to your server!](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)**\n• **[Join our help server!](https://discord.gg/2fxKxJH)**\n<:github:724036339426787380> **[Support this project on GitHub!](https://github.com/niztg/CyberTron5000)**\n🌐 **[Check out the website!](https://cybertron-5k.netlify.app/index.html)**\n<:reddit:703931951769190410> **[Join the subreddit!](https://www.reddit.com/r/CyberTron5000/)**\n\nCommands used since start: **{self.counter}** (cc <@!574870314928832533>)\nUptime: {a}\n")
         embed.add_field(name="_Statistics_",
-                        value=f"Used Memory: {pf.NativePython().bar(stat=psutil.virtual_memory()[2], max=100, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>')}\n**{len(self.client.users):,}** users, **{len(self.client.guilds):,}** guilds • About **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands, **{len(self.client.cogs)}** cogs • About **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n**{lines_of_code():,}** lines of code • " + '|'.join(
+                        value=f"Used Memory: {aesthetic.bar(stat=psutil.virtual_memory()[2], max=100, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>')}\n**{len(self.client.users):,}** users, **{len(self.client.guilds):,}** guilds • About **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands, **{len(self.client.cogs)}** cogs • About **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n**{lines_of_code():,}** lines of code • " + '|'.join(
                             self.softwares))
         embed.set_thumbnail(url=self.client.user.avatar_url_as(static_format="png"))
         embed.add_field(name="_Latest Commits_", value="\n".join(await self.get_commits()), inline=False)
@@ -332,7 +336,6 @@ class Meta(commands.Cog):
             return await ctx.send(f"<:warning:727013811571261540> **{ctx.author.name}**, limit must be greater than 0 and less than 16!")
         commits = [f"{index}. {commit}" for index, commit in enumerate(await self.get_commits(limit), 1)]
         await ctx.send(embed=discord.Embed(description="\n".join(commits), colour=colour).set_author(name=f"Last {limit} GitHub Commit(s) for CyberTron5000", icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png", url="https://github.com/niztg/CyberTron5000"))
-
 
 def setup(client):
     client.add_cog(Meta(client))
