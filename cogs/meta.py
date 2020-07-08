@@ -211,7 +211,7 @@ class Meta(commands.Cog):
                 description=f"This code was too long for Discord, you can see it instead [on GitHub](https://github.com/niztg/CyberTron5000/blob/master/cogs/info.py#L9-L109)",
                 colour=colour))
         else:
-            src = f"```py\n{str(__import__('inspect').getsource(self.client.get_command('source').callback)).replace('```', f'{u}')}```"
+            src = f"```py\n{str(__import__('inspect').getsource(self.client.get_command(command).callback)).replace('```', f'{u}')}```"
             if len(src) > 2000:
                 cmd = self.client.get_command(command).callback
                 file = cmd.__code__.co_filename
