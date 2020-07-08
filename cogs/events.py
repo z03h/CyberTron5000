@@ -31,7 +31,10 @@ class Events(commands.Cog):
     
         if isinstance(error, discord.ext.commands.MissingPermissions):
             await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {error}')
-    
+        
+        if isinstance(error, commands.CommandNotFound) or isinstance(error, commands.NotOwner):
+            pass
+        
         else:
             await ctx.message.add_reaction(self.x_r)
 
