@@ -127,27 +127,26 @@ class Reddit(commands.Cog):
     
     @commands.command(aliases=['mod'])
     async def moderator(self, ctx, mod, subreddit):
-        try:
-            async with ctx.typing():
-                async with aiohttp.ClientSession() as cs:
-                    async with cs.get(f"https://www.reddit.com/r/{subreddit}/about/moderators.json") as r:
-                        resp = await r.json()
-                    data = resp['data']
-                    mods = [i for i in data['children'] if str(i['name']).lower() == str(mod).lower()]
-                    timestamp = [i['date'] for i in mods]
-                    perms = [p['mod_permissions'] for p in mods]
-                    if not [i['author_flair_text'] for i in mods][0]:
-                        char = "\u200b"
-                    else:
-                        char = f" | {__import__('html').unescape([i['author_flair_text'] for i in mods][0])}"
-                    this = [f"{i['name']}{char}" for i in mods]
-                    embed = discord.Embed(colour=reddit_colour,
-                                          description=f"Permissions: {f', '.join(f'**{p.capitalize()}**' for p in perms[0])}\nAdded as Mod: **{datetime.datetime.utcfromtimestamp(timestamp[0]).strftime('%B %d, %Y')}**").set_author(
-                        name=this[0])
-                    embed.set_footer(text=f"r/{subreddit}")
-                    await ctx.send(embed=embed)
-        except Exception as er:
-            await ctx.send(er)
+        async with ctx.typing():
+            async with aiohttp.ClientSession() as cs:
+                async with cs.get(f"https://www.reddit.com/r/{subreddit}/about/moderators.json") as r:
+                    resp = await r.json()
+                if r.status != 200:
+                    return await ctx.send(f"Whoops, something went wrong, Error Code: {r.status}")
+                data = resp['data']
+                mods = [i for i in data['children'] if str(i['name']).lower() == str(mod).lower()]
+                timestamp = [i['date'] for i in mods]
+                perms = [p['mod_permissions'] for p in mods]
+                if not [i['author_flair_text'] for i in mods][0]:
+                    char = "\u200b"
+                else:
+                    char = f" | {__import__('html').unescape([i['author_flair_text'] for i in mods][0])}"
+                this = [f"{i['name']}{char}" for i in mods]
+                embed = discord.Embed(colour=reddit_colour,
+                                      description=f"Permissions: {f', '.join(f'**{p.capitalize()}**' for p in perms[0])}\nAdded as Mod: **{datetime.datetime.utcfromtimestamp(timestamp[0]).strftime('%B %d, %Y')}**").set_author(
+                    name=this[0])
+                embed.set_footer(text=f"r/{subreddit}")
+                await ctx.send(embed=embed)
     
     @commands.command(aliases=['showerthought'], help="hmm :thinking:")
     async def thonk(self, ctx):
@@ -173,36 +172,33 @@ class Reddit(commands.Cog):
     @commands.command(aliases=['ms'])
     async def modstats(self, ctx, user):
         """Shows you the moderated subreddits of a specific user."""
-        try:
-            async with ctx.typing():
-                async with aiohttp.ClientSession() as cs:
-                    async with cs.get(f"https://www.reddit.com/user/{user}/moderated_subreddits/.json") as r:
-                        res = await r.json()
-                    subreddits = res['data']
-                    reddits = [
-                        f"[{subreddit['sr_display_name_prefixed']}](https://reddit.com{subreddit['url']}) • <:member:716339965771907099> **{subreddit['subscribers']:,}**"
-                        for subreddit in subreddits]
-                    numbas = [s['subscribers'] for s in subreddits]
-                    msg = "Top 15 Subreddits" if len(reddits) > 15 else "Moderated Subreddits"
-                    modstats = [f"{i}. {v}" for i, v in enumerate(reddits, 1)]
-                    final_ms = "\n".join(modstats)
-                    zero_subs = len([item for item in numbas if item == 0])
-                    one_subs = len([item for item in numbas if item == 1])
-                    hundred_subs = len([item for item in numbas if item >= 100])
-                    thousand_subs = len([item for item in numbas if item >= 1000])
-                    hundred_thousand_subs = len([item for item in numbas if item >= 100_000])
-                    million = len([item for item in numbas if item >= 1_000_000])
-                    ten_million = len([item for item in numbas if item >= 10_000_000])
-                    embed = discord.Embed(
-                        description=f"u/{user} mods **{len(reddits):,}** subreddits with **{humanize.intcomma(sum(numbas))}** total readers\n\n*{msg}*\n\n{final_ms}",
-                        colour=reddit_colour)
-                    embed.add_field(name="Advanced Statistics",
-                                    value=f"Subreddits with 0 subscribers: **{zero_subs}**\nSubreddits with 1 subscriber: **{one_subs}**\nSubreddits with 100 or more subscribers: **{hundred_subs}**\nSubreddits with 1,000 or more subscribers: **{thousand_subs}**\nSubreddits with 100,000 or more subscribers: **{hundred_thousand_subs}**\nSubreddits with 1,000,000 or more subscribers: **{million}**\nSubreddits with 10,000,000 or more subscribers: **{ten_million}**\n\nAverage Subscribers Per Subreddit: **{humanize.intcomma(round(sum(numbas) / len(numbas)))}**")
-                await ctx.send(embed=embed)
-        except Exception as error:
-            await ctx.send(
-                f"Moderator not found/Author not verified. To verify, do `{ctx.prefix}verify [reddit username]`")
-            await ctx.send(error)
+        async with ctx.typing():
+            async with aiohttp.ClientSession() as cs:
+                async with cs.get(f"https://www.reddit.com/user/{user}/moderated_subreddits/.json") as r:
+                    res = await r.json()
+                if r.status != 200:
+                    return await ctx.send("Whoops, something went wrong. Error Code: {}".format(r.status))
+                subreddits = res['data']
+                reddits = [
+                    f"[{subreddit['sr_display_name_prefixed']}](https://reddit.com{subreddit['url']}) • <:member:716339965771907099> **{subreddit['subscribers']:,}**"
+                    for subreddit in subreddits]
+                numbas = [s['subscribers'] for s in subreddits]
+                msg = "Top 15 Subreddits" if len(reddits) > 15 else "Moderated Subreddits"
+                modstats = [f"{i}. {v}" for i, v in enumerate(reddits, 1)]
+                final_ms = "\n".join(modstats)
+                zero_subs = len([item for item in numbas if item == 0])
+                one_subs = len([item for item in numbas if item == 1])
+                hundred_subs = len([item for item in numbas if item >= 100])
+                thousand_subs = len([item for item in numbas if item >= 1000])
+                hundred_thousand_subs = len([item for item in numbas if item >= 100_000])
+                million = len([item for item in numbas if item >= 1_000_000])
+                ten_million = len([item for item in numbas if item >= 10_000_000])
+                embed = discord.Embed(
+                    description=f"u/{user} mods **{len(reddits):,}** subreddits with **{humanize.intcomma(sum(numbas))}** total readers\n\n*{msg}*\n\n{final_ms}",
+                    colour=reddit_colour)
+                embed.add_field(name="Advanced Statistics",
+                                value=f"Subreddits with 0 subscribers: **{zero_subs}**\nSubreddits with 1 subscriber: **{one_subs}**\nSubreddits with 100 or more subscribers: **{hundred_subs}**\nSubreddits with 1,000 or more subscribers: **{thousand_subs}**\nSubreddits with 100,000 or more subscribers: **{hundred_thousand_subs}**\nSubreddits with 1,000,000 or more subscribers: **{million}**\nSubreddits with 10,000,000 or more subscribers: **{ten_million}**\n\nAverage Subscribers Per Subreddit: **{humanize.intcomma(round(sum(numbas) / len(numbas)))}**")
+            await ctx.send(embed=embed)
     
     @commands.command(aliases=['ask'])
     async def askreddit(self, ctx):
