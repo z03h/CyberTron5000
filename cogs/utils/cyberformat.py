@@ -4,10 +4,12 @@ bruh
 
 import discord
 
+
 def minimalize(string):
     final = ''
     final += string[0:1].lower() + string[1:] if string else ''
     return final
+
 
 def listify(list: list, char='\n', limit: int = None):
     """

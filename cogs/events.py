@@ -107,11 +107,17 @@ class Events(commands.Cog):
             if message.author == self.client.user:
                 return
             async with message.channel.typing():
-                if len(message.content) < 3 or len(message.content) > 60:
+                if len(message.content) < 2 or len(message.content) > 60:
                     return await message.channel.send(
-                        f"**{message.author.name}**, text must be below 60 characters and over 3.")
-                r = await self.bot.ask(message.content, message.author.id)
-                await message.channel.send(f"**{message.author.name}**, {cyberformat.minimalize(str(r))}")
+                        f"**{message.author.name}**, text must be below 60 characters and over 2.")
+                resp = await self.bot.ask(message.content, message.author.id)
+                r = str(resp) if str(resp).startswith("I") else cyberformat.minimalize(str(resp))
+                if str(r)[-1] not in ['.', '?', '!']:
+                    suff = "?" if any(s in str(r) for s in ['who', 'what', 'when', 'where', 'why', 'how']) else "."
+                else:
+                    suff = "\u200b"
+                send = cyberformat.hyper_replace(str(r), old=[' i ', "i'm", "i'll"], new=[' I ', "I'm", "I'll"])
+                await message.channel.send(f"**{message.author.name}**, {send}{suff}")
 
 
 def setup(client):

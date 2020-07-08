@@ -13,6 +13,7 @@ from googletrans import Translator
 from random_word import RandomWords
 
 from .utils.lists import STAT_NAMES, NUMBER_ALPHABET, TYPES
+from .utils import cyberformat
 
 colour = 0x00dcff
 
@@ -282,9 +283,21 @@ class Internet(commands.Cog):
     
     @commands.command(aliases=['cb'])
     async def cleverbot(self, ctx, *, text: str):
+        """
+        Ask the clever bot a question.
+        """
         async with ctx.typing():
-            r = await self.bot.ask(text, ctx.author.id)
-            await ctx.send(r)
+            if len(ctx.message.content) < 2 or len(ctx.message.content) > 60:
+                return await ctx.send(
+                    f"**{ctx.author.name}**, text must be below 60 characters and over 2.")
+            resp = await self.bot.ask(text, ctx.author.id)
+            r = str(resp) if str(resp).startswith("I") else cyberformat.minimalize(str(resp))
+            if str(r)[-1] not in ['.', '?', '!']:
+                suff = "?" if any(s in str(r) for s in ['who', 'what', 'when', 'where', 'why', 'how']) else "."
+            else:
+                suff = "\u200b"
+            send = cyberformat.hyper_replace(str(r), old=[' i ', "i'm", "i'll"], new=[' I ', "I'm", "I'll"])
+            await ctx.send(f"**{ctx.author.name}**, {send}{suff}")
 
 
 def setup(client):
