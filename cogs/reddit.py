@@ -296,11 +296,6 @@ class Reddit(commands.Cog):
                     async with aiohttp.ClientSession() as cs:
                         async with cs.get(f'https://reddit.com{s["permalink"]}/.json') as r:
                             resp = await r.json()
-                    a = [i['data'] for i in resp]
-                    b = [(j['children'][0]['data']) for j in a]
-                    print(len(b))
-                    print(b[1]['body'])
-                    print(b[1]['author'])
                     return await ctx.send(embed=embed) if not s['over_18'] or s[
                         'over_18'] and ctx.channel.is_nsfw() else await ctx.send(
                         f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
