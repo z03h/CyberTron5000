@@ -26,58 +26,15 @@ password = secrets()['password']
 user_agent = secrets()['user_agent']
 
 
-async def get_reddit_user__data(data, scope: int):
-    """
-    Used for the RedditUser class
-    :param data:
-    :param scope:
-    :return:
-    """
-    async with aiohttp.ClientSession() as cs:
-        async with cs.get(f"https://reddit.com/user/{data}/about/.json") as r:
-            resp = await r.json()
-        async with cs.get(f"https://reddit.com/user/{data}/trophies/.json") as r2:
-            resp2 = await r2.json()
-        async with cs.get(f"https://reddit.com/user/{data}/moderated_subreddits/.json") as r3:
-            resp3 = await r3.json()
-        t = (resp['data'], resp2['data'], resp3['data'])
-        tl = (r, r2, r3)
-        if scope < 1 or scope > 3:
-            return "Incorrect choice. Please choose between 1 and 3"
-        item = (t[scope - 1], tl[scope - 1])
-        if item[1].status != 200:
-            return f"something went wrong. Code: {item[1].status}"
-        else:
-            return item[0]
-
-
-class RedditUser:
-    """
-    Simple Reddit Info
-    """
-    
-    def __init__(self, general_data: dict):
-        self.user_data = general_data
-        self.name: str = general_data['name']
-        self.link_karma: int = general_data['link_karma']
-        self.comment_karma: int = general_data['comment_karma']
-        self.karma = self.link_karma + self.comment_karma
-        self.nsfw: bool = general_data['subreddit']['over_18']
-        self.description: bool = general_data['subreddit']['public_description']
-        self.icon_img = general_data['subreddit']['icon_img'].split("?")[0]
-        self.banner_img = general_data['subreddit']['banner_img'].split("?")[0]
-        self.title = general_data['subreddit']['title']
-    
-    def __repr__(self):
-        return f"RedditUser(name: {self.name}, karma: {self.karma:,})"
-
-
 class Reddit(commands.Cog):
     """Commands interacting with the Reddit API."""
     
     def __init__(self, client):
-        self.reddit = praw.Reddit(client_id=client_id, client_secret=client_secret, username=username,
-                                  password=password, user_agent=user_agent)
+        self.reddit = praw.Reddit(client_id=client_id,
+                                  client_secret=client_secret,
+                                  username=username, password=password,
+                                  user_agent=user_agent
+                                  )
         self.client = client
         self.up = "<:upvote:718895913342337036>"
         self.share = "<:share:729813718086582402>"
@@ -345,16 +302,6 @@ class Reddit(commands.Cog):
                         f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
         except Exception as er:
             await ctx.send(er)
-    
-    @commands.command()
-    @checks.betasquad()
-    async def qq(self, ctx, name):
-        r = RedditUser(await get_reddit_user__data(name, 1))
-        await ctx.send(f"**{r.name}**\n")
-        await ctx.send(r)
-        await ctx.send(r.icon_img)
-        await ctx.send(r.banner_img)
-        await ctx.send(r.nsfw)
 
 
 def setup(client):
