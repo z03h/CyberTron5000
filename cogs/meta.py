@@ -9,6 +9,7 @@ import datetime
 import json
 import os
 import subprocess
+import platform
 import sys
 import time
 
@@ -298,11 +299,11 @@ class Meta(commands.Cog):
         embed = discord.Embed(colour=colour, title=f"About {self.client.user.name}",
                               description=f"{self.client.user.name} is a general purpose discord bot, and the best one! This project was started in April, around **{humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}**.\n\n• **[Invite me to your server!](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)**\n• **[Join our help server!](https://discord.gg/2fxKxJH)**\n<:github:724036339426787380> **[Support this project on GitHub!](https://github.com/niztg/CyberTron5000)**\n🌐 **[Check out the website!](https://cybertron-5k.netlify.app/index.html)**\n<:reddit:703931951769190410> **[Join the subreddit!](https://www.reddit.com/r/CyberTron5000/)**\n\nCommands used since start: **{self.counter}** (cc <@!574870314928832533>)\nUptime: {a}\n")
         embed.add_field(name="_Statistics_",
-                        value=f"Used Memory: {cyberformat.bar(stat=psutil.virtual_memory()[2], max=100, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>')}\n**{len(self.client.users):,}** users, **{len(self.client.guilds):,}** guilds • About **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands, **{len(self.client.cogs)}** cogs • About **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n**{lines_of_code():,}** lines of code • " + '|'.join(
-                            self.softwares))
+                        value=f"Used Memory: {cyberformat.bar(stat=psutil.virtual_memory()[2], max=100, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>')}\nCPU: {cyberformat.bar(stat=psutil.cpu_percent(), max=100, filled='<:loading_filled:729032081132355647>', empty='<:loading_empty:729034065092542464>')}\n**{len(self.client.users):,}** users, **{len(self.client.guilds):,}** guilds • About **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands, **{len(self.client.cogs)}** cogs • About **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n**{lines_of_code():,}** lines of code • " + '|'.join(
+                            self.softwares) + f"\ndiscord.py {discord.__version__} | Python {platform.python_version()}")
         embed.set_thumbnail(url=self.client.user.avatar_url_as(static_format="png"))
         embed.add_field(name="_Latest Commits_", value="\n".join(await self.get_commits()), inline=False)
-        embed.set_footer(text=f"discord.py {discord.__version__} • {self.version}")
+        embed.set_footer(text=self.version)
         embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
         await ctx.send(embed=embed)
     

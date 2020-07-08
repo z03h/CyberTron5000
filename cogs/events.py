@@ -21,22 +21,25 @@ class Events(commands.Cog):
         if isinstance(error, discord.ext.commands.CheckFailure):
             await ctx.message.add_reaction(emoji=self.x_r)
     
-        if isinstance(error, discord.ext.commands.BadArgument):
+        elif isinstance(error, discord.ext.commands.BadArgument):
             await ctx.send(
-                f"<{self.x_r}> **{ctx.author.name}**, {error}")
+                f"<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}!")
     
-        if isinstance(error, discord.ext.commands.MissingRequiredArgument):
+        elif isinstance(error, discord.ext.commands.MissingRequiredArgument):
             await ctx.send(
                 f"<{self.x_r}> **{ctx.author.name}**, you're missing the required argument **{error.param.name}**!")
     
-        if isinstance(error, discord.ext.commands.MissingPermissions):
-            await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {error}')
-        
-        if isinstance(error, commands.CommandNotFound) or isinstance(error, commands.NotOwner):
+        elif isinstance(error, discord.ext.commands.MissingPermissions):
+            await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}!')
+    
+        elif isinstance(error, commands.CommandNotFound) or isinstance(error, commands.NotOwner):
             pass
-        
+    
         else:
             await ctx.message.add_reaction(self.x_r)
+            await self.client.get_channel(730556685214548088).send(embed=discord.Embed(colour=colour, title="Error!",
+                                                                                       description=f"Error on `{ctx.command}`:\n```py\n{error}```").set_author(
+                name=ctx.author, icon_url=ctx.author.avatar_url))
 
     @commands.Cog.listener(name="on_message")
     async def on_user_mention(self, message):
