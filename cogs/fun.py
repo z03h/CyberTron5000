@@ -5,7 +5,7 @@ import discord
 from async_timeout import timeout
 from discord.ext import commands
 
-from .utils import aesthetic
+from .utils import cyberformat
 from .utils.lists import INDICATOR_LETTERS
 
 colour = 0x00dcff
@@ -25,7 +25,7 @@ class Fun(commands.Cog):
                     aliases=['say'])
     async def reply(self, ctx, *, message):
         await ctx.send(
-            aesthetic.hyper_replace(text=message, old=['@everyone', '@here'], new=['@\u200beveryone', '@\u200bhere']))
+            cyberformat.hyper_replace(text=message, old=['@everyone', '@here'], new=['@\u200beveryone', '@\u200bhere']))
     
     @reply.command(invoke_without_command=True,
                    help="Replies with what you said and deletes your message, but in an embed.")
@@ -36,16 +36,16 @@ class Fun(commands.Cog):
                    help="Replies with what you said and deletes your message, but in a different channel.")
     async def echo(self, ctx, channel: discord.TextChannel, *, message):
         await channel.send(
-            aesthetic.hyper_replace(text=message, old=['@everyone', '@here'], new=['@\u200beveryone', '@\u200bhere']))
+            cyberformat.hyper_replace(text=message, old=['@everyone', '@here'], new=['@\u200beveryone', '@\u200bhere']))
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
     
     @reply.command(invoke_without_command=True, help="Replies with what you said and deletes your message, but UwU.")
     async def owo(self, ctx, *, message):
-        await ctx.send(aesthetic.hyper_replace(text=message, old=['r', 'l', 'R', 'L'], new=['w', 'w', "W", "W"]))
+        await ctx.send(cyberformat.hyper_replace(text=message, old=['r', 'l', 'R', 'L'], new=['w', 'w', "W", "W"]))
     
     @reply.command(help="🅱", invoke_without_command=True)
     async def b(self, ctx, *, message):
-        await ctx.send(aesthetic.hyper_replace(text=message, old=['b', 'B', 'D', 'd'], new=['🅱', '🅱', "🅱", "🅱"]))
+        await ctx.send(cyberformat.hyper_replace(text=message, old=['b', 'B', 'D', 'd'], new=['🅱', '🅱', "🅱", "🅱"]))
     
     @reply.command(aliases=['msg'], help="Message a user something. ", invoke_without_command=True)
     async def message(self, ctx, user: discord.Member, *, message):
@@ -56,7 +56,7 @@ class Fun(commands.Cog):
     @reply.command(help="Spams a message.", invoke_without_command=True)
     async def spam(self, ctx, *, message):
         l = ['@u200beveryone', '@\u200bhere']
-        await ctx.send(f"{aesthetic.hyper_replace(text=message, old=['@everyone', '@here'], new=l)} " * 15)
+        await ctx.send(f"{cyberformat.hyper_replace(text=message, old=['@everyone', '@here'], new=l)} " * 15)
     
     @reply.command(invoke_without_command=True)
     async def indicator(self, ctx, *, message):

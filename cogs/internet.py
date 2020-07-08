@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import random
+import async_cleverbot
 from html import unescape as unes
 
 import aiohttp
@@ -25,6 +26,8 @@ class Internet(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.pypi = "https://raw.githubusercontent.com/github/explore/666de02829613e0244e9441b114edb85781e972c/topics/pip/pip.png"
+        self.bot = async_cleverbot.Cleverbot("OVbZ10+q,G#vU_-)67/T")
+        self.bot.set_context(async_cleverbot.DictContext(self.bot))
     
     @commands.group(invoke_without_command=True, aliases=['trans'], help="Translate something to English.")
     async def translate(self, ctx, *, message):
@@ -56,7 +59,7 @@ class Internet(commands.Cog):
     async def wordoftheday(self, ctx):
         try:
             random_word = RandomWords()
-            await ctx.send(random_word.get_random_word())
+            await ctx.send(dict(random_word.word_of_the_day()))
         except Exception as error:
             await ctx.send(error)
     
@@ -276,6 +279,12 @@ class Internet(commands.Cog):
             await ctx.send(embed=embed)
         except Exception as error:
             await ctx.send("Package probably not found.")
+    
+    @commands.command(aliases=['cb'])
+    async def cleverbot(self, ctx, *, text: str):
+        async with ctx.typing():
+            r = await self.bot.ask(text, ctx.author.id)
+            await ctx.send(r)
 
 
 def setup(client):
