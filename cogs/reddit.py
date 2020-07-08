@@ -30,11 +30,12 @@ class Reddit(commands.Cog):
     """Commands interacting with the Reddit API."""
     
     def __init__(self, client):
-        self.reddit = praw.Reddit(client_id=client_id,
-                                  client_secret=client_secret,
-                                  username=username, password=password,
-                                  user_agent=user_agent
-                                  )
+        self.reddit = praw.Reddit(
+            client_id=client_id,
+            client_secret=client_secret,
+            username=username, password=password,
+            user_agent=user_agent
+        )
         self.client = client
         self.up = "<:upvote:718895913342337036>"
         self.share = "<:share:729813718086582402>"
@@ -306,4 +307,3 @@ class Reddit(commands.Cog):
 
 def setup(client):
     client.add_cog(Reddit(client))
-
