@@ -175,3 +175,15 @@ status_mapping = {
     discord.ActivityType.custom: "\u200b"
 }
 
+badge_mapping = {
+    "staff": "<:staff:730846674775179394>",
+    "partner": "<:partner:730846624275759105>",
+    "hypesquad": "<:hypesquad:730846721235746859>",
+    "bug_hunter": "<:bug_hunter:730868709274419281>",
+    "bug_hunter_level_2": "<:bug_hunter_level_2:730874021721276527>",
+    "hypesquad_bravery": "<:hypesquad_bravery:730851606941270147>",
+    "hypesquad_brilliance": "<:hypesquad_brilliance:730851606853320765>",
+    "hypesquad_balance": "<:hypesquad_balance:730851606832087141>",
+    "early_supporter": "<:early_supporter:730869784337580102>",
+    "verified_bot_developer": "<:verified_bot_developer:730849897410199572>"
+}

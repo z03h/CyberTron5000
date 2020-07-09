@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from discord.ext import commands
 from disputils import BotEmbedPaginator
 
-from .utils.lists import REGIONS, sl, mlsl, wlsl, dlsl, status_mapping
+from .utils.lists import REGIONS, sl, mlsl, wlsl, dlsl, status_mapping, badge_mapping
 from .utils import cyberformat
 
 matplotlib.use('Agg')
@@ -63,6 +63,20 @@ class GuildStats:
             "total": len(self.context.guild.emojis),
             "limit": self.context.guild.emoji_limit,
         }
+    
+    async def check_nitro(self, m: discord.Member):
+        if m.is_avatar_animated():
+            return True
+        if m in self.context.guild.premium_subscribers:
+            return True
+        if m.activity:
+            for a in m.activities:
+                if a.type is not discord.ActivityType.custom:
+                    continue
+                else:
+                    if a.emoji.is_custom_emoji():
+                        return True
+        return False
 
 
 class uiEmbed:
@@ -147,7 +161,7 @@ class Profile(commands.Cog):
             categories = [category for category in guild.categories]
             region = REGIONS[f"{str(guild.region)}"]
             embed = discord.Embed(colour=colour,
-                                  description=f"**{guild.id}**\n👑 **{guild.owner}**\n🗺 **{region}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
+                                  description=f"**{guild.id}**\n<:owner:730864906429136907> **{guild.owner}**\n🗺 **{region}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
                                               f"\n{f'{n}'.join(people)}\n<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**\n{cyberformat.bar(stat=GuildStats(ctx).num_bot, max=ctx.guild.member_count, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>', show_stat=False)}\n<:boost:726151031322443787> **Nitro Tier: {guild.premium_tier}**\n{cyberformat.bar(stat=guild.premium_subscription_count, max=30, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>', show_stat=True)}")
             embed.set_author(name=f"{guild}", icon_url=guild.icon_url)
             embed.set_footer(
@@ -166,7 +180,7 @@ class Profile(commands.Cog):
         mods = [mod for mod in members if mod.guild_permissions.kick_members and mod.bot is False]
         mod_bots = [bot for bot in members if bot.guild_permissions.kick_members and bot.bot is True]
         await ctx.send(
-            embed=discord.Embed(description=f"👑 **OWNER:** {owner}\n"
+            embed=discord.Embed(description=f"<:owner:730864906429136907> **OWNER:** {owner}\n"
                                             f"\n**ADMINS** (Total {len(admins)})\n {f'{n}'.join([f'🛡 {admin.mention} - {admin.top_role.mention}' for admin in admins[:10]])}"
                                             f"\n\n**MODERATORS** (Total {len(mods)})\n {f'{n}'.join([f'🛡 {mod.mention} - {mod.top_role.mention}' for mod in mods[:10]])}"
                                             f"\n\n**MOD BOTS** (Total {len(mod_bots)})\n {f'{n}'.join([f'🛡 {bot.mention} - {bot.top_role.mention}' for bot in mod_bots[:10]])}",
@@ -243,6 +257,29 @@ class Profile(commands.Cog):
             em = uiEmbed(ctx).uiEmbed(member=member, opt="ui")
             activities = []
             m = ctx.guild.get_member(member.id)
+            bool_vals = []
+            names = []
+            member = member or ctx.author
+            badges_dict = dict(member.public_flags).items()
+            for key, value in badges_dict:
+                names.append(key)
+                bool_vals.append(value)
+            badges = []
+            for name, val in zip(names, bool_vals):
+                if val:
+                    if (str(name) is not 'verified_bot') or (str(name) is not 'team_user') or (
+                            str(name) is not 'system'):
+                        badges.append(name)
+                    else:
+                        continue
+                else:
+                    continue
+            lost = [badge_mapping[str(b)] for b in badges]
+            if await GuildStats(ctx).check_nitro(m):
+                lost.append("<:nitro:730892254092198019>")
+            else:
+                pass
+            em.description = " ".join(lost) + "\n" + em.description
             if not m.activities:
                 pass
             else:
