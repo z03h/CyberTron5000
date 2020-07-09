@@ -91,7 +91,7 @@ class Meta(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.tick = ":GreenTick:707950252434653184"
-        self.version = "CyberTron5000 Alpha v2.0.2"
+        self.version = "CyberTron5000 Alpha v2.5.2"
         self.counter = 0
         self.softwares = ['<:dpy:708479036518694983>', '<:python:706850228652998667>', '<:JSON:710927078513442857>']
     
