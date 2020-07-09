@@ -234,30 +234,23 @@ class Profile(commands.Cog):
                     elif isinstance(activity, discord.Streaming):
                         activity = f'Streaming **{activity.name}**'
                     else:
-                        for activity in m.activities:
-                            if isinstance(activity, discord.Spotify):
-                                activity = 'Listening to **Spotify**'
-                            elif isinstance(activity, discord.Game):
-                                activity = f'Playing **{activity.name}**'
-                            elif isinstance(activity, discord.Streaming):
-                                activity = f'Streaming **{activity.name}**'
-                            else:
-                                if activity.emoji:
-                                    emoji = ':thinking:' if activity.emoji.is_custom_emoji() and not self.client.get_emoji(
-                                        activity.emoji.id) else activity.emoji
-                                    if str(emoji) == ":thinking:":
-                                        em.set_footer(text="🤔 indicates a custom emoji")
-                                char = "\u200b" if activity.type == discord.ActivityType.custom else " "
-                                if str(activity.name) == "None":
-                                    ac = "\u200b"
-                                else:
-                                    ac = str(activity.name)
-                                activity = f'{emoji} {status_mapping[activity.type]}{char}**{ac}**'
-                            activities.append(activity)
-                        em.add_field(name="Activities", value="\n".join(activities))
-                    await ctx.send(embed=em)
-                except Exception as er:
-                await ctx.send(er)
+                        emoji = ''
+                        if activity.emoji:
+                            emoji = ':thinking:' if activity.emoji.is_custom_emoji() and not self.client.get_emoji(
+                                activity.emoji.id) else activity.emoji
+                            if str(emoji) == ":thinking:":
+                                em.set_footer(text="🤔 indicates a custom emoji")
+                        char = "\u200b" if activity.type == discord.ActivityType.custom else " "
+                        if str(activity.name) == "None":
+                            ac = "\u200b"
+                        else:
+                            ac = str(activity.name)
+                        activity = f'{emoji} {status_mapping[activity.type]}{char}**{ac}**'
+                    activities.append(activity)
+                em.add_field(name="Activities", value="\n".join(activities))
+            await ctx.send(embed=em)
+        except Exception as er:
+            await ctx.send(er)
     
     @commands.command(aliases=['perms'], help="Gets a user's permissions in the current channel.")
     async def permissions(self, ctx, *, member: discord.Member = None):
