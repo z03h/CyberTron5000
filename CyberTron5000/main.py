@@ -7,6 +7,7 @@ from CyberTron5000.CyberTron5000.cogs.utils.checks import check_admin_or_owner
 
 colour = 0x00dcff
 
+
 async def get_prefix(client, message):
     with open("prefixes.json", "r") as f:
         data = json.load(f)
@@ -23,6 +24,7 @@ async def get_prefix(client, message):
 
 client = commands.Bot(command_prefix=get_prefix, pm_help=None)
 client.remove_command('help')
+
 
 @client.event
 async def on_guild_join(guild):
@@ -78,7 +80,8 @@ async def on_ready():
             client.load_extension(f'cogs.{filename[:-3]}')
     print("Online!")
     await client.change_presence(
-        activity=discord.Activity(type=discord.ActivityType.listening, name=f"{len(client.users):,} users in {len(client.guilds):,} guilds"))
+        activity=discord.Activity(type=discord.ActivityType.listening,
+                                  name=f"{len(client.users):,} users in {len(client.guilds):,} guilds"))
 
 
 @client.group(invoke_without_command=True)
@@ -105,7 +108,9 @@ async def load(ctx, extension=None):
             if filename.endswith('.py'):
                 client.load_extension(f'cogs.{filename[:-3]}')
         
-        await ctx.send("\n".join([f":arrow_up: `cogs.{f[:-3]}`" for f in os.listdir('CyberTron5000/CyberTron5000/cogs') if f.endswith(".py")]))
+        await ctx.send("\n".join(
+            [f":arrow_up: `cogs.{f[:-3]}`" for f in os.listdir('CyberTron5000/CyberTron5000/cogs') if
+             f.endswith(".py")]))
     
     else:
         client.load_extension(f'cogs.{extension}')
@@ -120,7 +125,9 @@ async def unload(ctx, extension=None):
             if filename.endswith('.py'):
                 client.unload_extension(f'cogs.{filename[:-3]}')
         
-        await ctx.send("\n".join([f":arrow_down: `cogs.{f[:-3]}`" for f in os.listdir('CyberTron5000/CyberTron5000/cogs') if f.endswith(".py")]))
+        await ctx.send("\n".join(
+            [f":arrow_down: `cogs.{f[:-3]}`" for f in os.listdir('CyberTron5000/CyberTron5000/cogs') if
+             f.endswith(".py")]))
     
     else:
         client.unload_extension(f'cogs.{extension}')
@@ -135,7 +142,8 @@ async def reload(ctx, extension=None):
             if filename.endswith('.py'):
                 client.reload_extension(f'cogs.{filename[:-3]}')
         
-        await ctx.send("\n".join([f":repeat: `cogs.{f[:-3]}`" for f in os.listdir('CyberTron5000/CyberTron5000/cogs') if f.endswith(".py")]))
+        await ctx.send("\n".join(
+            [f":repeat: `cogs.{f[:-3]}`" for f in os.listdir('CyberTron5000/CyberTron5000/cogs') if f.endswith(".py")]))
     
     else:
         client.reload_extension(f'cogs.{extension}')

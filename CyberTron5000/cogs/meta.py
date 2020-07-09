@@ -286,7 +286,7 @@ class Meta(commands.Cog):
             async with cs.get("https://api.github.com/repos/niztg/CyberTron5000/commits") as r:
                 res = await r.json()
             commits = [
-                f"[`{item['sha'][0:7]}`](https://github.com/niztg/CyberTron5000/commit/{item['sha']}) → {item['commit']['message']} - {item['commit']['committer']['name']}"
+                f"[`{item['sha'][0:7]}`](https://github.com/niztg/CyberTron5000/commit/{item['sha']}) {item['commit']['message']} - {item['commit']['committer']['name']}"
                 for item in res]
             return commits[:limit]
     
