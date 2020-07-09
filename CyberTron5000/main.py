@@ -73,7 +73,7 @@ async def spaceprefix(ctx, *, prefix):
 @client.event
 async def on_ready():
     print("online!")
-    for filename in os.listdir('CyberTron5000/cogs'):
+    for filename in os.listdir('CyberTron5000/CyberTron5000/cogs'):
         if filename.endswith('.py'):
             client.load_extension(f'cogs.{filename[:-3]}')
     print("Online!")
@@ -105,7 +105,7 @@ async def load(ctx, extension=None):
             if filename.endswith('.py'):
                 client.load_extension(f'cogs.{filename[:-3]}')
         
-        await ctx.send("\n".join([f":arrow_up: `cogs.{f[:-3]}`" for f in os.listdir('CyberTron5000/cogs') if f.endswith(".py")]))
+        await ctx.send("\n".join([f":arrow_up: `cogs.{f[:-3]}`" for f in os.listdir('CyberTron5000/CyberTron5000/cogs') if f.endswith(".py")]))
     
     else:
         client.load_extension(f'cogs.{extension}')
@@ -116,11 +116,11 @@ async def load(ctx, extension=None):
 @commands.is_owner()
 async def unload(ctx, extension=None):
     if not extension:
-        for filename in os.listdir('CyberTron5000/cogs'):
+        for filename in os.listdir('CyberTron5000/CyberTron5000/cogs'):
             if filename.endswith('.py'):
                 client.unload_extension(f'cogs.{filename[:-3]}')
         
-        await ctx.send("\n".join([f":arrow_down: `cogs.{f[:-3]}`" for f in os.listdir('CyberTron5000/cogs') if f.endswith(".py")]))
+        await ctx.send("\n".join([f":arrow_down: `cogs.{f[:-3]}`" for f in os.listdir('CyberTron5000/CyberTron5000/cogs') if f.endswith(".py")]))
     
     else:
         client.unload_extension(f'cogs.{extension}')
@@ -131,11 +131,11 @@ async def unload(ctx, extension=None):
 @commands.is_owner()
 async def reload(ctx, extension=None):
     if not extension:
-        for filename in os.listdir('CyberTron5000/cogs'):
+        for filename in os.listdir('CyberTron5000/CyberTron5000/cogs'):
             if filename.endswith('.py'):
                 client.reload_extension(f'cogs.{filename[:-3]}')
         
-        await ctx.send("\n".join([f":repeat: `cogs.{f[:-3]}`" for f in os.listdir('CyberTron5000/cogs') if f.endswith(".py")]))
+        await ctx.send("\n".join([f":repeat: `cogs.{f[:-3]}`" for f in os.listdir('CyberTron5000/CyberTron5000/cogs') if f.endswith(".py")]))
     
     else:
         client.reload_extension(f'cogs.{extension}')
