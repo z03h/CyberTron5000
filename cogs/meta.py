@@ -199,8 +199,7 @@ class Meta(commands.Cog):
         message = await ctx.send("** **")
         end = time.perf_counter()
         duration = round((end - start) * 1000, 3)
-        await message.edit(
-            content=f"<{self.tick}> **{ctx.author.name}**, the current average websocket latency is **{round(self.client.latency * 1000, 3)}** ms • Response Time: **{duration}** ms")
+        await message.edit(embed=discord.Embed(colour=colour, description=f"```diff\n- Websocket Latency\n! {round(self.client.latency * 1000, 3)} ms\n- Response Time\n! {duration} ms```").set_author(name=f"Pong! 🏓").set_footer(text=ctx.author, icon_url=ctx.author.avatar_url))
     
     @commands.command(aliases=["sourcecode", "src"], help="Shows source code for a given command")
     async def source(self, ctx, *, command=None):

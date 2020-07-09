@@ -15,32 +15,32 @@ class Events(commands.Cog):
         self.x_r = ":warning:727013811571261540"
         self.bot = async_cleverbot.Cleverbot("OVbZ10+q,G#vU_-)67/T")
         self.bot.set_context(async_cleverbot.DictContext(self.bot))
-
+    
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, discord.ext.commands.CheckFailure):
             await ctx.message.add_reaction(emoji=self.x_r)
-    
+        
         elif isinstance(error, discord.ext.commands.BadArgument):
             await ctx.send(
                 f"<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}!")
-    
+        
         elif isinstance(error, discord.ext.commands.MissingRequiredArgument):
             await ctx.send(
                 f"<{self.x_r}> **{ctx.author.name}**, you're missing the required argument **{error.param.name}**!")
-    
+        
         elif isinstance(error, discord.ext.commands.MissingPermissions):
             await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}!')
-    
+        
         elif isinstance(error, commands.CommandNotFound) or isinstance(error, commands.NotOwner):
             pass
-    
+        
         else:
             await ctx.message.add_reaction(self.x_r)
             await self.client.get_channel(730556685214548088).send(embed=discord.Embed(colour=colour, title="Error!",
                                                                                        description=f"Error on `{ctx.command}`:\n```py\n{error}```").set_author(
                 name=ctx.author, icon_url=ctx.author.avatar_url))
-
+    
     @commands.Cog.listener(name="on_message")
     async def on_user_mention(self, message):
         owner = await self.client.fetch_user(350349365937700864)
@@ -57,7 +57,7 @@ class Events(commands.Cog):
                     embed.set_thumbnail(url=self.client.user.avatar_url)
                     embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
                     await message.channel.send(embed=embed)
-
+    
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         c = self.client.get_channel(727277234666078220)
@@ -89,7 +89,7 @@ class Events(commands.Cog):
             msg = "Thank you for adding me to your server! I will do my best to make your work here as easy as possible.\n"
             msg += "My default prefix is `=`, but you can change it using `=changeprefix <newprefix>\n[Join our help server for updates!](https://cybertron-5k.netlify.app/server)\n\n"
             await to_send.send(msg)
-
+    
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
         c = self.client.get_channel(727277234666078220)
@@ -107,16 +107,16 @@ class Events(commands.Cog):
         embed.set_footer(
             text=f"Guild created {humanize.naturaltime(__import__('datetime').datetime.utcnow() - guild.created_at)}")
         await c.send(f"Left guild. We're down to **{len(self.client.guilds)}** guilds", embed=embed)
-
+    
     @commands.Cog.listener(name="on_message")
     async def cleverbot_session(self, message):
-        if message.channel.id == 730486269468999741:
+        if (message.channel.id == 730486269468999741) or (message.channel.id == 730570845013147708):
             if message.author == self.client.user:
                 return
             async with message.channel.typing():
-                if len(message.content) < 2 or len(message.content) > 60:
+                if len(message.content) < 2 or len(message.content) > 100:
                     return await message.channel.send(
-                        f"**{message.author.name}**, text must be below 60 characters and over 2.")
+                        f"**{message.author.name}**, text must be below 100 characters and over 2.")
                 resp = await self.bot.ask(message.content, message.author.id)
                 r = str(resp) if str(resp).startswith("I") else cyberformat.minimalize(str(resp))
                 if str(r)[-1] not in ['.', '?', '!']:
@@ -125,7 +125,6 @@ class Events(commands.Cog):
                     suff = "\u200b"
                 send = cyberformat.hyper_replace(str(r), old=[' i ', "i'm", "i'll"], new=[' I ', "I'm", "I'll"])
                 await message.channel.send(f"**{message.author.name}**, {send}{suff}")
-        await self.client.process_commands(message)
 
 
 def setup(client):
