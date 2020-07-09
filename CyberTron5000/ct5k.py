@@ -3,35 +3,26 @@ import os
 
 import discord
 from discord.ext import commands
-from cogs.utils.checks import check_admin_or_owner
+from CyberTron5000.CyberTron5000.cogs.utils.checks import check_admin_or_owner
 
 colour = 0x00dcff
 
-
-def get_token():
-    with open("secrets.txt", "r") as f:
-        secrets = f.readlines()
-        return secrets[0].strip()
-
-
-def prefix(client, message):
+async def get_prefix(client, message):
+    with open("prefixes.json", "r") as f:
+        data = json.load(f)
     if message.guild:
-        with open("prefixes.json", 'r') as f:
-            sad = json.load(f)
-            if str(message.guild.id) in sad:
-                return sad[str(message.guild.id)]
-            else:
-                sad[str(message.guild.id)] = "="
-                with open("prefixes.json", "w") as f:
-                    a = json.dump(sad, f, indent=4)
-                    return a
-    if not message.guild:
+        try:
+            pref = str(data[str(message.guild.id)])
+            command_prefix = commands.when_mentioned_or(pref)(client, message)
+        except KeyError:
+            command_prefix = commands.when_mentioned_or("=")(client, message)
+        return command_prefix
+    else:
         return "="
 
 
-client = commands.Bot(command_prefix=prefix, pm_help=None)
+client = commands.Bot(command_prefix=get_prefix, pm_help=None)
 client.remove_command('help')
-client.load_extension("jishaku")
 
 @client.event
 async def on_guild_join(guild):
@@ -82,7 +73,7 @@ async def spaceprefix(ctx, *, prefix):
 @client.event
 async def on_ready():
     print("online!")
-    for filename in os.listdir('./cogs'):
+    for filename in os.listdir('CyberTron5000/cogs'):
         if filename.endswith('.py'):
             client.load_extension(f'cogs.{filename[:-3]}')
     print("Online!")
@@ -110,11 +101,11 @@ async def error(ctx, *, error):
 @commands.is_owner()
 async def load(ctx, extension=None):
     if not extension:
-        for filename in os.listdir('./cogs'):
+        for filename in os.listdir():
             if filename.endswith('.py'):
                 client.load_extension(f'cogs.{filename[:-3]}')
         
-        await ctx.send("\n".join([f":arrow_up: `cogs.{f[:-3]}`" for f in os.listdir("./cogs") if f.endswith(".py")]))
+        await ctx.send("\n".join([f":arrow_up: `cogs.{f[:-3]}`" for f in os.listdir('CyberTron5000/cogs') if f.endswith(".py")]))
     
     else:
         client.load_extension(f'cogs.{extension}')
@@ -125,11 +116,11 @@ async def load(ctx, extension=None):
 @commands.is_owner()
 async def unload(ctx, extension=None):
     if not extension:
-        for filename in os.listdir('./cogs'):
+        for filename in os.listdir('CyberTron5000/cogs'):
             if filename.endswith('.py'):
                 client.unload_extension(f'cogs.{filename[:-3]}')
         
-        await ctx.send("\n".join([f":arrow_down: `cogs.{f[:-3]}`" for f in os.listdir("./cogs") if f.endswith(".py")]))
+        await ctx.send("\n".join([f":arrow_down: `cogs.{f[:-3]}`" for f in os.listdir('CyberTron5000/cogs') if f.endswith(".py")]))
     
     else:
         client.unload_extension(f'cogs.{extension}')
@@ -140,17 +131,14 @@ async def unload(ctx, extension=None):
 @commands.is_owner()
 async def reload(ctx, extension=None):
     if not extension:
-        for filename in os.listdir('./cogs'):
+        for filename in os.listdir('CyberTron5000/cogs'):
             if filename.endswith('.py'):
                 client.reload_extension(f'cogs.{filename[:-3]}')
         
-        await ctx.send("\n".join([f":repeat: `cogs.{f[:-3]}`" for f in os.listdir("./cogs") if f.endswith(".py")]))
+        await ctx.send("\n".join([f":repeat: `cogs.{f[:-3]}`" for f in os.listdir('CyberTron5000/cogs') if f.endswith(".py")]))
     
     else:
         client.reload_extension(f'cogs.{extension}')
         await ctx.send(f":repeat: `cogs.{extension}`")
-
-
-client.run(get_token())
 
 # yeet yeet yeet 1995
