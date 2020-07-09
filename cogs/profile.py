@@ -92,7 +92,6 @@ class uiEmbed:
         perms = []
         negperms = []
         if opt == "ui":
-            is_bot = "<:bot:703728026512392312>" if member.bot else "\u200b"
             join_position = sorted(self.context.guild.members, key=lambda member: member.joined_at).index(member)
             if self.context.guild.get_member(member.id).activity and self.context.guild.get_member(
                     member.id).activity.type == discord.ActivityType.streaming:

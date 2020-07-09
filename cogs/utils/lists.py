@@ -185,5 +185,8 @@ badge_mapping = {
     "hypesquad_brilliance": "<:hypesquad_brilliance:730851606853320765>",
     "hypesquad_balance": "<:hypesquad_balance:730851606832087141>",
     "early_supporter": "<:early_supporter:730869784337580102>",
-    "verified_bot_developer": "<:verified_bot_developer:730849897410199572>"
+    "verified_bot_developer": "<:verified_bot_developer:730849897410199572>",
+    "verified_bot": "",
+    "system": "",
+    "team_user": ""
 }
