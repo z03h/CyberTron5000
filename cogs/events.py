@@ -34,7 +34,7 @@ class Events(commands.Cog):
                 f"<{self.x_r}> **{ctx.author.name}**, you're missing the required argument **{error.param.name}**!")
         
         elif isinstance(error, discord.ext.commands.MissingPermissions):
-            await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}!')
+            await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}')
         
         elif isinstance(error, commands.CommandNotFound) or isinstance(error, commands.NotOwner):
             pass
