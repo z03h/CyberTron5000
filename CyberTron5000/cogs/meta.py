@@ -34,7 +34,7 @@ def lines_main():
     So I only have to do this once
     :return:
     """
-    filename1 = "ct5k.py"
+    filename1 = "main.py"
     nol = 0
     with open(filename1, 'r') as files:
         for i in files:
@@ -233,7 +233,7 @@ class Meta(commands.Cog):
     @lines.command(invoke_without_command=True, help="Shows total lines in the main file.")
     async def main(self, ctx):
         await ctx.send(
-            embed=discord.Embed(title="File ct5k.py currently has {:,.0f} lines of code!".format(lines_main()),
+            embed=discord.Embed(title="File main.py currently has {:,.0f} lines of code!".format(lines_main()),
                                 color=0x00dcff))
     
     @lines.command(invoke_without_command=True, help="Shows total lines in the cogs.")
@@ -276,7 +276,7 @@ class Meta(commands.Cog):
     async def restart(self, ctx):
         await ctx.message.add_reaction(emoji=self.tick)
         await self.client.logout()
-        subprocess.call([sys.executable, "ct5k.py"])
+        subprocess.call([sys.executable, "main.py"])
     
     async def get_commits(self, limit: int = 3):
         async with aiohttp.ClientSession() as cs:
