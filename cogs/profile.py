@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from discord.ext import commands
 from disputils import BotEmbedPaginator
 
-from .utils.lists import REGIONS, sl, mlsl, wlsl, dlsl, channel_mapping, is_nsfw, status_mapping
+from .utils.lists import REGIONS, sl, mlsl, wlsl, dlsl, status_mapping
 from .utils import cyberformat
 
 matplotlib.use('Agg')
@@ -195,17 +195,37 @@ class Profile(commands.Cog):
                                                         name=f"Channels in {ctx.guild}")
         for c in ctx.guild.categories:
             x = []
-            for i in c.text_channels:
-                x.append(f"{channel_mapping[str(i.type)]}{i.name}{is_nsfw[i.is_nsfw()]}")
-            for j in c.voice_channels:
-                x.append(f"{channel_mapping[str(j.type)]}{j.name}")
+            for i in c.channels:
+                if isinstance(i, discord.TextChannel):
+                    if i.is_nsfw():
+                        channel = "<:nsfw:730852009032286288>"
+                    else:
+                        channel = "<:text_channel:703726554018086912>"
+                    x.append(f"{channel}{i.name}")
+                elif isinstance(i, discord.VoiceChannel):
+                    channel = "<:voice_channel:703726554068418560>"
+                    x.append(f"{channel}{i.name}")
+                else:
+                    pass
             embed.add_field(name=f"{c}", value='\u200b' + "\n".join(x),
                             inline=False)
         y = [b for b in ctx.guild.categories]
-        chl = [f"{channel_mapping[str(o.type)]}{o.name}{is_nsfw[o.is_nsfw()]}" for o in ctx.guild.text_channels if
-               not o.category and o not in y]
+        chl = []
+        for o in ctx.guild.channels:
+            if o.category or o in y:
+                pass
+            else:
+                if isinstance(o, discord.TextChannel):
+                    if o.is_nsfw():
+                        channel = "<:nsfw:730852009032286288>"
+                    else:
+                        channel = "<:text_channel:703726554018086912>"
+                    chl.append(f"{channel}{o.name}")
+                elif isinstance(o, discord.VoiceChannel):
+                    channel = "<:voice_channel:703726554068418560>"
+                    chl.append(f"{channel}{o.name}")
         embed.description = "\n".join(chl)
-        await ctx.send("peanut no like :angry:") if ctx.guild.id == 653376332507643914 else await ctx.send(embed=embed)
+        return await ctx.send("peanut no like :angry:") if ctx.guild.id == 653376332507643914 else await ctx.send(embed=embed)
     
     @commands.command(aliases=['ov'],
                       help="Gets an overview of a user, including their avatar, permissions in the channel and info.")

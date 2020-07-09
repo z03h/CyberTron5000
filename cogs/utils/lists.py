@@ -167,17 +167,6 @@ emotes = {
     'redditgifts exchanges': '<:rgexchange:702219316875231273>'
 }
 
-channel_mapping = {
-    "text": "<:text_channel:703726554018086912>",
-    "voice": "<:voice_channel:703726554068418560>",
-    "news": "📰"
-}
-
-is_nsfw = {
-    True: " <:18:727640468094976042>",
-    False: "\u200b"
-}
-
 status_mapping = {
     discord.ActivityType.listening: "Listening to",
     discord.ActivityType.watching: "Watching",
@@ -185,3 +174,4 @@ status_mapping = {
     discord.ActivityType.streaming: "Streaming",
     discord.ActivityType.custom: "\u200b"
 }
+
