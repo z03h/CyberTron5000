@@ -15,7 +15,7 @@ reddit_colour = 0xff5700
 
 
 def secrets():
-    with open("CyberTron5000/CyberTron5000/secrets.json", "r") as f:
+    with open("secrets.json", "r") as f:
         return json.load(f)
 
 
