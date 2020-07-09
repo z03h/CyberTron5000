@@ -34,7 +34,7 @@ def lines_main():
     So I only have to do this once
     :return:
     """
-    filename1 = "CyberTron5000/CyberTron5000/main.py"
+    filename1 = "main.py"
     nol = 0
     with open(filename1, 'r') as files:
         for i in files:
@@ -51,7 +51,7 @@ def lines_of_code(cog=None):
     if not cog:
         global count
         line_count = {}
-        directory = "CyberTron5000/CyberTron5000/cogs"
+        directory = "./cogs"
         for filename in os.listdir(directory):
             if filename.endswith(".py"):
                 _, ext = os.path.splitext(filename)
@@ -66,7 +66,7 @@ def lines_of_code(cog=None):
     elif cog:
         global counts
         line_count = {}
-        directory = "CyberTron5000/CyberTron5000/cogs"
+        directory = "./cogs"
         for filename in os.listdir(directory):
             if str(filename) == f"{cog.lower()}.py":
                 _, ext = os.path.splitext(filename)
