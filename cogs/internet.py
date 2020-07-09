@@ -2,6 +2,7 @@ import asyncio
 import datetime
 import random
 import async_cleverbot
+import json
 from html import unescape as unes
 
 import aiohttp
@@ -17,9 +18,11 @@ from .utils import cyberformat
 
 colour = 0x00dcff
 
+def secrets():
+    with open("secrets.json", "r") as f:
+        return json.load(f)
 
 # ≫
-
 
 class Internet(commands.Cog):
     """Interact with various API's"""
@@ -27,7 +30,7 @@ class Internet(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.pypi = "https://raw.githubusercontent.com/github/explore/666de02829613e0244e9441b114edb85781e972c/topics/pip/pip.png"
-        self.bot = async_cleverbot.Cleverbot("OVbZ10+q,G#vU_-)67/T")
+        self.bot = async_cleverbot.Cleverbot(secrets()['cleverbot'])
         self.bot.set_context(async_cleverbot.DictContext(self.bot))
     
     @commands.group(invoke_without_command=True, aliases=['trans'], help="Translate something to English.")

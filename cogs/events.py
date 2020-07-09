@@ -8,12 +8,16 @@ import json
 
 colour = 0x00dcff
 
+def secrets():
+    with open("secrets.json", "r") as f:
+        return json.load(f)
+
 
 class Events(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.x_r = ":warning:727013811571261540"
-        self.bot = async_cleverbot.Cleverbot("OVbZ10+q,G#vU_-)67/T")
+        self.bot = async_cleverbot.Cleverbot(secrets()['cleverbot'])
         self.bot.set_context(async_cleverbot.DictContext(self.bot))
     
     @commands.Cog.listener()
