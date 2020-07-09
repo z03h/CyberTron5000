@@ -98,7 +98,7 @@ class Meta(commands.Cog):
     @commands.Cog.listener()
     async def on_command_completion(self, ctx):
         self.counter += 1
-        
+    
     @commands.command()
     async def uptime(self, ctx):
         delta_uptime = datetime.datetime.utcnow() - start_time
@@ -106,7 +106,8 @@ class Meta(commands.Cog):
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
         a = f"**{days}** days\n**{hours}** hours\n**{minutes}** minutes\n**{seconds}** seconds"
-        await ctx.send(embed=discord.Embed(description=a, colour=colour).set_author(name=f"I have been up for {str(humanize.naturaltime(datetime.datetime.utcnow() - start_time)).split('ago')[0]}"))
+        await ctx.send(embed=discord.Embed(description=a, colour=colour).set_author(
+            name=f"I have been up for {str(humanize.naturaltime(datetime.datetime.utcnow() - start_time)).split('ago')[0]}"))
     
     @commands.command(help="Fetches the bot's invite link.")
     async def invite(self, ctx):
@@ -199,7 +200,9 @@ class Meta(commands.Cog):
         message = await ctx.send("** **")
         end = time.perf_counter()
         duration = round((end - start) * 1000, 3)
-        await message.edit(embed=discord.Embed(colour=colour, description=f"```diff\n- Websocket Latency\n! {round(self.client.latency * 1000, 3)} ms\n- Response Time\n! {duration} ms```").set_author(name=f"Pong! 🏓").set_footer(text=ctx.author, icon_url=ctx.author.avatar_url))
+        await message.edit(embed=discord.Embed(colour=colour,
+                                               description=f"```diff\n- Websocket Latency\n! {round(self.client.latency * 1000, 3)} ms\n- Response Time\n! {duration} ms```").set_author(
+            name=f"Pong! 🏓").set_footer(text=ctx.author, icon_url=ctx.author.avatar_url))
     
     @commands.command(aliases=["sourcecode", "src"], help="Shows source code for a given command")
     async def source(self, ctx, *, command=None):
@@ -222,7 +225,7 @@ class Meta(commands.Cog):
                 total, fl = __import__('inspect').getsourcelines(cmd)
                 ll = fl + (len(total) - 1)
                 await ctx.send(embed=discord.Embed(
-                    description=f"This code was too long for Discord, you can see it instead [on GitHub](<https://github.com/niztg/CyberTron5000/blob/master/CyberTron5000/{location}#L{fl}-L{ll}>)",
+                    description=f"This code was too long for Discord, you can see it instead [on GitHub](<https://github.com/niztg/CyberTron5000/blob/master/{location}#L{fl}-L{ll}>)",
                     colour=colour))
             else:
                 await ctx.send(src)
@@ -336,9 +339,14 @@ class Meta(commands.Cog):
     async def github(self, ctx, limit: int = 5):
         """Shows you recent github commits"""
         if limit < 1 or limit > 15:
-            return await ctx.send(f"<:warning:727013811571261540> **{ctx.author.name}**, limit must be greater than 0 and less than 16!")
+            return await ctx.send(
+                f"<:warning:727013811571261540> **{ctx.author.name}**, limit must be greater than 0 and less than 16!")
         commits = [f"{index}. {commit}" for index, commit in enumerate(await self.get_commits(limit), 1)]
-        await ctx.send(embed=discord.Embed(description="\n".join(commits), colour=colour).set_author(name=f"Last {limit} GitHub Commit(s) for CyberTron5000", icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png", url="https://github.com/niztg/CyberTron5000"))
+        await ctx.send(embed=discord.Embed(description="\n".join(commits), colour=colour).set_author(
+            name=f"Last {limit} GitHub Commit(s) for CyberTron5000",
+            icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png",
+            url="https://github.com/niztg/CyberTron5000"))
+
 
 def setup(client):
     client.add_cog(Meta(client))
