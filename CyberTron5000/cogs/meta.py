@@ -205,10 +205,13 @@ class Meta(commands.Cog):
     async def source(self, ctx, *, command=None):
         u = '\u200b'
         if not command:
-            return await ctx.send(embed=discord.Embed(colour=colour).set_author(name=f"⭐️ Check out the full sourcecode on GitHub!", url=f"https://github.com/niztg/CyberTron5000", icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png"))
+            return await ctx.send(
+                embed=discord.Embed(colour=colour).set_author(name=f"⭐️ Check out the full sourcecode on GitHub!",
+                                                              url=f"https://github.com/niztg/CyberTron5000",
+                                                              icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png"))
         elif command == "help":
             await ctx.send(embed=discord.Embed(
-                description=f"This code was too long for Discord, you can see it instead [on GitHub](https://github.com/niztg/CyberTron5000/blob/master/cogs/info.py#L9-L109)",
+                description=f"This code was too long for Discord, you can see it instead [on GitHub](https://github.com/niztg/CyberTron5000/blob/master/CyberTron5000/cogs/info.py#L9-L109)",
                 colour=colour))
         else:
             src = f"```py\n{str(__import__('inspect').getsource(self.client.get_command(command).callback)).replace('```', f'{u}')}```"
@@ -219,7 +222,7 @@ class Meta(commands.Cog):
                 total, fl = __import__('inspect').getsourcelines(cmd)
                 ll = fl + (len(total) - 1)
                 await ctx.send(embed=discord.Embed(
-                    description=f"This code was too long for Discord, you can see it instead [on GitHub](<https://github.com/niztg/CyberTron5000/blob/master/{location}#L{fl}-L{ll}>)",
+                    description=f"This code was too long for Discord, you can see it instead [on GitHub](<https://github.com/niztg/CyberTron5000/blob/master/CyberTron5000/{location}#L{fl}-L{ll}>)",
                     colour=colour))
             else:
                 await ctx.send(src)

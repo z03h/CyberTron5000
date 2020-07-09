@@ -1,5 +1,5 @@
 from discord.ext import commands
-from CyberTron500.cogs.utils.lists import REGIONS
+from CyberTron5000.CyberTron5000.cogs.utils.lists import REGIONS
 from .utils import cyberformat
 import discord
 import async_cleverbot
