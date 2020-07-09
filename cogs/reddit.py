@@ -38,7 +38,7 @@ class Reddit(commands.Cog):
         )
         self.client = client
         self.up = "<:upvote:718895913342337036>"
-        self.share = "<:share:729813718086582402>"
+        self.share = "<:share:730823872265584680>"
     
     # noinspection PyBroadException
     @commands.command(aliases=['rs', 'karma'], help="Shows your Reddit Stats.")
