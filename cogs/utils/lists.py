@@ -94,10 +94,10 @@ sl = {
     discord.Status.dnd: "<:dnd:726127192001478746>"
 }
 
-mlsl = {"online": "<:whiteiphone:703726679377575996>",
+mlsl = {"online": "<:mobile:730843223102193744>",
         "offline": "\u200b",
-        "idle": "<:whiteiphone:703726679377575996>",
-        "dnd": "<:whiteiphone:703726679377575996>"}
+        "idle": "<:mobile:730843223102193744>",
+        "dnd": "<:mobile:730843223102193744>"}
 
 wlsl = {"online": "🌐",
         "offline": "\u200b",
