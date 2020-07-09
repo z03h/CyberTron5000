@@ -73,7 +73,7 @@ async def spaceprefix(ctx, *, prefix):
 @client.event
 async def on_ready():
     print("online!")
-    for filename in os.listdir('CyberTron5000/CyberTron5000/cogs'):
+    for filename in os.listdir('cogs'):
         if filename.endswith('.py'):
             client.load_extension(f'cogs.{filename[:-3]}')
     print("Online!")
@@ -101,7 +101,7 @@ async def error(ctx, *, error):
 @commands.is_owner()
 async def load(ctx, extension=None):
     if not extension:
-        for filename in os.listdir():
+        for filename in os.listdir("cogs"):
             if filename.endswith('.py'):
                 client.load_extension(f'cogs.{filename[:-3]}')
         
@@ -116,7 +116,7 @@ async def load(ctx, extension=None):
 @commands.is_owner()
 async def unload(ctx, extension=None):
     if not extension:
-        for filename in os.listdir('CyberTron5000/CyberTron5000/cogs'):
+        for filename in os.listdir("cogs"):
             if filename.endswith('.py'):
                 client.unload_extension(f'cogs.{filename[:-3]}')
         
@@ -131,7 +131,7 @@ async def unload(ctx, extension=None):
 @commands.is_owner()
 async def reload(ctx, extension=None):
     if not extension:
-        for filename in os.listdir('CyberTron5000/CyberTron5000/cogs'):
+        for filename in os.listdir("cogs"):
             if filename.endswith('.py'):
                 client.reload_extension(f'cogs.{filename[:-3]}')
         
