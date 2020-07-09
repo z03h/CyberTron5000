@@ -1,4 +1,4 @@
-from CyberTron5000.CyberTron5000.main import client
+from CyberTron5000.CyberTron5000.ct5k import client
 
 
 def get_token():

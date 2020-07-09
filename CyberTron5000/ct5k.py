@@ -9,7 +9,7 @@ colour = 0x00dcff
 
 
 async def get_prefix(client, message):
-    with open("prefixes.json", "r") as f:
+    with open("CyberTron5000/CyberTron5000/prefixes.json", "r") as f:
         data = json.load(f)
     if message.guild:
         try:
@@ -28,7 +28,7 @@ client.remove_command('help')
 
 @client.event
 async def on_guild_join(guild):
-    with open("prefixes.json", "r") as f:
+    with open("CyberTron5000/CyberTron5000/prefixes.json", "r") as f:
         prefixes = json.load(f)
     prefixes[str(guild.id)] = "="
     with open("prefixes.json", "w") as f:
@@ -37,7 +37,7 @@ async def on_guild_join(guild):
 
 @client.event
 async def on_guild_remove(guild):
-    with open("prefixes.json", "r") as f:
+    with open("CyberTron5000/CyberTron5000/prefixes.json", "r") as f:
         prefixes = json.load(f)
     prefixes.pop(str(guild.id))
     with open("prefixes.json", "w") as f:
@@ -47,12 +47,12 @@ async def on_guild_remove(guild):
 @client.group(invoke_without_command=True, help="Change the guild's prefix", aliases=['prefix', 'pre'])
 @check_admin_or_owner()
 async def changeprefix(ctx, *, prefix):
-    with open("prefixes.json", "r") as f:
+    with open("CyberTron5000/CyberTron5000/prefixes.json", "r") as f:
         prefixes = json.load(f)
     
     prefixes[str(ctx.guild.id)] = prefix
     
-    with open("prefixes.json", "w") as f:
+    with open("CyberTron5000/CyberTron5000/prefixes.json", "w") as f:
         json.dump(prefixes, f, indent=4)
     await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
     await ctx.guild.me.edit(nick=f"({prefix}) {client.user.name}")
@@ -61,7 +61,7 @@ async def changeprefix(ctx, *, prefix):
 @changeprefix.command(invoke_without_command=True, help="Make your prefix end in a space.", aliases=['sp'])
 @check_admin_or_owner()
 async def spaceprefix(ctx, *, prefix):
-    with open("prefixes.json", "r") as f:
+    with open("CyberTron5000/CyberTron5000/prefixes.json", "r") as f:
         prefixes = json.load(f)
     
     prefixes[str(ctx.guild.id)] = f"{prefix} "
@@ -75,7 +75,7 @@ async def spaceprefix(ctx, *, prefix):
 @client.event
 async def on_ready():
     print("online!")
-    for filename in os.listdir('cogs'):
+    for filename in os.listdir('CyberTron5000/CyberTron5000/cogs'):
         if filename.endswith('.py'):
             client.load_extension(f'cogs.{filename[:-3]}')
     print("Online!")
@@ -104,7 +104,7 @@ async def error(ctx, *, error):
 @commands.is_owner()
 async def load(ctx, extension=None):
     if not extension:
-        for filename in os.listdir("cogs"):
+        for filename in os.listdir('CyberTron5000/CyberTron5000/cogs'):
             if filename.endswith('.py'):
                 client.load_extension(f'cogs.{filename[:-3]}')
         
@@ -121,7 +121,7 @@ async def load(ctx, extension=None):
 @commands.is_owner()
 async def unload(ctx, extension=None):
     if not extension:
-        for filename in os.listdir("cogs"):
+        for filename in os.listdir('CyberTron5000/CyberTron5000/cogs'):
             if filename.endswith('.py'):
                 client.unload_extension(f'cogs.{filename[:-3]}')
         
@@ -138,7 +138,7 @@ async def unload(ctx, extension=None):
 @commands.is_owner()
 async def reload(ctx, extension=None):
     if not extension:
-        for filename in os.listdir("cogs"):
+        for filename in os.listdir('CyberTron5000/CyberTron5000/cogs'):
             if filename.endswith('.py'):
                 client.reload_extension(f'cogs.{filename[:-3]}')
         
