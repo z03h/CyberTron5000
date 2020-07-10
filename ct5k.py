@@ -24,7 +24,7 @@ async def get_prefix(client, message):
 
 client = commands.Bot(command_prefix=get_prefix, pm_help=None)
 client.remove_command('help')
-client.
+client.colour = 0x00dcff
 
 
 @client.event

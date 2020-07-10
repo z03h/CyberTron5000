@@ -1,28 +1,27 @@
 import asyncio
 import datetime
 import random
-import async_cleverbot
 import json
+import async_cleverbot
 from html import unescape as unes
 
 import aiohttp
+import aiogoogletrans
 import discord
 from async_timeout import timeout
 from discord.ext import commands
-from googletrans import LANGUAGES
-from googletrans import Translator
 from random_word import RandomWords
 
 from .utils.lists import STAT_NAMES, NUMBER_ALPHABET, TYPES
 from .utils import cyberformat
 
 
+# ≫
 
 def secrets():
     with open("secrets.json", "r") as f:
         return json.load(f)
 
-# ≫
 
 class Internet(commands.Cog):
     """Interact with various API's"""
@@ -32,32 +31,6 @@ class Internet(commands.Cog):
         self.pypi = "https://raw.githubusercontent.com/github/explore/666de02829613e0244e9441b114edb85781e972c/topics/pip/pip.png"
         self.bot = async_cleverbot.Cleverbot(secrets()['cleverbot'])
         self.bot.set_context(async_cleverbot.DictContext(self.bot))
-    
-    @commands.group(invoke_without_command=True, aliases=['trans'], help="Translate something to English.")
-    async def translate(self, ctx, *, message):
-        
-        try:
-            translator = Translator()
-            result = translator.translate(message)
-            lang = LANGUAGES[f"{result.src}"]
-            embed = discord.Embed(colour=self.client.colour, title="Translate",
-                                  description=f"**{lang.capitalize()}**\n{message}\n\n**English**\n{result.text}")
-            await ctx.send(embed=embed)
-        except Exception as err:
-            await ctx.send(err)
-    
-    @translate.command(invoke_without_command=True, help="Translate something to a language of your choice.")
-    async def to(self, ctx, language, *, message):
-        try:
-            translator = Translator()
-            result = translator.translate(message, dest=language)
-            lang = LANGUAGES[f"{result.src}"]
-            embed = discord.Embed(colour=self.client.colour, title="Translate",
-                                  description=f"**{lang.capitalize()}**\n{message}\n\n**{language.capitalize()}**"
-                                              f"\n{result.text}")
-            await ctx.send(embed=embed)
-        except Exception as err:
-            await ctx.send(err)
     
     @commands.command(aliases=['wotd', 'word'], help="Get the word of the day.")
     async def wordoftheday(self, ctx):
@@ -153,7 +126,8 @@ class Internet(commands.Cog):
                     await cs.close()
             
             await ctx.send(
-                embed=discord.Embed(description=f"{user.name}, {unes(comp['compliment'])}", colour=self.client.colour).set_footer(
+                embed=discord.Embed(description=f"{user.name}, {unes(comp['compliment'])}",
+                                    colour=self.client.colour).set_footer(
                     text="https://complimentr.com/api"))
         except Exception as error:
             await ctx.send(f"```py\n{error}```")
@@ -175,8 +149,9 @@ class Internet(commands.Cog):
                 town = res['name']
                 sunrise = datetime.datetime.fromtimestamp(ts).strftime("%H:%M")
                 sunset = datetime.datetime.fromtimestamp(te).strftime("%H:%M")
-                embed = discord.Embed(colour=self.client.colour, description="**" + unes(topic['main']) + "**" + '\n' + unes(
-                    topic['description']).capitalize())
+                embed = discord.Embed(colour=self.client.colour,
+                                      description="**" + unes(topic['main']) + "**" + '\n' + unes(
+                                          topic['description']).capitalize())
                 embed.add_field(name="Info",
                                 value=f"*Temperature:* **{cels_temp}**° C • **{faren_temp}**° F • **{kelv_temp}**° K\n*Sunrise:* **{sunrise} UTC**\n*Sunset:* **{sunset} UTC**")
                 embed.set_footer(text=f"Weather for {town} • http://api.openweathermap.org")
@@ -204,7 +179,7 @@ class Internet(commands.Cog):
                 for item in s_s:
                     stats.append(f"**{STAT_NAMES[item['stat']['name']]}:** `{item['base_stat']}`")
                 for ability in abils:
-                    abilities.append(f"**{ability['ability']['name'].capitalize()}**")
+                    abilities.append(f"**{ability['ability']['name'].title()}**")
                 for a in ts:
                     lst.append(TYPES[a['type']['name']])
                 for b in s_s:
@@ -214,7 +189,7 @@ class Internet(commands.Cog):
                     async with cs.get(f"https://pokeapi.co/api/v2/pokemon-species/{res['id']}/") as r:
                         data = await r.json()
                 embed = discord.Embed(colour=self.client.colour, title=f"{pokemon.capitalize()} • #{res['id']}",
-                                      description=f"{types}\n**Height:** {res['height'] / 10} m\n\n<:pokeball:715599637079130202> {unes(data['flavor_text_entries'][0]['flavor_text'])}")
+                                      description=f"{types}\n**Height:** {res['height'] / 10} m\n\n<:pokeball:715599637079130202> {unes(data['flavor_text_entries'][0]['flavor_text']).strip()}")
                 embed.add_field(name="Abilities", value="\n".join(abilities[::-1]), inline=False)
                 embed.add_field(name="Stats", value="\n".join(stats[::-1]) + f"\n**Total**: `{sum(numlist)}`",
                                 inline=False)
@@ -238,7 +213,8 @@ class Internet(commands.Cog):
                 deph = str(defin).replace("[", "_")
                 deph2 = str(deph).replace("]", "_")
                 await ctx.send(
-                    embed=discord.Embed(title=terms, description=trom2[:2000] + f"\n\n{deph2}", colour=self.client.colour))
+                    embed=discord.Embed(title=terms, description=trom2[:2000] + f"\n\n{deph2}",
+                                        colour=self.client.colour))
         except Exception as error:
             await ctx.send(error)
     
@@ -301,6 +277,32 @@ class Internet(commands.Cog):
                 suff = "\u200b"
             send = cyberformat.hyper_replace(str(r), old=[' i ', "i'm", "i'll"], new=[' I ', "I'm", "I'll"])
             await ctx.send(f"**{ctx.author.name}**, {send}{suff}")
+    
+    @commands.group(invoke_without_command=True, aliases=['trans'])
+    async def translate(self, ctx, message):
+        translator = aiogoogletrans.Translator()
+        res = await translator.translate(message)
+        from_lang = aiogoogletrans.LANGUAGES[res.src]
+        to_lang = aiogoogletrans.LANGUAGES[res.dest]
+        embed = discord.Embed(colour=self.client.colour,
+                              description=f"**{from_lang.title()}**\n{message}\n\n**{to_lang.title()}**\n{res.text}\n\n**Pronunciation**\n{res.pronunciation}").set_author(
+            name='Translated Text')
+        return await ctx.send(embed=embed.set_footer(text=f"{round(res.confidence * 100)}% confident"))
+    
+    @translate.command(name='to', invoke_without_command=True)
+    async def to(self, ctx, target_lang, message):
+        translator = aiogoogletrans.Translator()
+        try:
+            res = await translator.translate(message, dest=target_lang)
+        except ValueError:
+            return await ctx.send(
+                f"<:warning:727013811571261540> **{ctx.author.name}**, `{target_lang}` is not a valid langauge!")
+        from_lang = aiogoogletrans.LANGUAGES[res.src]
+        to_lang = aiogoogletrans.LANGUAGES[res.dest]
+        embed = discord.Embed(colour=self.client.colour,
+                              description=f"**{from_lang.capitalize()}**\n{message}\n\n**{to_lang.capitalize()}**\n{res.text}\n\n**Pronunciation**\n{res.pronunciation}").set_author(
+            name='Translated Text')
+        return await ctx.send(embed=embed.set_footer(text=f"{res.confidence * 100}% confident"))
 
 
 def setup(client):
