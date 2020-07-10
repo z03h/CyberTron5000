@@ -18,6 +18,7 @@ colour = 0x00dcff
 
 # •
 
+
 class GuildStats:
     """
     Guild Stats
@@ -155,7 +156,7 @@ class Profile(commands.Cog):
             g = GuildStats(ctx).status_counter
             n = '\n'
             guild = ctx.guild
-            people = [f"<:member:716339965771907099>**{len(ctx.guild.members):,}**",
+            people = [f"<:member:731190477927219231>**{len(ctx.guild.members):,}**",
                       f"{sl[discord.Status.online]}**{g[discord.Status.online]:,}**",
                       f"{sl[discord.Status.idle]}**{g[discord.Status.idle]:,}**",
                       f"{sl[discord.Status.dnd]}**{g[discord.Status.dnd]:,}**",
@@ -184,7 +185,7 @@ class Profile(commands.Cog):
         members = [m for m in ctx.guild.members]
         admins = [admin for admin in members if admin.guild_permissions.administrator and admin.bot is False]
         mods = [mod for mod in members if mod.guild_permissions.kick_members and mod.bot is False]
-        mod_bots = [bot for bot in members if bot.guild_permissions.kick_members and bot.bot is True]
+        mod_bots = [bot for bot in members if bot.guild_permissions.kick_members and bot.bot]
         await ctx.send(
             embed=discord.Embed(description=f"<:owner:730864906429136907> **OWNER:** {owner}\n"
                                             f"\n**ADMINS** (Total {len(admins)})\n {f'{n}'.join([f'🛡 {admin.mention} - {admin.top_role.mention}' for admin in admins[:10]])}"
@@ -207,7 +208,7 @@ class Profile(commands.Cog):
         embed.add_field(name=f"Emojis (Total {len([e for e in ctx.guild.emojis])})",
                         value='\u200b' + "|".join([str(a) for a in ctx.guild.emojis][:24]), inline=False)
         await ctx.send(embed=embed, file=gs.guild_graph)
-
+    
     @guildinfo.command(aliases=['chan'])
     async def channels(self, ctx):
         """Shows you the channels of a guild that only mods/admins can see."""
@@ -264,7 +265,7 @@ class Profile(commands.Cog):
         embed.description = "\n".join(chl)
         return await ctx.send("peanut no like :angry:") if ctx.guild.id == 653376332507643914 else await ctx.send(
             embed=embed)
-
+    
     @guildinfo.command(aliases=['def-chan'])
     async def default_channels(self, ctx):
         """Shows you the channels of a guild that everyone can see."""

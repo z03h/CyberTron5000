@@ -117,29 +117,32 @@ class Meta(commands.Cog):
             url="https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot"
         )
         await ctx.send(embed=embed)
-    
+
     @commands.group(aliases=["e", "evaluate"], name='eval', invoke_without_command=True, help="Evaluates a function.")
     @commands.is_owner()
     async def eval_fn(self, ctx, *, cmd):
         fn_name = "_eval_expr"
-        
+    
         cmd = cyberformat.codeblock(cmd)
         cmd = cmd.strip("` ")
         cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
-        
+    
         body = f"async def {fn_name}():\n{cmd}"
-        
+    
         parsed = ast.parse(body)
         body = parsed.body[0].body
-        
+    
         insert_returns(body)
-        
+    
         env = {
             'client': ctx.bot,
             'discord': discord,
             'commands': commands,
             'ctx': ctx,
             '__import__': __import__,
+            'author': ctx.author,
+            'guild': ctx.guild,
+            'channel': ctx.channel,
             'reddit': praw.Reddit(client_id=secrets()['client_id'],
                                   client_secret=secrets()['client_secret'],
                                   username="CyberTron5000",
@@ -147,34 +150,37 @@ class Meta(commands.Cog):
                                   user_agent=secrets()['user_agent'])
         }
         exec(compile(parsed, filename="<ast>", mode="exec"), env)
-        
+    
         await ctx.message.add_reaction(emoji=self.tick)
         result = (await eval(f"{fn_name}()", env))
         await ctx.send('{}'.format(result))
-    
+
     @eval_fn.command(aliases=["rtrn", "r"], name='return', invoke_without_command=True,
                      help="Evaluates a function and returns output.")
     @commands.is_owner()
     async def r(self, ctx, *, cmd):
         try:
             fn_name = "_eval_expr"
-            
+        
             cmd = cyberformat.codeblock(cmd)
             cmd = cmd.strip("` ")
             cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
-            
+        
             body = f"async def {fn_name}():\n{cmd}"
-            
+        
             parsed = ast.parse(body)
             body = parsed.body[0].body
-            
+        
             insert_returns(body)
-            
+        
             env = {
                 'client': ctx.bot,
                 'discord': discord,
                 'commands': commands,
                 'ctx': ctx,
+                'author': ctx.author,
+                'guild': ctx.guild,
+                'channel': ctx.channel,
                 '__import__': __import__,
                 'reddit': praw.Reddit(client_id=secrets()['client_id'],
                                       client_secret=secrets()['client_secret'],
@@ -183,7 +189,7 @@ class Meta(commands.Cog):
                                       user_agent=secrets()['user_agent'])
             }
             exec(compile(parsed, filename="<ast>", mode="exec"), env)
-            
+        
             try:
                 result = (await eval(f"{fn_name}()", env))
                 await ctx.send(f'{result}')

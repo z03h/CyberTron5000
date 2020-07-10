@@ -183,12 +183,12 @@ class Reddit(commands.Cog):
                     return await ctx.send("Whoops, something went wrong. Error Code: {}".format(r.status))
                 subreddits = res['data']
                 reddits = [
-                    f"[{subreddit['sr_display_name_prefixed']}](https://reddit.com{subreddit['url']}) • <:member:716339965771907099> **{subreddit['subscribers']:,}**"
+                    f"[{subreddit['sr_display_name_prefixed']}](https://reddit.com{subreddit['url']}) • <:member:731190477927219231> **{subreddit['subscribers']:,}**"
                     for subreddit in subreddits]
                 numbas = [s['subscribers'] for s in subreddits]
                 msg = "Top 15 Subreddits" if len(reddits) > 15 else "Moderated Subreddits"
                 modstats = [f"{i}. {v}" for i, v in enumerate(reddits, 1)]
-                final_ms = "\n".join(modstats)
+                final_ms = "\n".join(modstats[:15])
                 zero_subs = len([item for item in numbas if item == 0])
                 one_subs = len([item for item in numbas if item == 1])
                 hundred_subs = len([item for item in numbas if item >= 100])

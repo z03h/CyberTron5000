@@ -80,6 +80,7 @@ class Images(commands.Cog):
         """
         What a monster
         """
+        member = member or ctx.author
         daggy = await self.client.fetch_user(self.daggy)
         async with ctx.typing():
             data = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png'))}
