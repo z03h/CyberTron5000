@@ -303,6 +303,39 @@ class Reddit(commands.Cog):
                         f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
         except Exception as er:
             await ctx.send(er)
+            
+    @commands.command(aliases=['pages', 'paginate'])
+    async def reddit_pages(self, ctx, subreddit, limit: int = 5):
+        """Gives you a paginated menu of any subreddit"""
+        from disputils import BotEmbedPaginator
+        posts = []
+        u = '\u200b'
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f"https://www.reddit.com/r/{subreddit}/hot.json") as r:
+                res = await r.json()
+            for i in res['data']['children']:
+                posts.append(i['data'])
+            counter = 0
+            embeds = []
+            async with ctx.typing():
+                for s in random.sample(posts, len(posts)):
+                    embed = discord.Embed(title=str(s['title']), colour=reddit_colour,
+                                          url=f"https://reddit.com/{s['permalink']}")
+                    embed.set_author(name=s['author'])
+                    embed.set_footer(text=f"{s['upvote_ratio'] * 100:,}% upvote ratio | posted to r/{s['subreddit']}")
+                    if s['is_self']:
+                        embed.description = f"{s['selftext'].replace('**', f'{u}')}\n{self.up} **{s['score']:,}** :speech_balloon: **{s['num_comments']:,}** {self.share} **{s['num_crossposts']:,}** :medal: **{s['total_awards_received']}**"
+                    else:
+                        embed.set_image(url=s['url'].split("?")[0])
+                        embed.description = f"{self.up} **{s['score']:,}** :speech_balloon: **{s['num_comments']:,}** {self.share} **{s['num_crossposts']:,}** :medal: **{s['total_awards_received']}**"
+                    embeds.append(embed)
+                    counter += 1
+                    if counter == limit:
+                        break
+                    else:
+                        continue
+        paginator = BotEmbedPaginator(ctx, embeds)
+        await paginator.run()
 
 
 def setup(client):
