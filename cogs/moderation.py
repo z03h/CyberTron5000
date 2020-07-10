@@ -1,9 +1,10 @@
 import discord
+import asyncio
+import json
+
 from discord.ext import commands
 
 from .utils.checks import check_admin_or_owner
-
-
 
 
 # ≫
@@ -58,16 +59,35 @@ class Moderation(commands.Cog):
     
     @commands.group(help="Vote on something.", invoke_without_command=True)
     async def vote(self, ctx, *, message):
+        valid_emojis = ['⬆️', '⬇️']
         author = ctx.message.author
         embed = discord.Embed(
             colour=self.client.colour, timestamp=ctx.message.created_at, title="Poll:", description=message
         )
         embed.set_footer(text=f"Started by {author}", icon_url=author.avatar_url)
-        await ctx.message.delete()
-        string = str("Vote Here!")
-        e = await ctx.send(string, embed=embed)
-        for r in ['⬆️', '⬇️']:
+        embed.add_field(name="Upvotes", value="1", inline=False)
+        embed.add_field(name="Downvotes", value="1", inline=False)
+        e = await ctx.send(embed=embed)
+        for r in valid_emojis:
             await e.add_reaction(r)
+        while True:
+            names = ['Upvotes', 'Downvotes']
+            done, pending = await asyncio.wait([
+                self.client.wait_for("reaction_add"),
+                self.client.wait_for("reaction_remove")
+            ], return_when=asyncio.FIRST_COMPLETED)
+            m = await ctx.channel.fetch_message(e.id)
+            res = done.pop().result()
+            print(res)
+            if res[0].emoji not in valid_emojis:
+                return
+            else:
+                index = valid_emojis.index(res[0].emoji)
+                p = (len(m.reactions)) - res[0].count
+                percent = round(p / len(m.reactions) * 100, 2)
+                embed.set_field_at(index=index, name=names[index], value=f"{res[0].count} | {percent}%", inline=False)
+                await e.edit(embed=embed)
+                continue
     
     @vote.command(invoke_without_command=True)
     @commands.is_owner()
@@ -103,6 +123,32 @@ class Moderation(commands.Cog):
     async def leave(self, ctx):
         """Makes bot leave server"""
         await self.client.get_guild(ctx.guild.id).leave()
+    
+    @commands.group(invoke_without_command=True, help="Change the guild's prefix", aliases=['prefix', 'pre'])
+    @check_admin_or_owner()
+    async def changeprefix(self, ctx, *, prefix):
+        with open("prefixes.json", "r") as f:
+            prefixes = json.load(f)
+        
+        prefixes[str(ctx.guild.id)] = prefix
+        
+        with open("prefixes.json", "w") as f:
+            json.dump(prefixes, f, indent=4)
+        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.guild.me.edit(nick=f"({prefix}) {self.client.user.name}")
+    
+    @changeprefix.command(invoke_without_command=True, help="Make your prefix end in a space.", aliases=['sp'])
+    @check_admin_or_owner()
+    async def spaceprefix(self, ctx, *, prefix):
+        with open("prefixes.json", "r") as f:
+            prefixes = json.load(f)
+        
+        prefixes[str(ctx.guild.id)] = f"{prefix} "
+        
+        with open("prefixes.json", "w") as f:
+            json.dump(prefixes, f, indent=4)
+        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.guild.me.edit(nick=f"({prefix}) {self.client.user.name}")
 
 
 def setup(client):

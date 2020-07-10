@@ -1,4 +1,4 @@
-"""
+""""
 
 For general bot commands, basic/meta stuff.
 
@@ -117,23 +117,23 @@ class Meta(commands.Cog):
             url="https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot"
         )
         await ctx.send(embed=embed)
-
+    
     @commands.group(aliases=["e", "evaluate"], name='eval', invoke_without_command=True, help="Evaluates a function.")
     @commands.is_owner()
     async def eval_fn(self, ctx, *, cmd):
         fn_name = "_eval_expr"
-    
+        
         cmd = cyberformat.codeblock(cmd)
         cmd = cmd.strip("` ")
         cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
-    
+        
         body = f"async def {fn_name}():\n{cmd}"
-    
+        
         parsed = ast.parse(body)
         body = parsed.body[0].body
-    
+        
         insert_returns(body)
-    
+        
         env = {
             'client': ctx.bot,
             'discord': discord,
@@ -150,29 +150,29 @@ class Meta(commands.Cog):
                                   user_agent=secrets()['user_agent'])
         }
         exec(compile(parsed, filename="<ast>", mode="exec"), env)
-    
+        
         await ctx.message.add_reaction(emoji=self.tick)
         result = (await eval(f"{fn_name}()", env))
         await ctx.send('{}'.format(result))
-
+    
     @eval_fn.command(aliases=["rtrn", "r"], name='return', invoke_without_command=True,
                      help="Evaluates a function and returns output.")
     @commands.is_owner()
     async def r(self, ctx, *, cmd):
         try:
             fn_name = "_eval_expr"
-        
+            
             cmd = cyberformat.codeblock(cmd)
             cmd = cmd.strip("` ")
             cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
-        
+            
             body = f"async def {fn_name}():\n{cmd}"
-        
+            
             parsed = ast.parse(body)
             body = parsed.body[0].body
-        
+            
             insert_returns(body)
-        
+            
             env = {
                 'client': ctx.bot,
                 'discord': discord,
@@ -189,7 +189,7 @@ class Meta(commands.Cog):
                                       user_agent=secrets()['user_agent'])
             }
             exec(compile(parsed, filename="<ast>", mode="exec"), env)
-        
+            
             try:
                 result = (await eval(f"{fn_name}()", env))
                 await ctx.send(f'{result}')
@@ -352,6 +352,69 @@ class Meta(commands.Cog):
             name=f"Last {limit} GitHub Commit(s) for CyberTron5000",
             icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png",
             url="https://github.com/niztg/CyberTron5000"))
+
+    @commands.group(invoke_without_command=True)
+    async def suggest(self, ctx, *, idea):
+        """Suggest an idea for the bot."""
+        owner = self.client.get_user(id=350349365937700864)
+        await owner.send(f"Idea: ```{idea}```")
+        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+
+    @suggest.command(invoke_without_command=True)
+    async def error(self, ctx, *, error):
+        """Report an error for this bot."""
+        owner = self.client.get_user(id=350349365937700864)
+        await owner.send(f"You should fix ```{error}```")
+        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+
+    @commands.command(help="Loads Cogs.")
+    @commands.is_owner()
+    async def load(self, ctx, extension=None):
+        if not extension:
+            for filename in os.listdir('cogs'):
+                if filename.endswith('.py'):
+                    self.client.load_extension(f'cogs.{filename[:-3]}')
+        
+            await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+            await ctx.send("\n".join([f":arrow_up: `cogs.{f[:-3]}`" for f in os.listdir("cogs") if f.endswith(".py")]))
+    
+        else:
+            self.client.load_extension(f'cogs.{extension}')
+            await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+            await ctx.send(f":arrow_up: `cogs.{extension}`")
+
+    @commands.command(help="Unloads Cogs.")
+    @commands.is_owner()
+    async def unload(self, ctx, extension=None):
+        if not extension:
+            for filename in os.listdir('cogs'):
+                if filename.endswith('.py'):
+                    self.client.unload_extension(f'cogs.{filename[:-3]}')
+        
+            await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+            await ctx.send(
+                "\n".join([f":arrow_down: `cogs.{f[:-3]}`" for f in os.listdir("cogs") if f.endswith(".py")]))
+    
+        else:
+            self.client.unload_extension(f'cogs.{extension}')
+            await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+            await ctx.send(f":arrow_down: `cogs.{extension}`")
+
+    @commands.command(help="Reloads Cogs")
+    @commands.is_owner()
+    async def reload(self, ctx, extension=None):
+        if not extension:
+            for filename in os.listdir('cogs'):
+                if filename.endswith('.py'):
+                    self.client.reload_extension(f'cogs.{filename[:-3]}')
+        
+            await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+            await ctx.send("\n".join([f":repeat: `cogs.{f[:-3]}`" for f in os.listdir("cogs") if f.endswith(".py")]))
+    
+        else:
+            self.client.reload_extension(f'cogs.{extension}')
+            await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+            await ctx.send(f":repeat: `cogs.{extension}`")
 
 
 def setup(client):
