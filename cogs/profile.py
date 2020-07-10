@@ -13,7 +13,7 @@ from .utils import cyberformat
 
 matplotlib.use('Agg')
 
-colour = 0x00dcff
+
 
 
 # •
@@ -112,14 +112,14 @@ class uiEmbed:
             else:
                 top_role_msg = f"\n**Top Role:** {member.top_role.mention}"
             embed = discord.Embed(
-                colour=colour, timestamp=self.context.message.created_at,
+                colour=self.client.colour, timestamp=self.context.message.created_at,
                 description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1:,}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**{top_role_msg}\n{status_list}"
             )
             embed.set_author(name=member)
             embed.set_thumbnail(url=member.avatar_url_as(static_format="png"))
             return embed
         elif opt == "perms":
-            embed = discord.Embed(colour=colour, timestamp=self.context.message.created_at,
+            embed = discord.Embed(colour=self.client.colour, timestamp=self.context.message.created_at,
                                   description=f"**Channel**: {self.context.channel.mention}")
             permissions = self.context.channel.permissions_for(member)
             for item, valueBool in permissions:
@@ -134,7 +134,7 @@ class uiEmbed:
             embed.add_field(name='Does Not Have', value='\n'.join(negperms), inline=True)
             return embed
         elif opt == "av":
-            embed = discord.Embed(colour=colour).set_image(url=member.avatar_url_as(static_format='png'))
+            embed = discord.Embed(colour=self.client.colour).set_image(url=member.avatar_url_as(static_format='png'))
             embed.set_author(name=f"Showing the profile picture of {member}")
             return embed
 
@@ -167,7 +167,7 @@ class Profile(commands.Cog):
             voice_channels = [voice_channel for voice_channel in guild.voice_channels]
             categories = [category for category in guild.categories]
             region = REGIONS[f"{str(guild.region)}"]
-            embed = discord.Embed(colour=colour,
+            embed = discord.Embed(colour=self.client.colour,
                                   description=f"**{guild.id}**\n<:owner:730864906429136907> **{guild.owner}**\n🗺 **{region}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
                                               f"\n{f'{n}'.join(people)}\n<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**\n{cyberformat.bar(stat=GuildStats(ctx).num_bot, max=ctx.guild.member_count, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>', show_stat=False)}\n<:boost:726151031322443787> **Nitro Tier: {guild.premium_tier}**\n{cyberformat.bar(stat=guild.premium_subscription_count, max=30, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>', show_stat=True)}")
             embed.set_author(name=f"{guild}", icon_url=guild.icon_url)
@@ -191,7 +191,7 @@ class Profile(commands.Cog):
                                             f"\n**ADMINS** (Total {len(admins)})\n {f'{n}'.join([f'🛡 {admin.mention} - {admin.top_role.mention}' for admin in admins[:10]])}"
                                             f"\n\n**MODERATORS** (Total {len(mods)})\n {f'{n}'.join([f'🛡 {mod.mention} - {mod.top_role.mention}' for mod in mods[:10]])}"
                                             f"\n\n**MOD BOTS** (Total {len(mod_bots)})\n {f'{n}'.join([f'🛡 {bot.mention} - {bot.top_role.mention}' for bot in mod_bots[:10]])}",
-                                colour=colour).set_author(name=f"Staff Team for {ctx.guild}",
+                                colour=self.client.colour).set_author(name=f"Staff Team for {ctx.guild}",
                                                           icon_url=ctx.guild.icon_url))
     
     @guildinfo.command(invoke_without_command=True, aliases=['stats'])
@@ -200,7 +200,7 @@ class Profile(commands.Cog):
         role_list = " ".join(role.mention for role in ctx.guild.roles[::-1][:10] if role.id != ctx.guild.id)
         gs = GuildStats(ctx)
         msg = "Top 10 Roles" if len([r for r in ctx.guild.roles]) > 10 else "Roles"
-        embed = discord.Embed(colour=colour,
+        embed = discord.Embed(colour=self.client.colour,
                               description=f"This guild has **{gs.emojis_dict['total']:,}** total emojis, **{gs.emojis_dict['animated']}** of which **({round(gs.emojis_dict['animated'] / gs.emojis_dict['total'] * 100, 1):,}%)** are animated.\nOut of this guild's limit of **{gs.emojis_dict['limit']}** for non-animated emojis, it has used **{round(gs.emojis_dict['still'] / gs.emojis_dict['limit'] * 100, 1):,}%** of it. **({gs.emojis_dict['still']}/{gs.emojis_dict['limit']})**\n<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**\n{cyberformat.bar(stat=GuildStats(ctx).num_bot, max=ctx.guild.member_count, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>', show_stat=True)}\n<:boost:726151031322443787> This guild has **{ctx.guild.premium_subscription_count}** Nitro Boosts and is Tier **{ctx.guild.premium_tier}**\n{cyberformat.bar(stat=ctx.guild.premium_subscription_count, max=30, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>', show_stat=True)}").set_author(
             name=f"Advanced Statistics for {ctx.guild}", icon_url=ctx.guild.icon_url)
         embed.set_image(url="attachment://guild.png")
@@ -212,7 +212,7 @@ class Profile(commands.Cog):
     @guildinfo.command(aliases=['chan'])
     async def channels(self, ctx):
         """Shows you the channels of a guild that only mods/admins can see."""
-        embed = discord.Embed(colour=colour).set_author(icon_url=ctx.guild.icon_url_as(format='png'),
+        embed = discord.Embed(colour=self.client.colour).set_author(icon_url=ctx.guild.icon_url_as(format='png'),
                                                         name=f"Channels in {ctx.guild}")
         for c in ctx.guild.categories:
             x = []
@@ -269,7 +269,7 @@ class Profile(commands.Cog):
     @guildinfo.command(aliases=['def-chan'])
     async def default_channels(self, ctx):
         """Shows you the channels of a guild that everyone can see."""
-        embed = discord.Embed(colour=colour).set_author(icon_url=ctx.guild.icon_url_as(format='png'),
+        embed = discord.Embed(colour=self.client.colour).set_author(icon_url=ctx.guild.icon_url_as(format='png'),
                                                         name=f"Channels in {ctx.guild}")
         for c in ctx.guild.categories:
             x = []

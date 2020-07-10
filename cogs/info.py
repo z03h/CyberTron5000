@@ -3,7 +3,7 @@ import itertools
 import discord
 from discord.ext import commands
 
-colour = 0x00dcff
+
 
 
 class CyberTronHelpCommand(commands.HelpCommand):
@@ -59,7 +59,7 @@ class CyberTronHelpCommand(commands.HelpCommand):
             return c.cog_name or '\u200bUncategorized Commands'
         
         total = 0
-        embed = discord.Embed(colour=colour,
+        embed = discord.Embed(colour=self.client.colour,
                               description=f'You can do `{self.clean_prefix}help [command/category]` for more info.\n\n')
         entries = await self.filter_commands(self.context.bot.commands, sort=True, key=key)
         for cog, cmds in itertools.groupby(entries, key=key):
@@ -81,7 +81,7 @@ class CyberTronHelpCommand(commands.HelpCommand):
         entries = await self.filter_commands(cog.get_commands(), sort=True)
         foo = "\n".join(
             [f"→ `{c.name} {c.signature}` • {c.help or 'No help provided for this command'}" for c in entries])
-        await self.context.send(embed=discord.Embed(description=f"{cog_doc}\n\n{foo}", colour=colour).set_author(
+        await self.context.send(embed=discord.Embed(description=f"{cog_doc}\n\n{foo}", colour=self.client.colour).set_author(
             name=f"{cog.qualified_name} Commands (Total {len(entries)})"))
     
     async def send_command_help(self, command):
@@ -90,7 +90,7 @@ class CyberTronHelpCommand(commands.HelpCommand):
         :param command:
         :return:
         """
-        embed = discord.Embed(title=self.get_command_signature(command), colour=colour,
+        embed = discord.Embed(title=self.get_command_signature(command), colour=self.client.colour,
                               description=command.help or "No help provided for this command.")
         await self.context.send(embed=embed)
     
@@ -103,7 +103,7 @@ class CyberTronHelpCommand(commands.HelpCommand):
         sc = []
         u = '\u200b'
         entries = await self.filter_commands(group.commands)
-        embed = discord.Embed(title=self.get_command_signature(group), colour=colour)
+        embed = discord.Embed(title=self.get_command_signature(group), colour=self.client.colour)
         for c in entries:
             char = "\u200b" if not c.aliases else "•"
             sc.append(f"→ `{group.name} {c.name}{char}{'•'.join(c.aliases)} {c.signature or f'{u}'}` • {c.help}")
@@ -134,7 +134,7 @@ class Info(commands.Cog):
     @commands.command()
     async def cogs(self, ctx):
         """Shows you every cog"""
-        await ctx.send(embed=discord.Embed(colour=colour, title=f"All Cogs ({len(self.client.cogs)})",
+        await ctx.send(embed=discord.Embed(colour=self.client.colour, title=f"All Cogs ({len(self.client.cogs)})",
                                            description=f"Do `{ctx.prefix}help <cog>` to know more about them!" + "\n\n" + "\n".join(
                                                [f"`{cog}` • {self.client.cogs[cog].__doc__}" for cog in
                                                 self.client.cogs])))

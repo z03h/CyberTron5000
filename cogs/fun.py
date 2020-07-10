@@ -8,7 +8,7 @@ from discord.ext import commands
 from .utils import cyberformat
 from .utils.lists import INDICATOR_LETTERS
 
-colour = 0x00dcff
+
 
 
 # ≫
@@ -30,7 +30,7 @@ class Fun(commands.Cog):
     @reply.command(invoke_without_command=True,
                    help="Replies with what you said and deletes your message, but in an embed.")
     async def embed(self, ctx, *, message):
-        await ctx.send(embed=discord.Embed(title=message, colour=colour))
+        await ctx.send(embed=discord.Embed(title=message, colour=self.client.colour))
     
     @reply.command(invoke_without_command=True,
                    help="Replies with what you said and deletes your message, but in a different channel.")
@@ -131,7 +131,7 @@ class Fun(commands.Cog):
         author = ctx.message.author
         if clause is None:
             embed = discord.Embed(
-                colour=colour, title="Tails!"
+                colour=self.client.colour, title="Tails!"
             )
             tails = embed.set_image(
                 url='https://upload.wikimedia.org/wikipedia/en/thumb/3/37/Quarte'
@@ -143,7 +143,7 @@ class Fun(commands.Cog):
             if choice == 'Tails!':
                 await ctx.send(embed=tails)
             embed = discord.Embed(
-                colour=colour, title="Heads!"
+                colour=self.client.colour, title="Heads!"
             )
             heads = embed.set_image(
                 url='https://upload.wikimedia.org/wikipedia/en/thumb/8/8a/Quarter_Obvers'
@@ -152,7 +152,7 @@ class Fun(commands.Cog):
                 await ctx.send(embed=heads)
         else:
             embed = discord.Embed(
-                colour=colour, title="Tails!"
+                colour=self.client.colour, title="Tails!"
             )
             tails = embed.set_image(
                 url='https://upload.wikimedia.org/wikipedia/en/thumb/3/37/Quar'
@@ -165,7 +165,7 @@ class Fun(commands.Cog):
             if choice == 'Tails!':
                 await ctx.send(embed=tails)
             embed = discord.Embed(
-                colour=colour, title="Heads!"
+                colour=self.client.colour, title="Heads!"
             )
             heads = embed.set_image(
                 url='https://upload.wikimedia.org/wikipedia/en/thumb/'
@@ -178,7 +178,7 @@ class Fun(commands.Cog):
     async def iq(self, ctx, *, member: discord.Member = None):
         member = member or ctx.message.author
         embed = discord.Embed(
-            colour=colour, title='IQ Rating Machine <:bigbrain:703735142509969408>',
+            colour=self.client.colour, title='IQ Rating Machine <:bigbrain:703735142509969408>',
             timestamp=ctx.message.created_at
         )
         embed.set_author(name="{}".format(member.display_name), icon_url=member.avatar_url)
@@ -246,7 +246,7 @@ class Fun(commands.Cog):
                 " but you guys decide to make peace. It's a draw!"
             ])
             embed = discord.Embed(
-                colour=colour, title='Fight Results! :crossed_swords:', timestamp=ctx.message.created_at
+                colour=self.client.colour, title='Fight Results! :crossed_swords:', timestamp=ctx.message.created_at
             )
             
             embed.set_author(name="{} vs {}".format(author.display_name, opponent.display_name),
@@ -260,7 +260,7 @@ class Fun(commands.Cog):
     async def who(self, ctx, *, question=None):
         member = random.choice(ctx.guild.members)
         embed = discord.Embed(
-            colour=colour, title=f"Answer: {member.display_name}", timestamp=ctx.message.created_at
+            colour=self.client.colour, title=f"Answer: {member.display_name}", timestamp=ctx.message.created_at
         )
         if not question:
             embed.set_author(name=f'Who?', icon_url=ctx.message.author.avatar_url)

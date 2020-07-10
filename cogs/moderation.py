@@ -3,7 +3,7 @@ from discord.ext import commands
 
 from .utils.checks import check_admin_or_owner
 
-colour = 0x00dcff
+
 
 
 # ≫
@@ -60,7 +60,7 @@ class Moderation(commands.Cog):
     async def vote(self, ctx, *, message):
         author = ctx.message.author
         embed = discord.Embed(
-            colour=colour, timestamp=ctx.message.created_at, title="Poll:", description=message
+            colour=self.client.colour, timestamp=ctx.message.created_at, title="Poll:", description=message
         )
         embed.set_footer(text=f"Started by {author}", icon_url=author.avatar_url)
         await ctx.message.delete()
@@ -75,7 +75,7 @@ class Moderation(commands.Cog):
         """Voting only in the CyberTron5000 help server (https://discord.gg/2fxKxJH)"""
         author = ctx.message.author
         embed = discord.Embed(
-            colour=colour, timestamp=ctx.message.created_at, title="Poll:", description=message
+            colour=self.client.colour, timestamp=ctx.message.created_at, title="Poll:", description=message
         )
         embed.set_footer(text=f"Started by {author}", icon_url=author.avatar_url)
         await ctx.message.delete()

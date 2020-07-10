@@ -8,7 +8,7 @@ from discord.ext import commands
 
 from .utils.checks import check_guild_and_channel, check_guild, check_guild_and_admin
 
-colour = 0x00dcff
+
 
 
 # ≫
@@ -194,7 +194,7 @@ class VibeSchool(commands.Cog):
                 p = True if round(total / len(ty_questions) * 100) > 70 else False
                 embed = discord.Embed(
                     description=f"Score: **{total}** out of **{len(ty_questions)}**\nPercent: **{round(total / len(ty_questions) * 100)}%**\nPass? {p}",
-                    colour=colour, title="Test Results").set_footer(text="Note: Bonus questions count as two points.")
+                    colour=self.client.colour, title="Test Results").set_footer(text="Note: Bonus questions count as two points.")
                 embed.set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
                 await ctx.send(embed=embed)
                 if p:
@@ -258,7 +258,7 @@ class VibeSchool(commands.Cog):
                 p = True if round(total / len(ty_questions) * 100) > 70 else False
                 embed = discord.Embed(
                     description=f"Score: **{total}** out of **{len(ty_questions)}**\nPercent: **{round(total / len(ty_questions) * 100)}%**\nPass? {p}",
-                    colour=colour, title="Test Results").set_footer(text="Note: Bonus questions count as two points.")
+                    colour=self.client.colour, title="Test Results").set_footer(text="Note: Bonus questions count as two points.")
                 embed.set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
                 await ctx.send(embed=embed)
                 if p:
@@ -277,7 +277,7 @@ class VibeSchool(commands.Cog):
     @commands.command(help="the eppicest server in the land")
     async def vibeschool(self, ctx):
         embed = discord.Embed(
-            colour=colour,
+            colour=self.client.colour,
             title="join now", url="https://discord.gg/E85ZHkt"
         )
         await ctx.send(embed=embed)

@@ -16,7 +16,7 @@ from random_word import RandomWords
 from .utils.lists import STAT_NAMES, NUMBER_ALPHABET, TYPES
 from .utils import cyberformat
 
-colour = 0x00dcff
+
 
 def secrets():
     with open("secrets.json", "r") as f:
@@ -40,7 +40,7 @@ class Internet(commands.Cog):
             translator = Translator()
             result = translator.translate(message)
             lang = LANGUAGES[f"{result.src}"]
-            embed = discord.Embed(colour=colour, title="Translate",
+            embed = discord.Embed(colour=self.client.colour, title="Translate",
                                   description=f"**{lang.capitalize()}**\n{message}\n\n**English**\n{result.text}")
             await ctx.send(embed=embed)
         except Exception as err:
@@ -52,7 +52,7 @@ class Internet(commands.Cog):
             translator = Translator()
             result = translator.translate(message, dest=language)
             lang = LANGUAGES[f"{result.src}"]
-            embed = discord.Embed(colour=colour, title="Translate",
+            embed = discord.Embed(colour=self.client.colour, title="Translate",
                                   description=f"**{lang.capitalize()}**\n{message}\n\n**{language.capitalize()}**"
                                               f"\n{result.text}")
             await ctx.send(embed=embed)
@@ -73,7 +73,7 @@ class Internet(commands.Cog):
             async with aiohttp.ClientSession() as cs:
                 async with cs.get('https://aws.random.cat/meow') as r:
                     res = await r.json()
-            em = discord.Embed(colour=colour, title="OwO", url=res['file'])
+            em = discord.Embed(colour=self.client.colour, title="OwO", url=res['file'])
             em.set_image(url=res['file'])
             await cs.close()
             em.set_footer(text="https://aws.random.cat/meow")
@@ -89,7 +89,7 @@ class Internet(commands.Cog):
                     res = await r.json()
                     res = res['url']
                     await cs.close()
-            em = discord.Embed(colour=colour, title="Woof!", url=res)
+            em = discord.Embed(colour=self.client.colour, title="Woof!", url=res)
             em.set_image(url=res)
             em.set_footer(text="https://random.dog/woof.json")
             await ctx.send(embed=em)
@@ -115,7 +115,7 @@ class Internet(commands.Cog):
                 yup = '\n'.join(an)
                 embed = discord.Embed(title=unes(data["question"]),
                                       description=f"{yup}",
-                                      colour=colour)
+                                      colour=self.client.colour)
                 embed.set_author(name=f"{ctx.message.author.display_name}'s question:",
                                  icon_url=ctx.message.author.avatar_url)
                 embed.add_field(name="Question Info",
@@ -140,7 +140,7 @@ class Internet(commands.Cog):
                     except Exception as error:
                         await ctx.send(error)
         except (asyncio.TimeoutError, asyncio.CancelledError):
-            await message.edit(embed=discord.Embed(colour=colour).set_author(
+            await message.edit(embed=discord.Embed(colour=self.client.colour).set_author(
                 name=f"Times up! The correct answer was {unes(data['correct_answer'])}."))
     
     @commands.command(aliases=['ily'], help="compliment your friends :heart:")
@@ -153,7 +153,7 @@ class Internet(commands.Cog):
                     await cs.close()
             
             await ctx.send(
-                embed=discord.Embed(description=f"{user.name}, {unes(comp['compliment'])}", colour=colour).set_footer(
+                embed=discord.Embed(description=f"{user.name}, {unes(comp['compliment'])}", colour=self.client.colour).set_footer(
                     text="https://complimentr.com/api"))
         except Exception as error:
             await ctx.send(f"```py\n{error}```")
@@ -175,7 +175,7 @@ class Internet(commands.Cog):
                 town = res['name']
                 sunrise = datetime.datetime.fromtimestamp(ts).strftime("%H:%M")
                 sunset = datetime.datetime.fromtimestamp(te).strftime("%H:%M")
-                embed = discord.Embed(colour=colour, description="**" + unes(topic['main']) + "**" + '\n' + unes(
+                embed = discord.Embed(colour=self.client.colour, description="**" + unes(topic['main']) + "**" + '\n' + unes(
                     topic['description']).capitalize())
                 embed.add_field(name="Info",
                                 value=f"*Temperature:* **{cels_temp}**° C • **{faren_temp}**° F • **{kelv_temp}**° K\n*Sunrise:* **{sunrise} UTC**\n*Sunset:* **{sunset} UTC**")
@@ -213,7 +213,7 @@ class Internet(commands.Cog):
                 async with aiohttp.ClientSession() as cs:
                     async with cs.get(f"https://pokeapi.co/api/v2/pokemon-species/{res['id']}/") as r:
                         data = await r.json()
-                embed = discord.Embed(color=colour, title=f"{pokemon.capitalize()} • #{res['id']}",
+                embed = discord.Embed(colour=self.client.colour, title=f"{pokemon.capitalize()} • #{res['id']}",
                                       description=f"{types}\n**Height:** {res['height'] / 10} m\n\n<:pokeball:715599637079130202> {unes(data['flavor_text_entries'][0]['flavor_text'])}")
                 embed.add_field(name="Abilities", value="\n".join(abilities[::-1]), inline=False)
                 embed.add_field(name="Stats", value="\n".join(stats[::-1]) + f"\n**Total**: `{sum(numlist)}`",
@@ -238,7 +238,7 @@ class Internet(commands.Cog):
                 deph = str(defin).replace("[", "_")
                 deph2 = str(deph).replace("]", "_")
                 await ctx.send(
-                    embed=discord.Embed(title=terms, description=trom2[:2000] + f"\n\n{deph2}", colour=colour))
+                    embed=discord.Embed(title=terms, description=trom2[:2000] + f"\n\n{deph2}", colour=self.client.colour))
         except Exception as error:
             await ctx.send(error)
     
@@ -249,7 +249,7 @@ class Internet(commands.Cog):
             async with cs.get("https://useless-facts.sameerkumar.website/api") as r:
                 res = await r.json()
                 await cs.close()
-        await ctx.send(embed=discord.Embed(title=res['data'], colour=colour))
+        await ctx.send(embed=discord.Embed(title=res['data'], colour=self.client.colour))
     
     @commands.command()
     async def pypi(self, ctx, *, package):
@@ -263,7 +263,7 @@ class Internet(commands.Cog):
                 char = '\u200b'
             else:
                 char = f' • {res["info"]["author_email"]}'
-            embed = discord.Embed(title=res['info']['name'], url=res['info']['project_url'], colour=colour,
+            embed = discord.Embed(title=res['info']['name'], url=res['info']['project_url'], colour=self.client.colour,
                                   description=f"> {res['info']['summary']}\n:scales: **{res['info']['license']}**\n[Home Page]({res['info']['home_page']})\n[Package URL]({res['info']['package_url']})",
                                   timestamp=ctx.message.created_at)
             embed.set_footer(text=f"{res['info']['name']} version {res['info']['version']}")

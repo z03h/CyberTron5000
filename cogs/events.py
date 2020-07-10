@@ -6,7 +6,7 @@ import async_cleverbot
 import humanize
 import json
 
-colour = 0x00dcff
+
 
 def secrets():
     with open("secrets.json", "r") as f:
@@ -41,7 +41,7 @@ class Events(commands.Cog):
         
         else:
             await ctx.message.add_reaction(self.x_r)
-            await self.client.get_channel(730556685214548088).send(embed=discord.Embed(colour=colour, title="Error!",
+            await self.client.get_channel(730556685214548088).send(embed=discord.Embed(colour=self.client.colour, title="Error!",
                                                                                        description=f"Error on `{ctx.command}`:\n```py\n{error}```").set_author(
                 name=ctx.author, icon_url=ctx.author.avatar_url))
     
@@ -53,7 +53,7 @@ class Events(commands.Cog):
                 prefix = json.load(f)
                 if str(message.guild.id) in prefix:
                     pre = prefix[str(message.guild.id)]
-                    embed = discord.Embed(colour=colour,
+                    embed = discord.Embed(colour=self.client.colour,
                                           description=f'**My prefix for {message.guild} is** `{pre}`\n\n**Do** '
                                                       f'`{pre}help` **for a full list of commands.**\n\n'
                                                       f'[Invite me to your server!]'
@@ -85,7 +85,7 @@ class Events(commands.Cog):
                           chan.permissions_for(guild.me).send_messages and isinstance(chan, discord.TextChannel)],
                          key=lambda x: x.position)[0]
         if to_send.permissions_for(guild.me).embed_links:
-            e = discord.Embed(colour=colour, title=self.client.user.name)
+            e = discord.Embed(colour=self.client.colour, title=self.client.user.name)
             tips = "My default prefix is `=`, but you can change it using `=changeprefix <newprefix>`\n[Join our help server for updates!](https://cybertron-5k.netlify.app/server)\n\n"
             e.description = f"Thank you for adding me to your server!\n{tips}"
             await to_send.send(embed=e)

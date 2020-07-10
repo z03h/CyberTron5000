@@ -4,7 +4,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-colour = 0x00dcff
+
 
 
 def dagpi():
@@ -34,7 +34,7 @@ class Images(commands.Cog):
                 async with cs.post('https://dagpi.tk/api/wanted', headers=data) as r:
                     data = await r.json()
             response = data['url']
-            embed = discord.Embed(color=colour)
+            embed = discord.Embed(colour=self.client.colour)
             embed.set_image(url=response)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)
@@ -52,7 +52,7 @@ class Images(commands.Cog):
                 async with cs.post('https://dagpi.tk/api/obamameme', headers=data) as r:
                     data = await r.json()
             response = data['url']
-            embed = discord.Embed(color=colour)
+            embed = discord.Embed(colour=self.client.colour)
             embed.set_image(url=response)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)
@@ -70,7 +70,7 @@ class Images(commands.Cog):
                 async with cs.post('https://dagpi.tk/api/bad', headers=data) as r:
                     data = await r.json()
             response = data['url']
-            embed = discord.Embed(color=colour)
+            embed = discord.Embed(colour=self.client.colour)
             embed.set_image(url=response)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)
@@ -88,7 +88,7 @@ class Images(commands.Cog):
                 async with cs.post('https://dagpi.tk/api/hitler', headers=data) as r:
                     data = await r.json()
             response = data['url']
-            embed = discord.Embed(color=colour)
+            embed = discord.Embed(colour=self.client.colour)
             embed.set_image(url=response)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)
@@ -107,7 +107,7 @@ class Images(commands.Cog):
                 async with cs.post('https://dagpi.tk/api/tweet', headers=data) as r:
                     data = await r.json()
             response = data['url']
-            embed = discord.Embed(color=colour)
+            embed = discord.Embed(colour=self.client.colour)
             embed.set_image(url=response)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)
@@ -126,7 +126,7 @@ class Images(commands.Cog):
                 async with cs.post('https://dagpi.tk/api/quote', headers=data) as r:
                     data = await r.json()
             response = data['url']
-            embed = discord.Embed(color=colour)
+            embed = discord.Embed(colour=self.client.colour)
             embed.set_image(url=response)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)
@@ -144,7 +144,7 @@ class Images(commands.Cog):
                 async with cs.post('https://dagpi.tk/api/triggered', headers=data) as r:
                     data = await r.json()
             response = data['url']
-            embed = discord.Embed(color=colour)
+            embed = discord.Embed(colour=self.client.colour)
             embed.set_image(url=response)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)
@@ -162,7 +162,7 @@ class Images(commands.Cog):
                 async with cs.post('https://dagpi.tk/api/gay', headers=data) as r:
                     data = await r.json()
             response = data['url']
-            embed = discord.Embed(color=colour)
+            embed = discord.Embed(colour=self.client.colour)
             embed.set_image(url=response)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)
@@ -180,7 +180,7 @@ class Images(commands.Cog):
                 async with cs.post('https://dagpi.tk/api/paint', headers=data) as r:
                     data = await r.json()
             response = data['url']
-            embed = discord.Embed(color=colour)
+            embed = discord.Embed(colour=self.client.colour)
             embed.set_image(url=response)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)

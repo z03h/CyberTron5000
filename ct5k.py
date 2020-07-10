@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 from CyberTron5000.cogs.utils.checks import check_admin_or_owner
 
-colour = 0x00dcff
+
 
 
 async def get_prefix(client, message):
@@ -24,6 +24,7 @@ async def get_prefix(client, message):
 
 client = commands.Bot(command_prefix=get_prefix, pm_help=None)
 client.remove_command('help')
+client.
 
 
 @client.event
