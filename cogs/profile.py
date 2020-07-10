@@ -92,6 +92,13 @@ class uiEmbed:
         perms = []
         negperms = []
         if opt == "ui":
+            if not member.bot:
+                is_bot = "\u200b"
+            else:
+                if member.public_flags.verified_bot:
+                    is_bot = "<:verifiedbot1:730904128397639682><:verifiedbot2:730904163365421128>"
+                else:
+                    is_bot = "<:bot:703728026512392312>"
             join_position = sorted(self.context.guild.members, key=lambda member: member.joined_at).index(member)
             if self.context.guild.get_member(member.id).activity and self.context.guild.get_member(
                     member.id).activity.type == discord.ActivityType.streaming:
@@ -200,10 +207,10 @@ class Profile(commands.Cog):
         embed.add_field(name=f"Emojis (Total {len([e for e in ctx.guild.emojis])})",
                         value='\u200b' + "|".join([str(a) for a in ctx.guild.emojis][:24]), inline=False)
         await ctx.send(embed=embed, file=gs.guild_graph)
-    
+
     @guildinfo.command(aliases=['chan'])
     async def channels(self, ctx):
-        """Shows you the channels of a guild."""
+        """Shows you the channels of a guild that only mods/admins can see."""
         embed = discord.Embed(colour=colour).set_author(icon_url=ctx.guild.icon_url_as(format='png'),
                                                         name=f"Channels in {ctx.guild}")
         for c in ctx.guild.categories:
@@ -212,16 +219,23 @@ class Profile(commands.Cog):
                 if isinstance(i, discord.TextChannel):
                     if i.is_nsfw():
                         channel = "<:nsfw:730852009032286288>"
+                    elif str(i.type) == "news":
+                        channel = "<:news:730866149109137520>"
                     else:
-                        channel = "<:text_channel:703726554018086912>"
-                    x.append(f"{channel}{i.name}")
+                        if i.overwrites_for(ctx.guild.default_role).read_messages is False:
+                            channel = "<:text_locked:730929388832686090>"
+                        else:
+                            channel = "<:text_channel:703726554018086912>"
+                    x.append(f"{channel} {i.name}")
                 elif isinstance(i, discord.VoiceChannel):
-                    channel = "<:voice_channel:703726554068418560>"
-                    x.append(f"{channel}{i.name}")
+                    if i.overwrites_for(ctx.guild.default_role).read_messages is False:
+                        channel = "<:voice_locked:730929346881126582>"
+                    else:
+                        channel = "<:voice_channel:703726554068418560>"
+                    x.append(f"{channel} {i.name}")
                 else:
                     pass
-            embed.add_field(name=f"{c}", value='\u200b' + "\n".join(x),
-                            inline=False)
+            embed.add_field(name=f"{c}", value='\u200b' + "\n".join(x), inline=False)
         y = [b for b in ctx.guild.categories]
         chl = []
         for o in ctx.guild.channels:
@@ -231,14 +245,85 @@ class Profile(commands.Cog):
                 if isinstance(o, discord.TextChannel):
                     if o.is_nsfw():
                         channel = "<:nsfw:730852009032286288>"
+                    elif str(o.type) == "news":
+                        channel = "<:news:730866149109137520>"
                     else:
-                        channel = "<:text_channel:703726554018086912>"
-                    chl.append(f"{channel}{o.name}")
+                        if o.overwrites_for(ctx.guild.default_role).read_messages is False:
+                            channel = "<:text_locked:730929388832686090>"
+                        else:
+                            channel = "<:text_channel:703726554018086912>"
+                    chl.append(f"{channel} {o.name}")
                 elif isinstance(o, discord.VoiceChannel):
-                    channel = "<:voice_channel:703726554068418560>"
-                    chl.append(f"{channel}{o.name}")
+                    if o.overwrites_for(ctx.guild.default_role).read_messages is False:
+                        channel = "<:voice_locked:730929346881126582>"
+                    else:
+                        channel = "<:voice_channel:703726554068418560>"
+                    chl.append(f"{channel} {o.name}")
+                else:
+                    pass
         embed.description = "\n".join(chl)
-        return await ctx.send("peanut no like :angry:") if ctx.guild.id == 653376332507643914 else await ctx.send(embed=embed)
+        return await ctx.send("peanut no like :angry:") if ctx.guild.id == 653376332507643914 else await ctx.send(
+            embed=embed)
+
+    @guildinfo.command(aliases=['def-chan'])
+    async def default_channels(self, ctx):
+        """Shows you the channels of a guild that everyone can see."""
+        embed = discord.Embed(colour=colour).set_author(icon_url=ctx.guild.icon_url_as(format='png'),
+                                                        name=f"Channels in {ctx.guild}")
+        for c in ctx.guild.categories:
+            x = []
+            for i in c.channels:
+                if isinstance(i, discord.TextChannel):
+                    if i.is_nsfw():
+                        channel = "<:nsfw:730852009032286288>"
+                    elif str(i.type) == "news":
+                        channel = "<:news:730866149109137520>"
+                    else:
+                        if i.overwrites_for(ctx.guild.default_role).read_messages is False:
+                            continue
+                        else:
+                            channel = "<:text_channel:703726554018086912>"
+                    x.append(f"{channel} {i.name}")
+                elif isinstance(i, discord.VoiceChannel):
+                    if i.overwrites_for(ctx.guild.default_role).read_messages is False:
+                        continue
+                    else:
+                        channel = "<:voice_channel:703726554068418560>"
+                    x.append(f"{channel} {i.name}")
+                else:
+                    pass
+            if x:
+                embed.add_field(name=f"{c}", value='\u200b' + "\n".join(x), inline=False)
+            else:
+                pass
+        y = [b for b in ctx.guild.categories]
+        chl = []
+        for o in ctx.guild.channels:
+            if o.category or o in y:
+                pass
+            else:
+                if isinstance(o, discord.TextChannel):
+                    if o.is_nsfw():
+                        channel = "<:nsfw:730852009032286288>"
+                    elif str(o.type) == "news":
+                        channel = "<:news:730866149109137520>"
+                    else:
+                        if o.overwrites_for(ctx.guild.default_role).read_messages is False:
+                            continue
+                        else:
+                            channel = "<:text_channel:703726554018086912>"
+                    chl.append(f"{channel} {o.name}")
+                elif isinstance(o, discord.VoiceChannel):
+                    if o.overwrites_for(ctx.guild.default_role).read_messages is False:
+                        continue
+                    else:
+                        channel = "<:voice_channel:703726554068418560>"
+                    chl.append(f"{channel} {o.name}")
+                else:
+                    pass
+        embed.description = "\n".join(chl)
+        return await ctx.send("peanut no like :angry:") if ctx.guild.id == 653376332507643914 else await ctx.send(
+            embed=embed)
     
     @commands.command(aliases=['ov'],
                       help="Gets an overview of a user, including their avatar, permissions in the channel and info.")
