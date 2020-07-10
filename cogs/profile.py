@@ -14,8 +14,6 @@ from .utils import cyberformat
 matplotlib.use('Agg')
 
 
-
-
 # •
 
 
@@ -112,14 +110,14 @@ class uiEmbed:
             else:
                 top_role_msg = f"\n**Top Role:** {member.top_role.mention}"
             embed = discord.Embed(
-                colour=self.client.colour, timestamp=self.context.message.created_at,
+                colour=0x00dcff, timestamp=self.context.message.created_at,
                 description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1:,}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**{top_role_msg}\n{status_list}"
             )
             embed.set_author(name=member)
             embed.set_thumbnail(url=member.avatar_url_as(static_format="png"))
             return embed
         elif opt == "perms":
-            embed = discord.Embed(colour=self.client.colour, timestamp=self.context.message.created_at,
+            embed = discord.Embed(colour=0x00dcff, timestamp=self.context.message.created_at,
                                   description=f"**Channel**: {self.context.channel.mention}")
             permissions = self.context.channel.permissions_for(member)
             for item, valueBool in permissions:
@@ -134,7 +132,7 @@ class uiEmbed:
             embed.add_field(name='Does Not Have', value='\n'.join(negperms), inline=True)
             return embed
         elif opt == "av":
-            embed = discord.Embed(colour=self.client.colour).set_image(url=member.avatar_url_as(static_format='png'))
+            embed = discord.Embed(colour=0x00dcff).set_image(url=member.avatar_url_as(static_format='png'))
             embed.set_author(name=f"Showing the profile picture of {member}")
             return embed
 
@@ -192,7 +190,7 @@ class Profile(commands.Cog):
                                             f"\n\n**MODERATORS** (Total {len(mods)})\n {f'{n}'.join([f'🛡 {mod.mention} - {mod.top_role.mention}' for mod in mods[:10]])}"
                                             f"\n\n**MOD BOTS** (Total {len(mod_bots)})\n {f'{n}'.join([f'🛡 {bot.mention} - {bot.top_role.mention}' for bot in mod_bots[:10]])}",
                                 colour=self.client.colour).set_author(name=f"Staff Team for {ctx.guild}",
-                                                          icon_url=ctx.guild.icon_url))
+                                                                      icon_url=ctx.guild.icon_url))
     
     @guildinfo.command(invoke_without_command=True, aliases=['stats'])
     async def statistics(self, ctx):
@@ -213,7 +211,7 @@ class Profile(commands.Cog):
     async def channels(self, ctx):
         """Shows you the channels of a guild that only mods/admins can see."""
         embed = discord.Embed(colour=self.client.colour).set_author(icon_url=ctx.guild.icon_url_as(format='png'),
-                                                        name=f"Channels in {ctx.guild}")
+                                                                    name=f"Channels in {ctx.guild}")
         for c in ctx.guild.categories:
             x = []
             for i in c.channels:
@@ -270,7 +268,7 @@ class Profile(commands.Cog):
     async def default_channels(self, ctx):
         """Shows you the channels of a guild that everyone can see."""
         embed = discord.Embed(colour=self.client.colour).set_author(icon_url=ctx.guild.icon_url_as(format='png'),
-                                                        name=f"Channels in {ctx.guild}")
+                                                                    name=f"Channels in {ctx.guild}")
         for c in ctx.guild.categories:
             x = []
             for i in c.channels:

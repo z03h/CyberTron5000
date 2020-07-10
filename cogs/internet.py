@@ -10,7 +10,6 @@ import aiogoogletrans
 import discord
 from async_timeout import timeout
 from discord.ext import commands
-from random_word import RandomWords
 
 from .utils.lists import STAT_NAMES, NUMBER_ALPHABET, TYPES
 from .utils import cyberformat
@@ -32,48 +31,34 @@ class Internet(commands.Cog):
         self.bot = async_cleverbot.Cleverbot(secrets()['cleverbot'])
         self.bot.set_context(async_cleverbot.DictContext(self.bot))
     
-    @commands.command(aliases=['wotd', 'word'], help="Get the word of the day.")
-    async def wordoftheday(self, ctx):
-        try:
-            random_word = RandomWords()
-            await ctx.send(dict(random_word.word_of_the_day()))
-        except Exception as error:
-            await ctx.send(error)
-    
     @commands.command(aliases=['kitty'], help="haha kitty go meow meow.")
     async def cat(self, ctx):
-        try:
-            async with aiohttp.ClientSession() as cs:
-                async with cs.get('https://aws.random.cat/meow') as r:
-                    res = await r.json()
-            em = discord.Embed(colour=self.client.colour, title="OwO", url=res['file'])
-            em.set_image(url=res['file'])
-            await cs.close()
-            em.set_footer(text="https://aws.random.cat/meow")
-            await ctx.send(embed=em)
-        except Exception as er:
-            await ctx.send(er)
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get('https://aws.random.cat/meow') as r:
+                res = await r.json()
+        em = discord.Embed(colour=self.client.colour, title="OwO", url=res['file'])
+        em.set_image(url=res['file'])
+        await cs.close()
+        em.set_footer(text="https://aws.random.cat/meow")
+        await ctx.send(embed=em)
     
     @commands.command(aliases=['puppy', 'pup', 'pupper'], help="haha puppy go woof woof")
     async def dog(self, ctx):
-        try:
-            async with aiohttp.ClientSession() as cs:
-                async with cs.get('https://random.dog/woof.json') as r:
-                    res = await r.json()
-                    res = res['url']
-                    await cs.close()
-            em = discord.Embed(colour=self.client.colour, title="Woof!", url=res)
-            em.set_image(url=res)
-            em.set_footer(text="https://random.dog/woof.json")
-            await ctx.send(embed=em)
-        except Exception as er:
-            await ctx.send(er)
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get('https://random.dog/woof.json') as r:
+                res = await r.json()
+                res = res['url']
+                await cs.close()
+        em = discord.Embed(colour=self.client.colour, title="Woof!", url=res)
+        em.set_image(url=res)
+        em.set_footer(text="https://random.dog/woof.json")
+        await ctx.send(embed=em)
     
     @commands.command(help="Get's you a trivia question.", aliases=['tr', 't'])
-    async def trivia(self, ctx):
+    async def trivia(self, ctx, difficulty: str = None):
         try:
             an = []
-            difficulty = random.choice(['easy', 'medium', 'hard'])
+            difficulty = random.choice(['easy', 'medium', 'hard']) if not difficulty else difficulty
             async with aiohttp.ClientSession() as cs:
                 async with cs.get("https://opentdb.com/api.php?amount=1",
                                   params={"amount": 1, "difficulty": difficulty}) as r:
@@ -98,23 +83,26 @@ class Internet(commands.Cog):
                 lower = str(letter_ans).lower()
                 message = await ctx.send("** **", embed=embed)
                 async with timeout(15):
-                    try:
-                        m = await self.client.wait_for(
-                            'message',
-                            timeout=15.0,
-                            check=lambda m: m.author == ctx.author)
-                        if str(lower) == m.content:
-                            await ctx.send("Correct!")
-                        elif str(letter_ans) == m.content:
-                            await ctx.send("Correct!")
-                        else:
-                            await ctx.send(
-                                f"Incorrect! The correct answer was {letter_ans}, {unes(data['correct_answer'])}.")
-                    except Exception as error:
-                        await ctx.send(error)
-        except (asyncio.TimeoutError, asyncio.CancelledError):
-            await message.edit(embed=discord.Embed(colour=self.client.colour).set_author(
-                name=f"Times up! The correct answer was {unes(data['correct_answer'])}."))
+                    m = await self.client.wait_for(
+                        'message',
+                        timeout=15.0,
+                        check=lambda m: m.author == ctx.author)
+                    if str(lower) == m.content:
+                        await ctx.send("Correct!")
+                    elif str(letter_ans) == m.content:
+                        await ctx.send("Correct!")
+                    else:
+                        await ctx.send(
+                            f"Incorrect! The correct answer was {letter_ans}, {unes(data['correct_answer'])}.")
+        except Exception as error:
+            if isinstance(error, IndexError):
+                return await ctx.send(
+                    f"<:warning:727013811571261540> **{ctx.author.name}**, invalid difficulty! Valid difficulties include easy, medium, hard.")
+            elif isinstance(error, asyncio.TimeoutError) or isinstance(error, asyncio.CancelledError):
+                await message.edit(embed=discord.Embed(colour=self.client.colour).set_author(
+                    name=f"Times up! The correct answer was {unes(data['correct_answer'])}."))
+            else:
+                await ctx.send(error.__class__.__name__)
     
     @commands.command(aliases=['ily'], help="compliment your friends :heart:")
     async def compliment(self, ctx, *, user: discord.Member = None):
@@ -156,10 +144,9 @@ class Internet(commands.Cog):
                                 value=f"*Temperature:* **{cels_temp}**° C • **{faren_temp}**° F • **{kelv_temp}**° K\n*Sunrise:* **{sunrise} UTC**\n*Sunset:* **{sunset} UTC**")
                 embed.set_footer(text=f"Weather for {town} • http://api.openweathermap.org")
                 await ctx.send(embed=embed)
-        except Exception:
+        except KeyError:
             await ctx.send(
-                "City probably not found. You can specify even more by adding your country as well. eg:\n`{}weather <city name>,<country name>`".format(
-                    ctx.prefix))
+                f"<:warning:727013811571261540> **{ctx.author.name}**, city probably not found. You can specify even more by adding your country as well. eg:\n`{ctx.prefix}weather <city name>,<country name>`")
     
     @commands.command(help="Shows you info about a Pokémon", aliases=['pokemon', 'poke', 'pokémon', 'pokédex'])
     async def pokedex(self, ctx, pokemon):
@@ -171,7 +158,6 @@ class Internet(commands.Cog):
             async with aiohttp.ClientSession() as cs:
                 async with cs.get(f'https://pokeapi.co/api/v2/pokemon/{pokemon.lower()}') as r:
                     res = await r.json()
-                    await cs.close()
                 sprite = res['sprites']['front_default']
                 abils = res['abilities']
                 s_s = res['stats']
@@ -185,9 +171,9 @@ class Internet(commands.Cog):
                 for b in s_s:
                     numlist.append(b['base_stat'])
                 types = " ".join(lst[::-1])
-                async with aiohttp.ClientSession() as cs:
-                    async with cs.get(f"https://pokeapi.co/api/v2/pokemon-species/{res['id']}/") as r:
-                        data = await r.json()
+                async with cs.get(f"https://pokeapi.co/api/v2/pokemon-species/{res['id']}/") as r1:
+                    data = await r1.json()
+                await cs.close()
                 embed = discord.Embed(colour=self.client.colour, title=f"{pokemon.capitalize()} • #{res['id']}",
                                       description=f"{types}\n**Height:** {res['height'] / 10} m\n\n<:pokeball:715599637079130202> {unes(data['flavor_text_entries'][0]['flavor_text']).strip()}")
                 embed.add_field(name="Abilities", value="\n".join(abilities[::-1]), inline=False)
@@ -196,11 +182,11 @@ class Internet(commands.Cog):
                 embed.set_thumbnail(url=sprite)
                 embed.set_footer(text="https://pokeapi.co/")
                 await ctx.send(embed=embed)
-        except Exception as error:
-            await ctx.send(f"Error, Pokemon not found! (Note that the API does not yet support Generation 8)")
-            await ctx.send(error)
+        except aiohttp.ContentTypeError:
+            await ctx.send(
+                f"<:warning:727013811571261540> **{ctx.author.name}**, error, Pokémon not found! (Note that the API does not yet support Generation 8)")
     
-    @commands.command(help="Urban Dictionary")
+    @commands.command(help="Urban Dictionary", aliases=['urban', 'define', 'def'])
     async def urbandict(self, ctx, *, terms):
         try:
             async with aiohttp.ClientSession() as cs:
@@ -208,15 +194,14 @@ class Internet(commands.Cog):
                     res = await r.json()
                 term = res['list'][0]['definition']
                 defin = res['list'][0]['example']
-                trom = str(term).replace("[", "_")
-                trom2 = str(trom).replace("]", "_")
-                deph = str(defin).replace("[", "_")
-                deph2 = str(deph).replace("]", "_")
+                term = cyberformat.hyper_replace(term, ['[', ']'], ['', ''])
+                example = cyberformat.hyper_replace(defin, ['[', ']'], ['', ''])
+                await cs.close()
                 await ctx.send(
-                    embed=discord.Embed(title=terms, description=trom2[:2000] + f"\n\n{deph2}",
+                    embed=discord.Embed(title=terms, description=term[:2000] + f"\n\n**Example:**\n{example}",
                                         colour=self.client.colour))
-        except Exception as error:
-            await ctx.send(error)
+        except(IndexError, KeyError, ValueError):
+            await ctx.send(f"<:warning:727013811571261540> **{ctx.author.name}**, term not found on urban dictionary.")
     
     @commands.command()
     async def fact(self, ctx):
@@ -229,36 +214,31 @@ class Internet(commands.Cog):
     
     @commands.command()
     async def pypi(self, ctx, *, package):
-        requires = []
-        classifiers = []
         try:
             async with aiohttp.ClientSession() as cs:
                 async with cs.get(f"https://pypi.org/pypi/{package}/json") as r:
                     res = await r.json()
-            if not res['info']['author_email']:
-                char = '\u200b'
+        except Exception as er:
+            if isinstance(er, aiohttp.ContentTypeError):
+                return await ctx.send(
+                    f"<:warning:727013811571261540> **{ctx.author.name}**, package not found! Check for spelling.")
             else:
-                char = f' • {res["info"]["author_email"]}'
-            embed = discord.Embed(title=res['info']['name'], url=res['info']['project_url'], colour=self.client.colour,
-                                  description=f"> {res['info']['summary']}\n:scales: **{res['info']['license']}**\n[Home Page]({res['info']['home_page']})\n[Package URL]({res['info']['package_url']})",
-                                  timestamp=ctx.message.created_at)
-            embed.set_footer(text=f"{res['info']['name']} version {res['info']['version']}")
-            embed.set_author(name=res['info']['author'] + char, icon_url=self.pypi)
-            if not res['info']['requires_dist']:
-                pass
-            else:
-                for i in res['info']['requires_dist']:
-                    requires.append(f"• {i}")
-                embed.add_field(name="Requires", value="\n".join(requires))
-            if not res['info']['classifiers']:
-                pass
-            else:
-                for j in res['info']['classifiers']:
-                    classifiers.append(f"• {j}")
-                embed.add_field(name="Classifiers", value="\n".join(classifiers), inline=False)
-            await ctx.send(embed=embed)
-        except Exception as error:
-            await ctx.send("Package probably not found.")
+                return await ctx.send(f"Unknown error occured: {er.__class__.__name__}. Code: {r.status}")
+        char = '\u200b' if not res['info']['author_email'] else f' • {res["info"]["author_email"]}'
+        embed = discord.Embed(title=res['info']['name'], url=res['info']['project_url'], colour=self.client.colour,
+                              description=f"{res['info']['summary']}\n:scales: **{res['info']['license']}**\n[Home Page]({res['info']['home_page']})\n[Package URL]({res['info']['package_url']})",
+                              timestamp=ctx.message.created_at)
+        embed.set_footer(text=f"{res['info']['name']} version {res['info']['version']}")
+        embed.set_author(name=res['info']['author'] + char, icon_url=self.pypi)
+        embed.add_field(name="Python Requirements", value=res['info']['requires_python'].replace("*", ""),
+                        inline=True) if res['info']['requires_python'] else None
+        embed.add_field(name=f"Requires (Total {len(res['info']['requires_dist'])})",
+                        value="\n".join([f"• {i}" for i in res['info']['requires_dist']][:15]), inline=True) if \
+            res['info']['requires_dist'] else None
+        embed.add_field(name=f"Classifiers (Total {len(res['info']['classifiers'])})",
+                        value="\n".join([f"• {i}" for i in res['info']['classifiers']][:15]), inline=False) if \
+            res['info']['classifiers'] else None
+        await ctx.send(embed=embed)
     
     @commands.command(aliases=['cb'])
     async def cleverbot(self, ctx, *, text: str):
