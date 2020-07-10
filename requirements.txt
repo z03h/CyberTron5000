@@ -6,4 +6,5 @@ random_word
 praw
 disputils
 matplotlib
+psutil
 async_cleverbot
