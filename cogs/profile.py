@@ -73,8 +73,13 @@ class GuildStats:
                 if a.type is not discord.ActivityType.custom:
                     continue
                 else:
-                    if a.emoji.is_custom_emoji():
-                        return True
+                    if a.emoji:
+                        if a.emoji.is_custom_emoji():
+                            return True
+                        else:
+                            return False
+                    else:
+                        return False
         return False
 
 
