@@ -91,7 +91,7 @@ class uiEmbed:
     def __init__(self, ctx):
         self.context = ctx
     
-    def uiEmbed(self, member: discord.Member, opt: str):
+    async def uiEmbed(self, member: discord.Member, opt: str):
         member = member or self.context.message.author
         perms = []
         negperms = []
@@ -118,6 +118,55 @@ class uiEmbed:
                 colour=0x00dcff, timestamp=self.context.message.created_at,
                 description=f"**{member.id}**\nJoined guild **{humanize.naturaltime(datetime.datetime.utcnow() - member.joined_at)}** • Join Position: **{join_position + 1:,}**\nCreated account **{humanize.naturaltime(datetime.datetime.utcnow() - member.created_at)}**{top_role_msg}\n{status_list}"
             )
+            activities = []
+            m = self.context.guild.get_member(member.id)
+            bool_vals = []
+            names = []
+            badges_dict = dict(member.public_flags).items()
+            for key, value in badges_dict:
+                names.append(key)
+                bool_vals.append(value)
+            badges = []
+            for name, val in zip(names, bool_vals):
+                if val:
+                    if (str(name) is not 'verified_bot') or (str(name) is not 'team_user') or (
+                            str(name) is not 'system'):
+                        badges.append(name)
+                    else:
+                        continue
+                else:
+                    continue
+            lost = [badge_mapping[str(b)] for b in badges]
+            if await GuildStats(self.context).check_nitro(m):
+                lost.append("<:nitro:730892254092198019>")
+            else:
+                pass
+            embed.description = " ".join(lost) + "\n" + embed.description
+            if not m.activities:
+                pass
+            else:
+                for activity in m.activities:
+                    if isinstance(activity, discord.Spotify):
+                        activity = 'Listening to **Spotify**'
+                    elif isinstance(activity, discord.Game):
+                        activity = f'Playing **{activity.name}**'
+                    elif isinstance(activity, discord.Streaming):
+                        activity = f'Streaming **{activity.name}**'
+                    else:
+                        emoji = ''
+                        if activity.emoji:
+                            emoji = ':thinking:' if activity.emoji.is_custom_emoji() and not self.context.bot.get_emoji(
+                                activity.emoji.id) else activity.emoji
+                            if str(emoji) == ":thinking:":
+                                embed.set_footer(text="🤔 indicates a custom emoji")
+                        char = "\u200b" if activity.type == discord.ActivityType.custom else " "
+                        if str(activity.name) == "None":
+                            ac = "\u200b"
+                        else:
+                            ac = str(activity.name)
+                        activity = f'{emoji} {status_mapping[activity.type]}{char}**{ac}**'
+                    activities.append(activity)
+                embed.add_field(name="Activities", value="\n".join(activities))
             embed.set_author(name=member)
             embed.set_thumbnail(url=member.avatar_url_as(static_format="png"))
             return embed
@@ -150,7 +199,7 @@ class Profile(commands.Cog):
     
     @commands.command(aliases=["av"], help="Gets the avatar of a user.")
     async def avatar(self, ctx, *, avamember: discord.Member = None):
-        await ctx.send(embed=uiEmbed(ctx).uiEmbed(member=avamember, opt="av"))
+        await ctx.send(embed=await uiEmbed(ctx).uiEmbed(member=avamember, opt="av"))
     
     @commands.group(aliases=['si', 'serverinfo', 'gi', 'guild', 'server'], help="Gets the guild's info.",
                     invoke_without_command=True)
@@ -333,8 +382,9 @@ class Profile(commands.Cog):
                       help="Gets an overview of a user, including their avatar, permissions in the channel and info.")
     async def overview(self, ctx, *, member: discord.Member = None):
         u = uiEmbed(ctx)
-        embeds = [u.uiEmbed(member=member, opt="ui"), u.uiEmbed(member=member, opt="perms"),
-                  u.uiEmbed(member=member, opt="av")]
+        em = await u.uiEmbed(member=member, opt="ui")
+        embeds = [em, await u.uiEmbed(member=member, opt="perms"),
+                  await u.uiEmbed(member=member, opt="av")]
         paginator = BotEmbedPaginator(ctx, embeds)
         await paginator.run()
     
@@ -342,64 +392,14 @@ class Profile(commands.Cog):
     async def userinfo(self, ctx, *, member: discord.Member = None):
         try:
             member = member or ctx.author
-            em = uiEmbed(ctx).uiEmbed(member=member, opt="ui")
-            activities = []
-            m = ctx.guild.get_member(member.id)
-            bool_vals = []
-            names = []
-            member = member or ctx.author
-            badges_dict = dict(member.public_flags).items()
-            for key, value in badges_dict:
-                names.append(key)
-                bool_vals.append(value)
-            badges = []
-            for name, val in zip(names, bool_vals):
-                if val:
-                    if (str(name) is not 'verified_bot') or (str(name) is not 'team_user') or (
-                            str(name) is not 'system'):
-                        badges.append(name)
-                    else:
-                        continue
-                else:
-                    continue
-            lost = [badge_mapping[str(b)] for b in badges]
-            if await GuildStats(ctx).check_nitro(m):
-                lost.append("<:nitro:730892254092198019>")
-            else:
-                pass
-            em.description = " ".join(lost) + "\n" + em.description
-            if not m.activities:
-                pass
-            else:
-                for activity in m.activities:
-                    if isinstance(activity, discord.Spotify):
-                        activity = 'Listening to **Spotify**'
-                    elif isinstance(activity, discord.Game):
-                        activity = f'Playing **{activity.name}**'
-                    elif isinstance(activity, discord.Streaming):
-                        activity = f'Streaming **{activity.name}**'
-                    else:
-                        emoji = ''
-                        if activity.emoji:
-                            emoji = ':thinking:' if activity.emoji.is_custom_emoji() and not self.client.get_emoji(
-                                activity.emoji.id) else activity.emoji
-                            if str(emoji) == ":thinking:":
-                                em.set_footer(text="🤔 indicates a custom emoji")
-                        char = "\u200b" if activity.type == discord.ActivityType.custom else " "
-                        if str(activity.name) == "None":
-                            ac = "\u200b"
-                        else:
-                            ac = str(activity.name)
-                        activity = f'{emoji} {status_mapping[activity.type]}{char}**{ac}**'
-                    activities.append(activity)
-                em.add_field(name="Activities", value="\n".join(activities))
+            em = await uiEmbed(ctx).uiEmbed(member=member, opt="ui")
             await ctx.send(embed=em)
         except Exception as er:
             await ctx.send(er)
     
     @commands.command(aliases=['perms'], help="Gets a user's permissions in the current channel.")
     async def permissions(self, ctx, *, member: discord.Member = None):
-        await ctx.send(embed=uiEmbed(ctx).uiEmbed(member=member, opt="perms"))
+        await ctx.send(embed=await uiEmbed(ctx).uiEmbed(member=member, opt="perms"))
 
 
 def setup(client):
