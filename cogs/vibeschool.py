@@ -342,4 +342,3 @@ class VibeSchool(commands.Cog):
 
 def setup(client):
     client.add_cog(VibeSchool(client))
-#####

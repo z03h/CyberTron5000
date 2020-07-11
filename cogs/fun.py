@@ -7,11 +7,7 @@ from discord.ext import commands
 
 from .utils import cyberformat
 from .utils.lists import INDICATOR_LETTERS
-
-
-
-
-# ≫
+from .utils import paginator
 
 
 class Fun(commands.Cog):
