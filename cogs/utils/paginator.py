@@ -8,10 +8,11 @@ class CatchAllMenu(menus.Menu):
     Catch All Paginator
     """
     
-    def __init__(self, to_paginate, is_embed: bool = False):
+    def __init__(self, to_paginate, tick: bool = True, is_embed: bool = False):
         super().__init__()
         self.to_paginate: list = to_paginate
         self.is_embed = is_embed
+        self.tick = tick
         if self.is_embed:
             for i in self.to_paginate:
                 if isinstance(i, discord.Embed):
@@ -32,7 +33,10 @@ class CatchAllMenu(menus.Menu):
     
     @menus.button('<:arrow_left:731310897989156884>')
     async def on_left_arrow(self, payload):
-        current = self.to_paginate.index(self.message.content)
+        try:
+            current = self.to_paginate.index(self.message.content)
+        except KeyError:
+            current = 0
         index = current - 1 if current else 0
         await self.message.edit(content=self.to_paginate[index])
     
@@ -40,13 +44,16 @@ class CatchAllMenu(menus.Menu):
     async def on_stop(self, payload):
         self.stop()
         await self.message.delete()
-        await self.ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await self.ctx.message.add_reaction(emoji=":GreenTick:707950252434653184") if self.tick else None
     
     @menus.button('<:arrow_right:731311292346007633>')
     async def on_right_arrow(self, payload):
         current = self.to_paginate.index(self.message.content)
         index = current + 1 if current != len(self.to_paginate) else current
-        await self.message.edit(content=self.to_paginate[index])
+        try:
+            await self.message.edit(content=self.to_paginate[index])
+        except IndexError:
+            pass
     
     @menus.button('<:last_page_right:731315722986324018>')
     async def on_last_page(self, payload):

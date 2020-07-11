@@ -5,9 +5,8 @@ import discord
 from async_timeout import timeout
 from discord.ext import commands
 
-from .utils import cyberformat
+from .utils import cyberformat, paginator
 from .utils.lists import INDICATOR_LETTERS
-from .utils import paginator
 
 
 class Fun(commands.Cog):
@@ -16,12 +15,13 @@ class Fun(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.tick = ":GreenTick:707950252434653184"
-        
+    
     @commands.command()
     async def horror(self, ctx, limit: int = 10):
         posts = []
         async with __import__('aiohttp').ClientSession() as cs:
-            async with cs.get(f"https://www.reddit.com/r/twosentencehorror/{random.choice(['hot', 'top', 'rising'])}.json") as r:
+            async with cs.get(
+                    f"https://www.reddit.com/r/twosentencehorror/{random.choice(['hot', 'top', 'rising'])}.json") as r:
                 res = await r.json()
             for i in res['data']['children']:
                 posts.append(i['data'])
@@ -30,11 +30,12 @@ class Fun(commands.Cog):
             async with ctx.typing():
                 for s in random.sample(posts, len(posts)):
                     counter += 1
-                    if counter == limit+1:
+                    if counter == limit + 1:
                         break
                     else:
                         if not s['stickied'] and s['is_self']:
-                            texts.append(f"{s['title']}\n{s['selftext']}")
+                            text = f"{s['title']}\n{s['selftext']}".replace('"', '\"')
+                            texts.append(text)
                         else:
                             continue
             ptp = paginator.CatchAllMenu([cyberformat.shorten(i) for i in texts if i])

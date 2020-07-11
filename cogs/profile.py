@@ -167,7 +167,8 @@ class uiEmbed:
                         activity = f'{emoji} {status_mapping[activity.type]}{char}**{ac}**'
                     activities.append(activity)
                 embed.add_field(name="Activities", value="\n".join(activities))
-            embed.set_author(name=member)
+            top_text = "\u200b" if member.name == member.display_name else f" • {member.display_name}"
+            embed.set_author(name=f"{member}{top_text}")
             embed.set_thumbnail(url=member.avatar_url_as(static_format="png"))
             return embed
         elif opt == "perms":
