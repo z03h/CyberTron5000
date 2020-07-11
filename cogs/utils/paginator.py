@@ -1,14 +1,23 @@
 from discord.ext import menus
+import discord
+from cogs.utils import exceptions
 
 
-class PlainTextMenu(menus.Menu):
+class CatchAllMenu(menus.Menu):
     """
-    Paginates Plain Text lists
+    Catch All Paginator
     """
     
-    def __init__(self, to_paginate):
+    def __init__(self, to_paginate, is_embed: bool = False):
         super().__init__()
         self.to_paginate: list = to_paginate
+        self.is_embed = is_embed
+        if self.is_embed:
+            for i in self.to_paginate:
+                if isinstance(i, discord.Embed):
+                    continue
+                else:
+                    raise exceptions.NotEmbedError()
     
     @property
     def info_page(self):

@@ -37,7 +37,7 @@ class Fun(commands.Cog):
                             texts.append(f"{s['title']}\n{s['selftext']}")
                         else:
                             continue
-            ptp = paginator.PlainTextMenu([cyberformat.shorten(i) for i in texts if i])
+            ptp = paginator.CatchAllMenu([cyberformat.shorten(i) for i in texts if i])
             await ptp.start(ctx)
     
     @commands.group(invoke_without_command=True, help="Replies with what you said and deletes your message.",
