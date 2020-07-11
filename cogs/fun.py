@@ -16,6 +16,29 @@ class Fun(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.tick = ":GreenTick:707950252434653184"
+        
+    @commands.command()
+    async def horror(self, ctx, limit: int = 10):
+        posts = []
+        async with __import__('aiohttp').ClientSession() as cs:
+            async with cs.get(f"https://www.reddit.com/r/twosentencehorror/{random.choice(['hot', 'top', 'rising'])}.json") as r:
+                res = await r.json()
+            for i in res['data']['children']:
+                posts.append(i['data'])
+            counter = 0
+            texts = []
+            async with ctx.typing():
+                for s in random.sample(posts, len(posts)):
+                    counter += 1
+                    if counter == limit+1:
+                        break
+                    else:
+                        if not s['stickied'] and s['is_self']:
+                            texts.append(f"{s['title']}\n{s['selftext']}")
+                        else:
+                            continue
+            ptp = paginator.PlainTextMenu([cyberformat.shorten(i) for i in texts if i])
+            await ptp.start(ctx)
     
     @commands.group(invoke_without_command=True, help="Replies with what you said and deletes your message.",
                     aliases=['say'])

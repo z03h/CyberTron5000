@@ -5,6 +5,12 @@ bruh
 import discord
 
 
+def shorten(s: str):
+    if len(s) >= 2000:
+        return s[:-3] + "..."
+    else:
+        return s
+
 def minimalize(string):
     final = ''
     final += string[0:1].lower() + string[1:] if string else ''
