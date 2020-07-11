@@ -81,7 +81,6 @@ class BetterEmbedMenu(menus.Menu):
         self.stop()
         await self.message.delete()
         await self.ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
-        
     
     @menus.button('<:arrow_right:731311292346007633>')
     async def on_right_arrow(self, payload):
