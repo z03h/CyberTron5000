@@ -391,12 +391,19 @@ class Profile(commands.Cog):
     
     @commands.command(aliases=['ui', 'user'], help="Gets a user's info.")
     async def userinfo(self, ctx, *, member: discord.Member = None):
-        try:
-            member = member or ctx.author
-            em = await uiEmbed(ctx).uiEmbed(member=member, opt="ui")
-            await ctx.send(embed=em)
-        except Exception as er:
-            await ctx.send(er)
+        member = member or ctx.author
+        embed = discord.Embed(title=str(member), colour=0xb00b69).set_thumbnail(url=member.avatar_url).set_image(url=member.avatar_url)
+        embed.add_field(name="roles", value=",".join(r.mention for r in member.roles[::-1][:15]))
+        embed.add_field(name='name', value='\u200b')
+        embed.add_field(name=member.name, value=member.display_name)
+        embed.add_field(name='dates', value=f'made acount: {member.created_at}\njoined server: {member.joined_at}')
+        embed.add_field(name=f'status: :{member.status}:', value='\u200b')
+        embed.timestamp = ctx.message.created_at
+        embed.colour = member.colour
+        embed.set_footer(text='created today')
+        embed.add_field(name='is a bot?', value=f'{member.bot}')
+        embed.add_field(name='bad', value='ges {member.bdages}')
+        await ctx.send(embed=embed)
     
     @commands.command(aliases=['perms'], help="Gets a user's permissions in the current channel.")
     async def permissions(self, ctx, *, member: discord.Member = None):

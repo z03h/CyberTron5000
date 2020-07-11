@@ -6,8 +6,6 @@ from async_timeout import timeout
 from discord.ext import commands
 
 
-
-
 class Games(commands.Cog):
     """Games!"""
     

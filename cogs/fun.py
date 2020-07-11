@@ -16,30 +16,11 @@ class Fun(commands.Cog):
         self.client = client
         self.tick = ":GreenTick:707950252434653184"
     
-    @commands.command()
-    async def horror(self, ctx, limit: int = 10):
-        posts = []
-        async with __import__('aiohttp').ClientSession() as cs:
-            async with cs.get(
-                    f"https://www.reddit.com/r/twosentencehorror/{random.choice(['hot', 'top', 'rising'])}.json") as r:
-                res = await r.json()
-            for i in res['data']['children']:
-                posts.append(i['data'])
-            counter = 0
-            texts = []
-            async with ctx.typing():
-                for s in random.sample(posts, len(posts)):
-                    counter += 1
-                    if counter == limit + 1:
-                        break
-                    else:
-                        if not s['stickied'] and s['is_self']:
-                            text = f"{s['title']}\n{s['selftext']}".replace('"', '\"')
-                            texts.append(text)
-                        else:
-                            continue
-            ptp = paginator.CatchAllMenu([cyberformat.shorten(i) for i in texts if i])
-            await ptp.start(ctx)
+    @commands.command(aliases=['pt'])
+    async def paginator_test(self, ctx):
+        source = paginator.EmbedSource(data=[discord.Embed(title="a"), discord.Embed(title="b"), discord.Embed(title="c")])
+        pages = paginator.CatchAllMenu(source)
+        await pages.start(ctx)
     
     @commands.group(invoke_without_command=True, help="Replies with what you said and deletes your message.",
                     aliases=['say'])

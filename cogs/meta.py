@@ -1,4 +1,4 @@
-""""
+"""
 
 For general bot commands, basic/meta stuff.
 
@@ -26,10 +26,9 @@ from .utils.checks import insert_returns, check_admin_or_owner
 start_time = datetime.datetime.utcnow()
 
 
-
 # ≫
 
-def lines_main():
+async def lines_main():
     """
     So I only have to do this once
     :return:
@@ -42,7 +41,7 @@ def lines_main():
     return nol
 
 
-def lines_of_code(cog=None):
+async def lines_of_code(cog=None):
     """
     Same thing
     :param cog:
@@ -62,7 +61,7 @@ def lines_of_code(cog=None):
             
             for ext, count in line_count.items():
                 pass
-        return lines_main() + count
+        return await lines_main() + count
     elif cog:
         global counts
         line_count = {}
@@ -215,12 +214,13 @@ class Meta(commands.Cog):
         u = '\u200b'
         if not command:
             return await ctx.send(
-                embed=discord.Embed(colour=self.client.colour).set_author(name=f"⭐️ Check out the full sourcecode on GitHub!",
-                                                              url=f"https://github.com/niztg/CyberTron5000",
-                                                              icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png"))
+                embed=discord.Embed(colour=self.client.colour).set_author(
+                    name=f"⭐️ Check out the full sourcecode on GitHub!",
+                    url=f"https://github.com/niztg/CyberTron5000",
+                    icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png"))
         elif command == "help":
             await ctx.send(embed=discord.Embed(
-                description=f"This code was too long for Discord, you can see it instead [on GitHub](https://github.com/niztg/CyberTron5000/blob/master/CyberTron5000/cogs/info.py#L9-L109)",
+                description=f"This code was too long for Discord, you can see it instead [on GitHub](https://github.com/niztg/CyberTron5000/blob/master /cogs/info.py#L9-L109)",
                 colour=self.client.colour))
         else:
             src = f"```py\n{str(__import__('inspect').getsource(self.client.get_command(command).callback)).replace('```', f'{u}')}```"
@@ -239,27 +239,28 @@ class Meta(commands.Cog):
     @commands.group(invoke_without_command=True, help="Shows total lines of code used to make the bot.")
     async def lines(self, ctx):
         await ctx.send(
-            embed=discord.Embed(title="CyberTron5000 was made with {:,.0f} lines of code!".format(lines_of_code()),
-                                color=0x00dcff))
+            embed=discord.Embed(
+                title="CyberTron5000 was made with {:,.0f} lines of code!".format(await lines_of_code()),
+                color=0x00dcff))
     
     @lines.command(invoke_without_command=True, help="Shows total lines in the main file.")
     async def main(self, ctx):
         await ctx.send(
-            embed=discord.Embed(title="File ct5k.py currently has {:,.0f} lines of code!".format(lines_main()),
+            embed=discord.Embed(title="File ct5k.py currently has {:,.0f} lines of code!".format(await lines_main()),
                                 color=0x00dcff))
     
     @lines.command(invoke_without_command=True, help="Shows total lines in the cogs.")
     async def cogs(self, ctx):
         await ctx.send(
             embed=discord.Embed(
-                title="Cogs have a total of {:,.0f} lines of code!".format(lines_of_code() - lines_main()),
+                title="Cogs have a total of {:,.0f} lines of code!".format(await lines_of_code() - await lines_main()),
                 color=0x00dcff))
     
     @lines.command(invoke_without_command=True, help="Shows total lines in a single cog.")
     async def cog(self, ctx, cog):
         await ctx.send(
             embed=discord.Embed(
-                title="{}.py has a total of {:,.0f} lines of code!".format(cog.lower(), lines_of_code(cog=cog)),
+                title="{}.py has a total of {:,.0f} lines of code!".format(cog.lower(), await lines_of_code(cog=cog)),
                 color=0x00dcff))
     
     @lines.command(aliases=['cmd'], invoke_without_command=True)
@@ -310,7 +311,7 @@ class Meta(commands.Cog):
         embed = discord.Embed(colour=self.client.colour, title=f"About {self.client.user.name}",
                               description=f"{self.client.user.name} is a general purpose discord bot, and the best one! This project was started in April, around **{humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}**.\n\n• **[Invite me to your server!](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)**\n• **[Join our help server!](https://discord.gg/2fxKxJH)**\n<:github:724036339426787380> **[Support this project on GitHub!](https://github.com/niztg/CyberTron5000)**\n🌐 **[Check out the website!](https://cybertron-5k.netlify.app/index.html)**\n<:reddit:703931951769190410> **[Join the subreddit!](https://www.reddit.com/r/CyberTron5000/)**\n\nCommands used since start: **{self.counter}** (cc <@!574870314928832533>)\nUptime: {a}\nUsed Memory: {cyberformat.bar(stat=psutil.virtual_memory()[2], max=100, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>')}\nCPU: {cyberformat.bar(stat=psutil.cpu_percent(), max=100, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>')}\n")
         embed.add_field(name="_Statistics_",
-                        value=f"**{len(self.client.users):,}** users, **{len(self.client.guilds):,}** guilds • About **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands, **{len(self.client.cogs)}** cogs • About **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n**{lines_of_code():,}** lines of code • " + '|'.join(
+                        value=f"**{len(self.client.users):,}** users, **{len(self.client.guilds):,}** guilds • About **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands, **{len(self.client.cogs)}** cogs • About **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n**{await lines_of_code():,}** lines of code • " + '|'.join(
                             self.softwares) + f"\ndiscord.py {discord.__version__} | Python {platform.python_version()}")
         embed.set_thumbnail(url=self.client.user.avatar_url_as(static_format="png"))
         embed.add_field(name="_Latest Commits_", value="\n".join(await self.get_commits()), inline=False)
@@ -352,21 +353,21 @@ class Meta(commands.Cog):
             name=f"Last {limit} GitHub Commit(s) for CyberTron5000",
             icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png",
             url="https://github.com/niztg/CyberTron5000"))
-
+    
     @commands.group(invoke_without_command=True)
     async def suggest(self, ctx, *, idea):
         """Suggest an idea for the bot."""
         owner = self.client.get_user(id=350349365937700864)
         await owner.send(f"Idea: ```{idea}```")
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
-
+    
     @suggest.command(invoke_without_command=True)
     async def error(self, ctx, *, error):
         """Report an error for this bot."""
         owner = self.client.get_user(id=350349365937700864)
         await owner.send(f"You should fix ```{error}```")
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
-
+    
     @commands.command(help="Loads Cogs.")
     @commands.is_owner()
     async def load(self, ctx, extension=None):
@@ -374,15 +375,15 @@ class Meta(commands.Cog):
             for filename in os.listdir('cogs'):
                 if filename.endswith('.py'):
                     self.client.load_extension(f'cogs.{filename[:-3]}')
-        
+            
             await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
             await ctx.send("\n".join([f":arrow_up: `cogs.{f[:-3]}`" for f in os.listdir("cogs") if f.endswith(".py")]))
-    
+        
         else:
             self.client.load_extension(f'cogs.{extension}')
             await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
             await ctx.send(f":arrow_up: `cogs.{extension}`")
-
+    
     @commands.command(help="Unloads Cogs.")
     @commands.is_owner()
     async def unload(self, ctx, extension=None):
@@ -390,16 +391,16 @@ class Meta(commands.Cog):
             for filename in os.listdir('cogs'):
                 if filename.endswith('.py'):
                     self.client.unload_extension(f'cogs.{filename[:-3]}')
-        
+            
             await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
             await ctx.send(
                 "\n".join([f":arrow_down: `cogs.{f[:-3]}`" for f in os.listdir("cogs") if f.endswith(".py")]))
-    
+        
         else:
             self.client.unload_extension(f'cogs.{extension}')
             await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
             await ctx.send(f":arrow_down: `cogs.{extension}`")
-
+    
     @commands.command(help="Reloads Cogs")
     @commands.is_owner()
     async def reload(self, ctx, extension=None):
@@ -407,10 +408,10 @@ class Meta(commands.Cog):
             for filename in os.listdir('cogs'):
                 if filename.endswith('.py'):
                     self.client.reload_extension(f'cogs.{filename[:-3]}')
-        
+            
             await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
             await ctx.send("\n".join([f":repeat: `cogs.{f[:-3]}`" for f in os.listdir("cogs") if f.endswith(".py")]))
-    
+        
         else:
             self.client.reload_extension(f'cogs.{extension}')
             await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
@@ -419,5 +420,3 @@ class Meta(commands.Cog):
 
 def setup(client):
     client.add_cog(Meta(client))
-
-#

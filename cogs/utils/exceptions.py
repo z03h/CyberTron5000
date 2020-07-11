@@ -1,4 +1,4 @@
-class NotEmbedError(Exception):
+class EmbedError(Exception):
     def __init__(self):
         self.message = "One of the passed in elements is not an embed."
     
