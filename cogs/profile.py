@@ -136,7 +136,7 @@ class uiEmbed:
             embed.description += f'→ Created Account • **{humanize.naturaltime(datetime.datetime.utcnow() - m.created_at)}** ({m.created_at.strftime("%B %d, %Y")})\n'
             embed.description += f'→ Joined Guild • **{humanize.naturaltime(datetime.datetime.utcnow() - m.joined_at)}** ({m.joined_at.strftime("%B %d, %Y")})\n'
             embed.description += f'→ Join Position • **{(sorted(self.context.guild.members, key=lambda m: m.joined_at).index(m)) + 1:,}**\n'
-            embed.description += f'→ Guilds Shared With Bot • **{len([g for g in self.context.bot.guilds if g.get_member(m.id)]) if m != self.context.bot.user else f"bro this is literally the bot ({len(self.context.bot.guilds)})"}'
+            embed.description += f'→ Guilds Shared With Bot • **{len([g for g in self.context.bot.guilds if g.get_member(m.id)]) if m != self.context.bot.user else f"bro this is literally the bot ({len(self.context.bot.guilds)})"}**'
             if m.top_role.id == self.context.guild.id:
                 pass
             else:
