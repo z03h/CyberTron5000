@@ -74,10 +74,10 @@ class Games(commands.Cog):
         for emoji in ['😘', '🔪']:
             await msg.add_reaction(emoji)
             await msg.add_reaction(emoji='👫')
-        async with timeout(30):
+        async with timeout(60):
             reaction, user = await self.client.wait_for(
                 'reaction_add',
-                timeout=30.0,
+                timeout=60.0,
                 check=lambda reaction,
                              user: reaction.emoji
             )
@@ -133,10 +133,10 @@ class Games(commands.Cog):
                     await msg1.add_reaction(e)
                 await msg1.add_reaction(emoji='😘')
                 await asyncio.sleep(0.1)
-                async with timeout(30):
+                async with timeout(60):
                     reaction, user = await self.client.wait_for(
                         'reaction_add',
-                        timeout=30.0,
+                        timeout=60.0,
                         check=lambda reaction,
                                      user: reaction.emoji
                     )
@@ -172,10 +172,10 @@ class Games(commands.Cog):
                 await msg1.add_reaction(emoji='😘')
                 await msg1.add_reaction(emoji='👫')
                 await asyncio.sleep(0.1)
-                async with timeout(30):
+                async with timeout(60):
                     reaction, user = await self.client.wait_for(
                         'reaction_add',
-                        timeout=30.0,
+                        timeout=60.0,
                         check=lambda reaction,
                                      user: reaction.emoji
                     )
@@ -200,7 +200,6 @@ class Games(commands.Cog):
                                           icon_url=ctx.message.author.avatar_url)
                         
                         await ctx.send(embed=embed2)
-
 
 def setup(client):
     client.add_cog(Games(client))

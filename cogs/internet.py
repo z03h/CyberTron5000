@@ -161,7 +161,7 @@ class Internet(commands.Cog):
                 embed.set_thumbnail(url=res[0]['sprites']['normal'])
                 evo_line = []
                 for e in res[0]['family']['evolutionLine']:
-                    if str(e).lower() == pokemon:
+                    if str(e).lower() == pokemon.lower():
                         evo_line.append(f"**{e}**")
                     else:
                         evo_line.append(e)

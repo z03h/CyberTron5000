@@ -5,7 +5,7 @@ import discord
 from async_timeout import timeout
 from discord.ext import commands
 
-from .utils import cyberformat
+from .utils import cyberformat, paginator
 from .utils.lists import INDICATOR_LETTERS
 
 
@@ -15,6 +15,29 @@ class Fun(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.tick = ":GreenTick:707950252434653184"
+    
+    @commands.command()
+    async def horror(self, ctx, limit: int = 5):
+        """Gives you a paginated menu of any subreddit"""
+        posts = []
+        async with __import__('aiohttp').ClientSession() as cs:
+            async with cs.get(f"https://www.reddit.com/r/twosentencehorror/hot.json") as r:
+                res = await r.json()
+            for i in res['data']['children']:
+                posts.append(i['data'])
+            counter = 0
+            embeds = []
+            async with ctx.typing():
+                for s in random.sample(posts, len(posts)):
+                    text = cyberformat.shorten(f"{s['title']}\n{s['selftext']}")
+                    embeds.append(discord.Embed(description=text, colour=self.client.colour))
+                    counter += 1
+                    if counter == limit:
+                        break
+                    else:
+                        continue
+        p = paginator.CatchAllMenu(paginator.EmbedSource(embeds))
+        await p.start(ctx)
     
     @commands.group(invoke_without_command=True, help="Replies with what you said and deletes your message.",
                     aliases=['say'])
