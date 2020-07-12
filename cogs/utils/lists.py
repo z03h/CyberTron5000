@@ -94,22 +94,6 @@ sl = {
     discord.Status.dnd: "<:dnd:726127192001478746>"
 }
 
-mlsl = {"online": "<:mobile:730843223102193744>",
-        "offline": "\u200b",
-        "idle": "<:mobile:730843223102193744>",
-        "dnd": "<:mobile:730843223102193744>"}
-
-wlsl = {"online": "🌐",
-        "offline": "\u200b",
-        "idle": "🌐",
-        "dnd": "🌐"}
-# 🌐
-
-dlsl = {"online": ":desktop:",
-        "offline": "\u200b",
-        "idle": ":desktop:",
-        "dnd": ":desktop:"}
-
 emotes = {
     'eight-year club': '<:eightyearclub:702188391961198683>',
     'alpha tester': '<:alpha_user:702188392154267715>',
@@ -186,7 +170,4 @@ badge_mapping = {
     "hypesquad_balance": "<:hypesquad_balance:730851606832087141>",
     "early_supporter": "<:early_supporter:730869784337580102>",
     "verified_bot_developer": "<:verified_bot_developer:730849897410199572>",
-    "verified_bot": "",
-    "system": "",
-    "team_user": ""
 }
