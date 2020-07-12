@@ -168,9 +168,14 @@ class Internet(commands.Cog):
                 n = '\n'
                 embed.description = f" ".join([TYPES[item.lower()] for item in res[0]['type']])
                 embed.description += f'\n<:pokeball:715599637079130202> {res[0]["description"]}\n**{res[0]["height"]}**\n**{res[0]["weight"]}**'
-                embed.add_field(name='Evolution Line', value=f'{" → ".join(evo_line)}' or "**{0.capitalize()}**".format(str(pokemon)), inline=False)
-                embed.add_field(name='Abilities', value=', '.join([f'**{i}**' for i in res[0]['abilities']]), inline=False)
-                embed.add_field(name='Base Stats', value=f"{f'{n}'.join([f'**{STAT_NAMES[key]}:** `{value}`' for key, value in res[0]['stats'].items()])}", inline=False)
+                embed.add_field(name='Evolution Line',
+                                value=f'{" → ".join(evo_line)}' or "**{0}**".format(str(pokemon).capitalize()),
+                                inline=False)
+                embed.add_field(name='Abilities', value=', '.join([f'**{i}**' for i in res[0]['abilities']]),
+                                inline=False)
+                embed.add_field(name='Base Stats',
+                                value=f"{f'{n}'.join([f'**{STAT_NAMES[key]}:** `{value}`' for key, value in res[0]['stats'].items()])}",
+                                inline=False)
                 await ctx.send(embed=embed)
         except IndexError:
             await ctx.send(
@@ -222,8 +227,8 @@ class Internet(commands.Cog):
         embed.set_author(name=res['info']['author'] + char, icon_url=self.pypi)
         embed.add_field(name="Python Requirements", value=res['info']['requires_python'].replace("*", ""),
                         inline=False) if res['info']['requires_python'] else None
-        pm = '\u200b' if len(res['info']['requires_dist']) <= 5 else "\n..."
-        pm2 = '\u200b' if len(res['info']['classifiers']) <= 5 else "\n..."
+        pm = '\u200b' if res['info']['requires_dist'] and len(res['info']['requires_dist']) <= 5 else "\n..."
+        pm2 = '\u200b' if res['info']['requires_dist'] and len(res['info']['classifiers']) <= 5 else "\n..."
         embed.add_field(name=f"Requires (Total {len(res['info']['requires_dist'])})",
                         value="\n".join([f"• {i}" for i in res['info']['requires_dist']][:5]) + pm, inline=False) if \
             res['info']['requires_dist'] else None

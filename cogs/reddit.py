@@ -9,7 +9,7 @@ import praw
 from discord.ext import commands
 
 from .utils.lists import emotes
-from .utils import checks
+from .utils import checks, paginator
 
 reddit_colour = 0xff5700
 
@@ -278,7 +278,8 @@ class Reddit(commands.Cog):
                         [f"[{mod['name']}](https://reddit.com/user/{mod['name']})" for mod in mods[:10]]))
                     embed.set_footer(
                         text=f"Subreddit created {datetime.datetime.utcfromtimestamp(data['created_utc']).strftime('%B %d, %Y')}")
-                    return await ctx.send(embed=embed) if not data['over18'] or data['over18'] and ctx.channel.is_nsfw() else await ctx.send(
+                    return await ctx.send(embed=embed) if not data['over18'] or data[
+                        'over18'] and ctx.channel.is_nsfw() else await ctx.send(
                         f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
     
     @commands.command(aliases=['a'], help="Ask Reddit...", hidden=True)
@@ -310,7 +311,6 @@ class Reddit(commands.Cog):
     @commands.command(aliases=['pages', 'paginate'])
     async def reddit_pages(self, ctx, subreddit, limit: int = 5):
         """Gives you a paginated menu of any subreddit"""
-        from disputils import BotEmbedPaginator
         posts = []
         u = '\u200b'
         async with aiohttp.ClientSession() as cs:
@@ -337,8 +337,8 @@ class Reddit(commands.Cog):
                         break
                     else:
                         continue
-        paginator = BotEmbedPaginator(ctx, embeds)
-        await paginator.run()
+        p = paginator.CatchAllMenu(paginator.EmbedSource(embeds))
+        await p.start(ctx)
 
 
 def setup(client):

@@ -5,7 +5,7 @@ import discord
 from async_timeout import timeout
 from discord.ext import commands
 
-from .utils import cyberformat, paginator
+from .utils import cyberformat
 from .utils.lists import INDICATOR_LETTERS
 
 
@@ -15,12 +15,6 @@ class Fun(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.tick = ":GreenTick:707950252434653184"
-    
-    @commands.command(aliases=['pt'])
-    async def paginator_test(self, ctx):
-        source = paginator.EmbedSource(data=[discord.Embed(title="a"), discord.Embed(title="b"), discord.Embed(title="c")])
-        pages = paginator.CatchAllMenu(source)
-        await pages.start(ctx)
     
     @commands.group(invoke_without_command=True, help="Replies with what you said and deletes your message.",
                     aliases=['say'])
