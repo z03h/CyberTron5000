@@ -1,6 +1,6 @@
 class EmbedError(Exception):
     def __init__(self):
-        self.message = "One of the passed in elements is not an embed."
+        self.message = "Error! You passed incorrect embed arguments!"
     
     def __str__(self):
         return self.message
