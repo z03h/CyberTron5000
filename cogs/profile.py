@@ -408,7 +408,7 @@ class Profile(commands.Cog):
     @commands.command(aliases=['mi', 'member', 'ui', 'user', 'userinfo'])
     async def memberinfo(self, ctx, *, member: discord.Member=None):
         """
-        Gives you member info (not user info)
+        Gives you userinfo
         """
         m = member or ctx.author
         await ctx.send(embed=await uiEmbed(ctx).uiEmbed(member=m, opt="ui"))
