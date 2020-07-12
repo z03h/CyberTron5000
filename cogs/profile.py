@@ -127,17 +127,20 @@ class uiEmbed:
             if m in self.context.guild.premium_subscribers:
                 local_emojis.append("<:boost:726151031322443787>")
             char = '\u200b' if not a or not local_emojis else " | "
-            local_emojis.append(is_bot)
             le = " ".join(local_emojis)
-            embed.description = f"\n{' '.join(a) if a else u}{char}{le}"
-            embed.description += f'\n→ ID • **{m.id}**\n'
+            if not a and not local_emojis and is_bot == '\u200b':
+                embed.description = f'\n→ ID • **{m.id}**\n'
+            else:
+                embed.description = f"\n{' '.join(a) if a else u}{char}{le}{is_bot}"
+                embed.description += f'\n→ ID • **{m.id}**\n'
             embed.description += f'→ Created Account • **{humanize.naturaltime(datetime.datetime.utcnow() - m.created_at)}** ({m.created_at.strftime("%B %d, %Y")})\n'
             embed.description += f'→ Joined Guild • **{humanize.naturaltime(datetime.datetime.utcnow() - m.joined_at)}** ({m.joined_at.strftime("%B %d, %Y")})\n'
-            embed.description += f'→ Guilds Shared With Bot • **{len([g for g in self.context.bot.guilds if g.get_member(m.id)])}**\n'
+            embed.description += f'→ Join Position • **{(sorted(self.context.guild.members, key=lambda m: m.joined_at).index(m)) + 1:,}**\n'
+            embed.description += f'→ Guilds Shared With Bot • **{len([g for g in self.context.bot.guilds if g.get_member(m.id)]) if m != self.context.bot.user else f"bro this is literally the bot** ({len(self.context.bot.guilds)})"}'
             if m.top_role.id == self.context.guild.id:
                 pass
             else:
-                embed.description += f'→ Roles • **{len([r for r in m.roles if r.id != self.context.guild.id])}** | Top Role • {m.top_role.mention}'
+                embed.description += f'\n→ Roles • **{len([r for r in m.roles if r.id != self.context.guild.id])}** | Top Role • {m.top_role.mention}'
             embed.description += f'\n→ [Avatar URL]({m.avatar_url_as(static_format="png", size=4096)})\n'
             embed.add_field(name='Status',
                             value=f'{sl[m.web_status]} **Web Status**\n{sl[m.desktop_status]} **Desktop Status**\n{sl[m.mobile_status]} **Mobile Status**')
