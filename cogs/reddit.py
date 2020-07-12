@@ -83,7 +83,7 @@ class Reddit(commands.Cog):
     async def meme(self, ctx):
         subreddit = random.choice(
             ['memes', 'dankmemes', 'okbuddyretard', 'memeeconomy', 'dankexchange', 'pewdiepiesubmissions',
-             'memes_of_the_dank'])
+             'memes_of_the_dank', 'wholesomememes'])
         posts = []
         async with ctx.typing():
             async with aiohttp.ClientSession() as cs:
@@ -262,11 +262,13 @@ class Reddit(commands.Cog):
                 async with cs.get(f"https://reddit.com/r/{subreddit}/about/.json") as r:
                     res = await r.json()
                 data = res['data']
+                icon = data['community_icon'].split("?")[0]
+                banner = data['banner_background_image'].split("?")[0]
                 embed = discord.Embed(
                     description=f"{data['public_description']}\n**{data['subscribers']:,}** subscribers | **{data['active_user_count']:,}** active users",
                     colour=reddit_colour).set_author(name=data['display_name_prefixed'],
-                                                     url=f"https://reddit.com/r/{subreddit}")
-                embed.set_thumbnail(url=data['community_icon'].split("?")[0])
+                                                     url=f"https://reddit.com/r/{subreddit}", icon_url=icon)
+                embed.description += f'\n[Icon URL]({str(icon)})\n[Banner URL]({str(banner)})'
                 async with aiohttp.ClientSession() as cs:
                     async with cs.get(f"https://www.reddit.com/r/{subreddit}/about/moderators.json") as r:
                         resp = await r.json()
@@ -303,7 +305,7 @@ class Reddit(commands.Cog):
                         f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
         except Exception as er:
             await ctx.send(er)
-            
+    
     @commands.command(aliases=['pages', 'paginate'])
     async def reddit_pages(self, ctx, subreddit, limit: int = 5):
         """Gives you a paginated menu of any subreddit"""
