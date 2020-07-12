@@ -18,7 +18,7 @@ class Fun(commands.Cog):
     
     @commands.command()
     async def horror(self, ctx, limit: int = 5):
-        """Gives you a paginated menu of any subreddit"""
+        """spoopy"""
         posts = []
         async with __import__('aiohttp').ClientSession() as cs:
             async with cs.get(f"https://www.reddit.com/r/twosentencehorror/hot.json") as r:
@@ -30,7 +30,7 @@ class Fun(commands.Cog):
             async with ctx.typing():
                 for s in random.sample(posts, len(posts)):
                     text = cyberformat.shorten(f"{s['title']}\n{s['selftext']}")
-                    embeds.append(discord.Embed(description=text, colour=self.client.colour))
+                    embeds.append(discord.Embed(description=text[:2000], colour=self.client.colour))
                     counter += 1
                     if counter == limit:
                         break

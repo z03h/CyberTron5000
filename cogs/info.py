@@ -2,8 +2,7 @@ import itertools
 
 import discord
 from discord.ext import commands
-
-
+from .utils import paginator
 
 
 class CyberTronHelpCommand(commands.HelpCommand):
@@ -47,17 +46,17 @@ class CyberTronHelpCommand(commands.HelpCommand):
         :return:
         """
         return f"Command/category `{string}` not found!"
-
+    
     async def send_bot_help(self, mapping):
         """
         Sends the actual help message
         :param mapping:
         :return:
         """
-    
+        
         def key(c):
             return c.cog_name or '\u200bUncategorized Commands'
-    
+        
         total = 0
         embed = discord.Embed(colour=0x00dcff,
                               description=f'You can do `{self.clean_prefix}help [command/category]` for more info.\n\n')
@@ -138,6 +137,62 @@ class Info(commands.Cog):
                                            description=f"Do `{ctx.prefix}help <cog>` to know more about them!" + "\n\n" + "\n".join(
                                                [f"`{cog}` • {self.client.cogs[cog].__doc__}" for cog in
                                                 self.client.cogs])))
+    
+    @commands.command(name='paginated_help', aliases=['phelp'])
+    async def phelp(self, ctx, *, command=None):
+        """
+        If you don't like the regular help command
+
+        """
+        embeds = []
+        use = self.client.get_command(command) if command else None
+        lcogs = [str(cog) for cog in self.client.cogs]
+        if not command:
+            for name, obj in self.client.cogs.items():
+                embed = discord.Embed(title=f"{name} Commands", colour=self.client.colour)
+                cmds = []
+                for cmd in obj.get_commands():
+                    cmds.append(f"→ `{cmd.name} {cmd.signature}` • {cmd.help}")
+                embed.description = '\n'.join(cmds)
+                if cmds:
+                    embeds.append(embed)
+                else:
+                    continue
+            pages = paginator.CatchAllMenu(paginator.EmbedSource([discord.Embed(colour=self.client.colour,
+                                                                                title=f'{self.client.user.name} Help',
+                                                                                description=f'Do `{ctx.prefix}help command/cog` for more info').set_image(
+                url=self.client.user.avatar_url)] + embeds))
+            await pages.start(ctx)
+        elif command in lcogs:
+            embed = discord.Embed(colour=self.client.colour, title=f'{command.capitalize()} Help')
+            embed.description = '\n'.join(
+                [f"→ `{cmd.name} {cmd.signature}` • {cmd.help}" for cmd in self.client.cogs[command].get_commands()])
+            await ctx.send(embed=embed)
+        elif command and use:
+            help_msg = use.help or "No help provided for this command"
+            parent = use.full_parent_name
+            if len(use.aliases) > 0:
+                aliases = '•'.join(use.aliases)
+                cmd_alias_format = f'{use.name}•{aliases}'
+                if parent:
+                    cmd_alias_format = f'{parent} {cmd_alias_format}'
+                alias = cmd_alias_format
+            else:
+                alias = use.name if not parent else f'{parent} {use.name}'
+            embed = discord.Embed(title=f"{alias} {use.signature}", description=help_msg, colour=self.client.colour)
+            if isinstance(use, commands.Group):
+                embed = discord.Embed(title=f"{alias} {use.signature}", description=help_msg,
+                                      colour=self.client.colour)
+                for sub_cmd in use.commands:
+                    u = '\u200b'
+                    embed.add_field(
+                        name=f"{use.name} {sub_cmd.name}{'•' if sub_cmd.aliases else u}{'•'.join(sub_cmd.aliases)} {sub_cmd.signature}",
+                        value=f"{sub_cmd.help}", inline=False)
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(embed=embed)
+        elif command not in lcogs or command and not use:
+            await ctx.send("not found")
 
 
 def setup(client):
