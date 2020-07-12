@@ -47,27 +47,27 @@ class CyberTronHelpCommand(commands.HelpCommand):
         :return:
         """
         return f"Command/category `{string}` not found!"
-    
+
     async def send_bot_help(self, mapping):
         """
         Sends the actual help message
         :param mapping:
         :return:
         """
-        
+    
         def key(c):
             return c.cog_name or '\u200bUncategorized Commands'
-        
+    
         total = 0
         embed = discord.Embed(colour=0x00dcff,
                               description=f'You can do `{self.clean_prefix}help [command/category]` for more info.\n\n')
         entries = await self.filter_commands(self.context.bot.commands, sort=True, key=key)
-        for cog, cmds in itertools.groupby(entries, key=key):
+        for cg, cm in itertools.groupby(entries, key=key):
             cats = []
-            cmds = sorted(cmds, key=lambda c: c.name)
-            cats.append(f'**{cog}**\n{"•".join([f"`{c.name}`" for c in cmds])}\n')
+            cm = sorted(cm, key=lambda c: c.name)
+            cats.append(f'**{cg}**\n{"•".join([f"`{c.name}`" for c in cm])}\n')
             embed.description += "\n".join(cats)
-            total += len([c for c in cmds])
+            total += len([c for c in cm])
         embed.set_author(name=f"CyberTron5000 Commands (Total {total})")
         await self.context.send(embed=embed)
     
