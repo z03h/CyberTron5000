@@ -168,13 +168,13 @@ class Internet(commands.Cog):
                 n = '\n'
                 embed.description = f" ".join([TYPES[item.lower()] for item in res[0]['type']])
                 embed.description += f'\n<:pokeball:715599637079130202> {res[0]["description"]}\n**{res[0]["height"]}**\n**{res[0]["weight"]}**'
-                embed.add_field(name='Evolution Line', value=f'{" → ".join(evo_line)}', inline=False)
+                embed.add_field(name='Evolution Line', value=f'{" → ".join(evo_line)}' or "**{0.capitalize()}**".format(str(pokemon)), inline=False)
                 embed.add_field(name='Abilities', value=', '.join([f'**{i}**' for i in res[0]['abilities']]), inline=False)
                 embed.add_field(name='Base Stats', value=f"{f'{n}'.join([f'**{STAT_NAMES[key]}:** `{value}`' for key, value in res[0]['stats'].items()])}", inline=False)
                 await ctx.send(embed=embed)
         except IndexError:
             await ctx.send(
-                f"<:warning:727013811571261540> **{ctx.author.name}**, error, Pokémon not found! (Note that the API does not yet support Generation 8)")
+                f"<:warning:727013811571261540> **{ctx.author.name}**, error, Pokémon not found!")
     
     @commands.command(help="Urban Dictionary", aliases=['urban', 'define', 'def'])
     async def urbandict(self, ctx, *, terms):
