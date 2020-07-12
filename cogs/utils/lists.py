@@ -9,10 +9,11 @@ import discord
 STAT_NAMES = {
     "speed": "SPEED",
     "attack": "ATTACK",
-    "special-attack": "SPECIAL ATTACK",
-    "special-defense": "SPECIAL DEFENSE",
+    "sp_atk": "SPECIAL ATTACK",
+    "sp_def": "SPECIAL DEFENSE",
     "defense": "DEFENSE",
-    "hp": "HP"
+    "hp": "HP",
+    "total": "TOTAL"
     
 }
 

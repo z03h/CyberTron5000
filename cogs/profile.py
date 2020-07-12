@@ -133,8 +133,8 @@ class uiEmbed:
             else:
                 embed.description = f"\n{' '.join(a) if a else u}{char}{le}{is_bot}"
                 embed.description += f'\n→ ID • **{m.id}**\n'
-            embed.description += f'→ Created Account • **{humanize.naturaltime(datetime.datetime.utcnow() - m.created_at)}** ({m.created_at.strftime("%B %d, %Y")})\n'
-            embed.description += f'→ Joined Guild • **{humanize.naturaltime(datetime.datetime.utcnow() - m.joined_at)}** ({m.joined_at.strftime("%B %d, %Y")})\n'
+            embed.description += f'→ Created Account • **{humanize.naturaltime(datetime.datetime.utcnow() - m.created_at)}**\n'
+            embed.description += f'→ Joined Guild • **{humanize.naturaltime(datetime.datetime.utcnow() - m.joined_at)}**\n'
             embed.description += f'→ Join Position • **{(sorted(self.context.guild.members, key=lambda m: m.joined_at).index(m)) + 1:,}**\n'
             embed.description += f'→ Guilds Shared With Bot • **{len([g for g in self.context.bot.guilds if g.get_member(m.id)]) if m != self.context.bot.user else f"bro this is literally the bot ({len(self.context.bot.guilds)})"}**'
             if m.top_role.id == self.context.guild.id:
@@ -407,7 +407,7 @@ class Profile(commands.Cog):
         await ctx.send(embed=embed)
     
     @commands.command(aliases=['mi'])
-    async def memberinfo(self, ctx, *, member: discord.Member=None):
+    async def memberinfo(self, ctx, *, member: discord.Member = None):
         """
         Gives you member info (not user info)
         """

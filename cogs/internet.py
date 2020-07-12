@@ -150,39 +150,29 @@ class Internet(commands.Cog):
     
     @commands.command(help="Shows you info about a Pokémon", aliases=['pokemon', 'poke', 'pokémon', 'pokédex'])
     async def pokedex(self, ctx, pokemon):
-        abilities = []
-        lst = []
-        stats = []
-        numlist = []
         try:
             async with aiohttp.ClientSession() as cs:
-                async with cs.get(f'https://pokeapi.co/api/v2/pokemon/{pokemon.lower()}') as r:
+                async with cs.get(f"https://some-random-api.ml/pokedex?pokemon={pokemon.lower()}") as r:
                     res = await r.json()
-                sprite = res['sprites']['front_default']
-                abils = res['abilities']
-                s_s = res['stats']
-                ts = res['types']
-                for item in s_s:
-                    stats.append(f"**{STAT_NAMES[item['stat']['name']]}:** `{item['base_stat']}`")
-                for ability in abils:
-                    abilities.append(f"**{ability['ability']['name'].title()}**")
-                for a in ts:
-                    lst.append(TYPES[a['type']['name']])
-                for b in s_s:
-                    numlist.append(b['base_stat'])
-                types = " ".join(lst[::-1])
-                async with cs.get(f"https://pokeapi.co/api/v2/pokemon-species/{res['id']}/") as r1:
-                    data = await r1.json()
-                await cs.close()
-                embed = discord.Embed(colour=self.client.colour, title=f"{pokemon.capitalize()} • #{res['id']}",
-                                      description=f"{types}\n**Height:** {res['height'] / 10} m\n\n<:pokeball:715599637079130202> {unes(data['flavor_text_entries'][0]['flavor_text']).strip()}")
-                embed.add_field(name="Abilities", value="\n".join(abilities[::-1]), inline=False)
-                embed.add_field(name="Stats", value="\n".join(stats[::-1]) + f"\n**Total**: `{sum(numlist)}`",
-                                inline=False)
-                embed.set_thumbnail(url=sprite)
-                embed.set_footer(text="https://pokeapi.co/")
+                if r.status != 200:
+                    return await ctx.send("Error!")
+                embed = discord.Embed(title=f"{res[0]['name'].title()} • #{res[0]['id']}", colour=self.client.colour)
+                embed.set_author(name=f'The {" ".join(res[0]["species"])}')
+                embed.set_thumbnail(url=res[0]['sprites']['normal'])
+                evo_line = []
+                for e in res[0]['family']['evolutionLine']:
+                    if str(e).lower() == pokemon:
+                        evo_line.append(f"**{e}**")
+                    else:
+                        evo_line.append(e)
+                n = '\n'
+                embed.description = f" ".join([TYPES[item.lower()] for item in res[0]['type']])
+                embed.description += f'\n<:pokeball:715599637079130202> {res[0]["description"]}\n**{res[0]["height"]}**\n**{res[0]["weight"]}**'
+                embed.add_field(name='Evolution Line', value=f'{" → ".join(evo_line)}', inline=False)
+                embed.add_field(name='Abilities', value=', '.join([f'**{i}**' for i in res[0]['abilities']]), inline=False)
+                embed.add_field(name='Base Stats', value=f"{f'{n}'.join([f'**{STAT_NAMES[key]}:** `{value}`' for key, value in res[0]['stats'].items()])}", inline=False)
                 await ctx.send(embed=embed)
-        except aiohttp.ContentTypeError:
+        except IndexError:
             await ctx.send(
                 f"<:warning:727013811571261540> **{ctx.author.name}**, error, Pokémon not found! (Note that the API does not yet support Generation 8)")
     
