@@ -222,11 +222,13 @@ class Internet(commands.Cog):
         embed.set_author(name=res['info']['author'] + char, icon_url=self.pypi)
         embed.add_field(name="Python Requirements", value=res['info']['requires_python'].replace("*", ""),
                         inline=False) if res['info']['requires_python'] else None
+        pm = '\u200b' if len(res['info']['requires_dist']) <= 5 else "\n..."
+        pm2 = '\u200b' if len(res['info']['classifiers']) <= 5 else "\n..."
         embed.add_field(name=f"Requires (Total {len(res['info']['requires_dist'])})",
-                        value="\n".join([f"• {i}" for i in res['info']['requires_dist']][:5]) + "\n...", inline=False) if \
+                        value="\n".join([f"• {i}" for i in res['info']['requires_dist']][:5]) + pm, inline=False) if \
             res['info']['requires_dist'] else None
         embed.add_field(name=f"Classifiers (Total {len(res['info']['classifiers'])})",
-                        value="\n".join([f"• {i}" for i in res['info']['classifiers']][:5]) + "\n...", inline=False) if \
+                        value="\n".join([f"• {i}" for i in res['info']['classifiers']][:5]) + pm2, inline=False) if \
             res['info']['classifiers'] else None
         await ctx.send(embed=embed)
     
