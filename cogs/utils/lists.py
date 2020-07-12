@@ -81,7 +81,11 @@ REGIONS = {
     "hongkong": "Hong Kong",
     "us-central": "US Central",
     "us-south": "US South",
-    "us-west": "US West"
+    "us-west": "US West",
+    'eu-west': "EU West",
+    "eu-north": "EU North",
+    "eu-south": "EU South",
+    "eu-east": "EU East"
 }
 
 INDICATOR_LETTERS = {'1': '1️⃣', '2': '2️⃣', '3': '3️⃣',

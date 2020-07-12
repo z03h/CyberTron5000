@@ -1,11 +1,9 @@
 from discord.ext import commands
-from .utils.lists import REGIONS
 from .utils import cyberformat
 import discord
 import async_cleverbot
 import humanize
 import json
-
 
 
 def secrets():
@@ -41,9 +39,9 @@ class Events(commands.Cog):
         
         else:
             await ctx.message.add_reaction(self.x_r)
-            await self.client.get_channel(730556685214548088).send(embed=discord.Embed(colour=self.client.colour, title="Error!",
-                                                                                       description=f"Error on `{ctx.command}`:\n```py\n{error}```").set_author(
-                name=ctx.author, icon_url=ctx.author.avatar_url))
+            await self.client.get_channel(730556685214548088).send(
+                embed=discord.Embed(colour=self.client.colour, title="Error!",
+                                    description=f"Error on `{ctx.command}`:\n```py\n{error}```\n**Server:** {ctx.guild}\n**Author:** {ctx.author}\n[URL]({ctx.message.jump_url})"))
     
     @commands.Cog.listener(name="on_message")
     async def on_user_mention(self, message):
@@ -72,9 +70,8 @@ class Events(commands.Cog):
         voice_channels = [voice_channel for voice_channel in guild.voice_channels]
         categories = [category for category in guild.categories]
         emojis = [emoji for emoji in guild.emojis]
-        region = REGIONS[f"{str(guild.region)}"]
         embed = discord.Embed(colour=0x00ff00, title=f'{guild}',
-                              description=f"**{guild.id}**"f"\n<:member:716339965771907099>**{len(guild.members):,}\n**Owner:** {guild.owner.mention}\n**Region:** {region}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**\n**Admins:**\n{ml}")
+                              description=f"**{guild.id}**"f"\n<:member:716339965771907099>**{len(guild.members):,}\n**Owner:** {guild.owner.mention}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**\n**Admins:**\n{ml}")
         embed.set_thumbnail(url=guild.icon_url)
         embed.set_footer(text=f"Guild created"
                               f"{humanize.naturaltime(__import__('datetime').datetime.utcnow() - guild.created_at)}")
@@ -104,9 +101,8 @@ class Events(commands.Cog):
         voice_channels = [voice_channel for voice_channel in guild.voice_channels]
         categories = [category for category in guild.categories]
         emojis = [emoji for emoji in guild.emojis]
-        region = REGIONS[f"{str(guild.region)}"]
         embed = discord.Embed(colour=discord.Colour.red(), title=f'{guild}',
-                              description=f"**{guild.id}**"f"\n<:member:716339965771907099>**{len(guild.members):,}**\n**Owner:** {guild.owner.mention}\n**Region:** {region}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**\n**Admins:**{ml}")
+                              description=f"**{guild.id}**"f"\n<:member:716339965771907099>**{len(guild.members):,}**\n**Owner:** {guild.owner.mention}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**\n**Admins:**{ml}")
         embed.set_thumbnail(url=guild.icon_url)
         embed.set_footer(
             text=f"Guild created {humanize.naturaltime(__import__('datetime').datetime.utcnow() - guild.created_at)}")
