@@ -125,7 +125,7 @@ class uiEmbed:
             if m.permissions_in(self.context.channel).kick_members:
                 local_emojis.append("<:Mods:713500789670281216>")
             if m in self.context.guild.premium_subscribers:
-                local_emojis.append("<:boost:726151031322443787>")
+                local_emojis.append("<:nitro:731722710283190332>")
             char = '\u200b' if not a or not local_emojis else " | "
             le = " ".join(local_emojis)
             if not a and not local_emojis and is_bot == '\u200b':
@@ -406,7 +406,7 @@ class Profile(commands.Cog):
         embed.add_field(name='bad', value='ges {member.bdages}')
         await ctx.send(embed=embed)
     
-    @commands.command(aliases=['mi'])
+    @commands.command(aliases=['mi', 'member'])
     async def memberinfo(self, ctx, *, member: discord.Member = None):
         """
         Gives you member info (not user info)
