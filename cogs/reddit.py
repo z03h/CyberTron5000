@@ -278,7 +278,8 @@ class Reddit(commands.Cog):
                         [f"[{mod['name']}](https://reddit.com/user/{mod['name']})" for mod in mods[:10]]))
                     embed.set_footer(
                         text=f"Subreddit created {datetime.datetime.utcfromtimestamp(data['created_utc']).strftime('%B %d, %Y')}")
-                    await ctx.send(embed=embed)
+                    return await ctx.send(embed=embed) if not data['over18'] or data['over18'] and ctx.channel.is_nsfw() else await ctx.send(
+                        f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
     
     @commands.command(aliases=['a'], help="Ask Reddit...", hidden=True)
     @checks.betasquad()

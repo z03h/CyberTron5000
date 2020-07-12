@@ -221,12 +221,12 @@ class Internet(commands.Cog):
         embed.set_footer(text=f"{res['info']['name']} version {res['info']['version']}")
         embed.set_author(name=res['info']['author'] + char, icon_url=self.pypi)
         embed.add_field(name="Python Requirements", value=res['info']['requires_python'].replace("*", ""),
-                        inline=True) if res['info']['requires_python'] else None
+                        inline=False) if res['info']['requires_python'] else None
         embed.add_field(name=f"Requires (Total {len(res['info']['requires_dist'])})",
-                        value="\n".join([f"• {i}" for i in res['info']['requires_dist']][:15]), inline=True) if \
+                        value="\n".join([f"• {i}" for i in res['info']['requires_dist']][:5]) + "\n...", inline=False) if \
             res['info']['requires_dist'] else None
         embed.add_field(name=f"Classifiers (Total {len(res['info']['classifiers'])})",
-                        value="\n".join([f"• {i}" for i in res['info']['classifiers']][:15]), inline=False) if \
+                        value="\n".join([f"• {i}" for i in res['info']['classifiers']][:5]) + "\n...", inline=False) if \
             res['info']['classifiers'] else None
         await ctx.send(embed=embed)
     
