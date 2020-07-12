@@ -6,10 +6,9 @@ import collections
 import humanize
 import matplotlib.pyplot as plt
 from discord.ext import commands
-from disputils import BotEmbedPaginator
 
 from .utils.lists import REGIONS, sl, status_mapping, badge_mapping
-from .utils import cyberformat
+from .utils import cyberformat, paginator
 
 matplotlib.use('Agg')
 
@@ -172,7 +171,7 @@ class uiEmbed:
                 embed.add_field(name='Activities', value='\n'.join(activities))
             return embed
         elif opt == "perms":
-            embed = discord.Embed(colour=0x00dcff, timestamp=self.context.message.created_at,
+            embed = discord.Embed(colour=0x00dcff,
                                   description=f"**Channel**: {self.context.channel.mention}")
             permissions = self.context.channel.permissions_for(member)
             for item, valueBool in permissions:
@@ -386,13 +385,14 @@ class Profile(commands.Cog):
         em = await u.uiEmbed(member=member, opt="ui")
         embeds = [em, await u.uiEmbed(member=member, opt="perms"),
                   await u.uiEmbed(member=member, opt="av")]
-        paginator = BotEmbedPaginator(ctx, embeds)
-        await paginator.run()
+        p = paginator.CatchAllMenu(paginator.EmbedSource(embeds))
+        await p.start(ctx)
     
     @commands.command(help="Gets a user's info.")
     async def betteruserinfo(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
-        embed = discord.Embed(title=str(member), colour=0xb00b69).set_thumbnail(url=member.avatar_url).set_image(url=member.avatar_url)
+        embed = discord.Embed(title=str(member), colour=0xb00b69).set_thumbnail(url=member.avatar_url).set_image(
+            url=member.avatar_url)
         embed.add_field(name="roles", value=",".join(r.mention for r in member.roles[::-1][:15]))
         embed.add_field(name='name', value='\u200b')
         embed.add_field(name=member.name, value=member.display_name)
@@ -404,9 +404,9 @@ class Profile(commands.Cog):
         embed.add_field(name='is a bot?', value=f'{member.bot}')
         embed.add_field(name='bad', value='ges {member.bdages}')
         await ctx.send(embed=embed)
-
+    
     @commands.command(aliases=['mi', 'member', 'ui', 'user', 'userinfo'])
-    async def memberinfo(self, ctx, *, member: discord.Member=None):
+    async def memberinfo(self, ctx, *, member: discord.Member = None):
         """
         Gives you userinfo
         """
