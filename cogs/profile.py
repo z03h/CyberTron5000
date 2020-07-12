@@ -389,11 +389,10 @@ class Profile(commands.Cog):
         paginator = BotEmbedPaginator(ctx, embeds)
         await paginator.run()
     
-    @commands.command(aliases=['ui', 'user'], help="Gets a user's info.")
-    async def userinfo(self, ctx, *, member: discord.Member = None):
+    @commands.command(help="Gets a user's info.")
+    async def betteruserinfo(self, ctx, *, member: discord.Member = None):
         member = member or ctx.author
-        embed = discord.Embed(title=str(member), colour=0xb00b69).set_thumbnail(url=member.avatar_url).set_image(
-            url=member.avatar_url)
+        embed = discord.Embed(title=str(member), colour=0xb00b69).set_thumbnail(url=member.avatar_url).set_image(url=member.avatar_url)
         embed.add_field(name="roles", value=",".join(r.mention for r in member.roles[::-1][:15]))
         embed.add_field(name='name', value='\u200b')
         embed.add_field(name=member.name, value=member.display_name)
@@ -405,9 +404,9 @@ class Profile(commands.Cog):
         embed.add_field(name='is a bot?', value=f'{member.bot}')
         embed.add_field(name='bad', value='ges {member.bdages}')
         await ctx.send(embed=embed)
-    
-    @commands.command(aliases=['mi', 'member'])
-    async def memberinfo(self, ctx, *, member: discord.Member = None):
+
+    @commands.command(aliases=['mi', 'member', 'ui', 'user', 'userinfo'])
+    async def memberinfo(self, ctx, *, member: discord.Member=None):
         """
         Gives you member info (not user info)
         """
