@@ -404,79 +404,12 @@ class Profile(commands.Cog):
         await ctx.send(embed=embed)
     
     @commands.command(aliases=['mi'])
-    async def memberinfo(self, ctx, *, member: discord.Member = None):
+    async def memberinfo(self, ctx, *, member: discord.Member=None):
+        """
+        Gives you member info (not user info)
+        """
         m = member or ctx.author
-        u = '\u200b'
-        embed = discord.Embed(colour=self.client.colour).set_author(
-            name=f"{str(m)}{f' | {m.display_name}' if m.name != m.display_name else u}", icon_url=m.avatar_url,
-            url=m.avatar_url_as(static_format='png', size=4096))
-        if not m.bot:
-            is_bot = "\u200b"
-        else:
-            if m.public_flags.verified_bot:
-                is_bot = "<:verifiedbot1:730904128397639682><:verifiedbot2:730904163365421128>"
-            else:
-                is_bot = "<:bot:703728026512392312>"
-        mem_flags = dict(m.public_flags).items()
-        badges = [k for k, v in mem_flags]
-        bools = [v for k, v in mem_flags]
-        final = []
-        for v, b in zip(badges, bools):
-            if b:
-                final.append(v)
-            else:
-                continue
-        a = [badge_mapping[str(b)] for b in final if b in badge_mapping]
-        a.append("<:nitro:730892254092198019>") if await GuildStats(ctx).check_nitro(m) else None
-        local_emojis = []
-        if m == ctx.guild.owner:
-            local_emojis.append("<:owner:730864906429136907>")
-        if m.permissions_in(ctx.channel).kick_members:
-            local_emojis.append("<:Mods:713500789670281216>")
-        if m in ctx.guild.premium_subscribers:
-            local_emojis.append("<:boost:726151031322443787>")
-        char = '\u200b' if not a or not local_emojis else " | "
-        local_emojis.append(is_bot)
-        le = " ".join(local_emojis)
-        embed.description = f"\n{' '.join(a) if a else u}{char}{le}"
-        embed.description += f'\n→ ID • **{m.id}**\n'
-        embed.description += f'→ Created Account • **{humanize.naturaltime(datetime.datetime.utcnow() - m.created_at)}** ({m.created_at.strftime("%B %d, %Y")})\n'
-        embed.description += f'→ Joined Guild • **{humanize.naturaltime(datetime.datetime.utcnow() - m.joined_at)}** ({m.joined_at.strftime("%B %d, %Y")})\n'
-        embed.description += f'→ Guilds Shared With Bot • **{len([g for g in self.client.guilds if g.get_member(m.id)])}**\n'
-        if m.top_role.id == ctx.guild.id:
-            pass
-        else:
-            embed.description += f'→ Roles • **{len([r for r in m.roles if r.id != ctx.guild.id])}** | Top Role • {m.top_role.mention}'
-        embed.description += f'\n→ [Avatar URL]({m.avatar_url_as(static_format="png", size=4096)})\n'
-        embed.add_field(name='Status',
-                        value=f'{sl[m.web_status]} **Web Status**\n{sl[m.desktop_status]} **Desktop Status**\n{sl[m.mobile_status]} **Mobile Status**')
-        if m.status == discord.Status.offline or not m.activities:
-            pass
-        else:
-            activities = []
-            for activity in m.activities:
-                if isinstance(activity, discord.Spotify):
-                    activity = 'Listening to **Spotify**'
-                elif isinstance(activity, discord.Game):
-                    activity = f'Playing **{activity.name}**'
-                elif isinstance(activity, discord.Streaming):
-                    activity = f'Streaming **{activity.name}**'
-                else:
-                    emoji = ''
-                    if activity.emoji:
-                        emoji = ':thinking:' if activity.emoji.is_custom_emoji() and not self.client.get_emoji(
-                            activity.emoji.id) else activity.emoji
-                        if str(emoji) == ":thinking:":
-                            embed.set_footer(text="🤔 indicates a custom emoji")
-                    char = "\u200b" if activity.type == discord.ActivityType.custom else " "
-                    if str(activity.name) == "None":
-                        ac = "\u200b"
-                    else:
-                        ac = str(activity.name)
-                    activity = f'{emoji} {status_mapping[activity.type]}{char}**{ac}**'
-                activities.append(activity)
-            embed.add_field(name='Activities', value='\n'.join(activities))
-        await ctx.send(embed=embed)
+        await ctx.send(embed=await uiEmbed(ctx).uiEmbed(member=m, opt="ui"))
     
     @commands.command(aliases=['perms'], help="Gets a user's permissions in the current channel.")
     async def permissions(self, ctx, *, member: discord.Member = None):
