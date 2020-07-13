@@ -77,19 +77,6 @@ class Events(commands.Cog):
                               f"{humanize.naturaltime(__import__('datetime').datetime.utcnow() - guild.created_at)}")
         await c.send(f"Joined Guild! This is guild **#{len(self.client.guilds)}**", embed=embed)
         await guild.me.edit(nick=f"(=) {self.client.user.name}")
-        # stole this from dutchy ↓ ↓ ↓ https://github.com/iDutchy/Charles/blob/master/cogs/Events.py#L286-L303
-        to_send = sorted([chan for chan in guild.channels if
-                          chan.permissions_for(guild.me).send_messages and isinstance(chan, discord.TextChannel)],
-                         key=lambda x: x.position)[0]
-        if to_send.permissions_for(guild.me).embed_links:
-            e = discord.Embed(colour=self.client.colour, title=self.client.user.name)
-            tips = "My default prefix is `=`, but you can change it using `=changeprefix <newprefix>`\n[Join our help server for updates!](https://cybertron-5k.netlify.app/server)\n\n"
-            e.description = f"Thank you for adding me to your server!\n{tips}"
-            await to_send.send(embed=e)
-        else:
-            msg = "Thank you for adding me to your server! I will do my best to make your work here as easy as possible.\n"
-            msg += "My default prefix is `=`, but you can change it using `=changeprefix <newprefix>\n[Join our help server for updates!](https://cybertron-5k.netlify.app/server)\n\n"
-            await to_send.send(msg)
     
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
