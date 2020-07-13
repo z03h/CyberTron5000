@@ -5,6 +5,7 @@ import asyncio
 
 
 class Tags(commands.Cog):
+    """Tags are a way of storing data for later retrieval."""
     def __init__(self, client):
         self.client = client
     
@@ -14,6 +15,9 @@ class Tags(commands.Cog):
     
     @commands.group(invoke_without_command=True)
     async def tag(self, ctx, *, name):
+        """
+        Invokes a tag
+        """
         tag = await self.client.pg_con.fetch("SELECT content FROM tags WHERE name = $1 AND guild_id = $2", name,
                                              str(ctx.guild.id))
         if not tag:
@@ -23,6 +27,7 @@ class Tags(commands.Cog):
     
     @tag.command()
     async def list(self, ctx):
+        """Lists the tags you own"""
         my_tags = await self.client.pg_con.fetch("SELECT name FROM tags WHERE user_id = $1 and guild_id = $2",
                                                  str(ctx.author.id), str(ctx.guild.id))
         le_tags = []
@@ -36,6 +41,7 @@ class Tags(commands.Cog):
     
     @tag.command(invoke_without_command=True)
     async def create(self, ctx, *, contents: str):
+        """Creates a tag (please separate the title of the tag and the content with `|`)"""
         if "|" not in contents:
             return await ctx.send("Incorrect arguments! Please separate your tag name and content with `|`")
         elif contents.startswith("|"):
@@ -67,6 +73,7 @@ class Tags(commands.Cog):
     
     @tag.command()
     async def all_list(self, ctx):
+        """Lists all the tags in the guild"""
         tags = await self.client.pg_con.fetch("SELECT name, user_id FROM tags WHERE guild_id = $1", str(ctx.guild.id))
         list = []
         for x in range(len(tags)):
