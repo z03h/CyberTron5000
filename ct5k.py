@@ -27,6 +27,7 @@ For more information, please refer to <https://unlicense.org>
 
 import json
 import os
+import asyncpg
 
 import discord
 from discord.ext import commands
@@ -34,7 +35,7 @@ from discord.ext import commands
 def get_token():
     with open("secrets.json", "r") as f:
         res = json.load(f)
-    return res['bot_token']
+    return res
 
 
 # ⤗
@@ -66,6 +67,9 @@ class CyberTron5000(commands.Bot):
                          allowed_mentions=discord.AllowedMentions(everyone=False, roles=True, users=True))
         
         self.colour = 0x00dcff
+        
+    async def create_db_pool(self):
+        self.pg_con = await asyncpg.create_pool(user='postgres', password=get_token()['psql_password'], database='MyDB')
     
     async def on_guild_join(self, guild):
         with open("prefixes.json", "r") as f:
@@ -93,4 +97,5 @@ class CyberTron5000(commands.Bot):
 
 
 client = CyberTron5000()
-client.run(get_token())
+client.loop.run_until_complete(client.create_db_pool())
+client.run(get_token()['bot_token'])

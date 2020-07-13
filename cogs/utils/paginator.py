@@ -83,13 +83,22 @@ class IndexedListSource(menus.ListPageSource):
         offset = menu.current_page * self.per_page + 1
         embed = self.embed
         if not embed.fields:
-            embed.add_field(name='Entries',
-                            value='\n'.join(f'`[{i}]` {v}' for i, v in enumerate(entries, start=offset)), inline=False)
-            index = 0
+            if not entries:
+                embed.add_field(name='Entries', value='No Entries')
+                index = 0
+            else:
+                embed.add_field(name='Entries',
+                                value='\n'.join(f'`[{i}]` {v}' for i, v in enumerate(entries, start=offset)),
+                                inline=False)
+                index = 0
         else:
             index = len(embed.fields) - 1
             print(index)
         embed.set_footer(text=f'({menu.current_page + 1}/{menu._source.get_max_pages()})')
-        embed.set_field_at(index=index, name='Entries',
-                           value='\n'.join(f'`[{i}]` {v}' for i, v in enumerate(entries, start=offset)))
+        if not entries:
+            embed.set_field_at(index=index, name='Entries',
+                               value='No Entries')
+        else:
+            embed.set_field_at(index=index, name='Entries',
+                               value='\n'.join(f'`[{i}]` {v}' for i, v in enumerate(entries, start=offset)))
         return embed

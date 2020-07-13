@@ -7,5 +7,6 @@ praw
 matplotlib
 psutil
 async_cleverbot
+asyncpg
 git+https://github.com/Rapptz/discord.py
 git+https://github.com/Rapptz/discord-ext-menus

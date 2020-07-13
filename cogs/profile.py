@@ -333,7 +333,7 @@ class Profile(commands.Cog):
             embed.description += f'\n→ ID • **{m.id}**\n'
         embed.description += f'→ Created Account • **{humanize.naturaltime(datetime.datetime.utcnow() - m.created_at)}**\n'
         embed.description += f'→ Joined Guild • **{humanize.naturaltime(datetime.datetime.utcnow() - m.joined_at)}**\n'
-        embed.description += f'→ Join Position • **{(sorted(ctx.guild.members, key=lambda m: m.joined_at).index(m)) + 1:,}**\n'
+        #   embed.description += f'→ Join Position • **{(sorted(ctx.guild.members, key=lambda m: m.joined_at).index(m)) + 1:,}**\n'
         embed.description += f'→ Guilds Shared With Bot • **{len([g for g in ctx.bot.guilds if g.get_member(m.id)]) if m != ctx.bot.user else f"bro this is literally the bot ({len(ctx.bot.guilds)})"}**'
         if m.top_role.id == ctx.guild.id:
             pass
