@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 
-class Database(commands.Cog):
+class Tags(commands.Cog):
     def __init__(self, client):
         self.client = client
     
@@ -11,4 +11,4 @@ class Database(commands.Cog):
 
 
 def setup(client):
-    client.add_cog(Database(client))
+    client.add_cog(Tags(client))
