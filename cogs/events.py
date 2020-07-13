@@ -55,7 +55,7 @@ class Events(commands.Cog):
                                           description=f'**My prefix for {message.guild} is** `{pre}`\n\n**Do** '
                                                       f'`{pre}help` **for a full list of commands.**\n\n'
                                                       f'[Invite me to your server!]'
-                                                      f'(https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2081291511&scope=bot)\n\n[Join our help server!](https://discord.gg/aa9p43W)')
+                                                      f'(https://cybertron-5k.netlify.app/invite)\n\n[Join our help server!](https://discord.gg/aa9p43W)')
                     embed.set_thumbnail(url=self.client.user.avatar_url)
                     embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
                     await message.channel.send(embed=embed)
