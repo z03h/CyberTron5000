@@ -39,6 +39,19 @@ class Fun(commands.Cog):
         p = paginator.CatchAllMenu(paginator.EmbedSource(embeds))
         await p.start(ctx)
     
+    @commands.command()
+    async def pfpcycle(self, ctx):
+        """if you're reading this it probably isnt your business"""
+        pfps = ['http://tinyurl.com/y8ccnxm3',
+                'https://images-ext-1.discordapp.net/external/6HjseNKji1C5wbK9Wb_jnIluzFWrCRW6xqhfboNtDDI/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/350349365937700864/bbbff13a570231108b7afa383416b62a.png',
+                'http://tinyurl.com/ycjuvusq',
+                'https://cdn.discordapp.com/avatars/350349365937700864/f38bc11cf4360a9267a55962fcd71809.png?size=1024',
+                'https://media.discordapp.net/attachments/381963689470984203/732283634190516304/coolweavile.png?width=962&height=962',
+                'http://i.some-random-api.ml/pokemon/weavile.png']
+        embeds = [discord.Embed(colour=self.client.colour).set_image(url=p) for p in pfps]
+        a = paginator.CatchAllMenu(paginator.EmbedSource(embeds))
+        await a.start(ctx)
+    
     @commands.group(invoke_without_command=True, help="Replies with what you said and deletes your message.",
                     aliases=['say'])
     async def reply(self, ctx, *, message):

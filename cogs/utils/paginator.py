@@ -63,7 +63,8 @@ class CatchAllMenu(menus.MenuPages, inherit_buttons=False):
                f"\n<:stop_button:731316755485425744> • Stop the paginator" \
                f"\n<:1234:731401199797927986> • Go to a page of your choosing" \
                f"\n<:info:731324830724390974> • Brings you here"
- 
+
+
 class EmbedSource(menus.ListPageSource):
     def __init__(self, data):
         super().__init__(data, per_page=1)
@@ -71,3 +72,24 @@ class EmbedSource(menus.ListPageSource):
     async def format_page(self, menu, entries: discord.Embed):
         entries.set_footer(text=f'({menu.current_page + 1}/{menu._source.get_max_pages()})')
         return entries
+
+
+class IndexedListSource(menus.ListPageSource):
+    def __init__(self, data: list, embed: discord.Embed, per_page: int = 10):
+        super().__init__(per_page=per_page, entries=data)
+        self.embed = embed
+    
+    async def format_page(self, menu, entries: list):
+        offset = menu.current_page * self.per_page + 1
+        embed = self.embed
+        if not embed.fields:
+            embed.add_field(name='Entries',
+                            value='\n'.join(f'`[{i}]` {v}' for i, v in enumerate(entries, start=offset)), inline=False)
+            index = 0
+        else:
+            index = len(embed.fields) - 1
+            print(index)
+        embed.set_footer(text=f'({menu.current_page + 1}/{menu._source.get_max_pages()})')
+        embed.set_field_at(index=index, name='Entries',
+                           value='\n'.join(f'`[{i}]` {v}' for i, v in enumerate(entries, start=offset)))
+        return embed
