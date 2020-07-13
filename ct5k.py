@@ -69,7 +69,7 @@ class CyberTron5000(commands.Bot):
         self.colour = 0x00dcff
         
     async def create_db_pool(self):
-        self.pg_con = await asyncpg.create_pool(user='postgres', password=get_token()['psql_password'], database='MyDB')
+        self.pg_con = await asyncpg.create_pool(user=get_token()['psql_user'], password=get_token()['psql_password'], database=get_token()['psql_db'])
     
     async def on_guild_join(self, guild):
         with open("prefixes.json", "r") as f:
