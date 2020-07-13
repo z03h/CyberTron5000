@@ -209,6 +209,7 @@ class Meta(commands.Cog):
     
     @commands.command(aliases=["sourcecode", "src"], help="Shows source code for a given command")
     async def source(self, ctx, *, command=None):
+        # inspired by r.danny https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/meta.py#L328-L366
         u = '\u200b'
         if not command:
             return await ctx.send(
@@ -224,12 +225,14 @@ class Meta(commands.Cog):
             src = f"```py\n{str(__import__('inspect').getsource(self.client.get_command(command).callback)).replace('```', f'{u}')}```"
             if len(src) > 2000:
                 cmd = self.client.get_command(command).callback
+                if not cmd:
+                    return await ctx.send("Command not found.")
                 file = cmd.__code__.co_filename
                 location = os.path.relpath(file)
                 total, fl = __import__('inspect').getsourcelines(cmd)
                 ll = fl + (len(total) - 1)
                 await ctx.send(embed=discord.Embed(
-                    description=f"This code was too long for Discord, you can see it instead [on GitHub](<https://github.com/niztg/CyberTron5000/blob/master/{location}#L{fl}-L{ll}>)",
+                    description=f"This code was too long for Discord, you can see it instead [on GitHub](https://github.com/niztg/CyberTron5000/blob/master/{location}#L{fl}-L{ll})",
                     colour=self.client.colour))
             else:
                 await ctx.send(src)
