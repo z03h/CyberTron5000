@@ -13,7 +13,6 @@ class Tags(commands.Cog):
         await arg.send("You're mom")
     
     @commands.group(invoke_without_command=True)
-    @checks.betasquad()
     async def tag(self, ctx, *, name):
         tag = await self.client.pg_con.fetch("SELECT content FROM tags WHERE name = $1 AND guild_id = $2", name,
                                              str(ctx.guild.id))
@@ -23,7 +22,6 @@ class Tags(commands.Cog):
             await ctx.send(tag[0][0])
     
     @tag.command()
-    @checks.betasquad()
     async def list(self, ctx):
         my_tags = await self.client.pg_con.fetch("SELECT name FROM tags WHERE user_id = $1 and guild_id = $2",
                                                  str(ctx.author.id), str(ctx.guild.id))
@@ -37,7 +35,6 @@ class Tags(commands.Cog):
         await menu.start(ctx)
     
     @tag.command(invoke_without_command=True)
-    @checks.betasquad()
     async def create(self, ctx, *, contents: str):
         if "|" not in contents:
             return await ctx.send("Incorrect arguments! Please separate your tag name and content with `|`")
