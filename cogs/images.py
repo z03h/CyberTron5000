@@ -5,8 +5,6 @@ import discord
 from discord.ext import commands
 
 
-
-
 def dagpi():
     with open("secrets.json", "r") as f:
         res = json.load(f)
@@ -29,13 +27,13 @@ class Images(commands.Cog):
         daggy = await self.client.fetch_user(self.daggy)
         member = member or ctx.author
         async with ctx.typing():
-            data = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png'))}
+            resp = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png'))}
             async with aiohttp.ClientSession() as cs:
-                async with cs.post('https://dagpi.tk/api/wanted', headers=data) as r:
-                    data = await r.json()
-            response = data['url']
+                async with cs.post('https://dagpi.tk/api/wanted', headers=resp) as r:
+                    resp = await r.json()
+            res = resp['url']
             embed = discord.Embed(colour=self.client.colour)
-            embed.set_image(url=response)
+            embed.set_image(url=res)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)
     
@@ -47,13 +45,13 @@ class Images(commands.Cog):
         daggy = await self.client.fetch_user(self.daggy)
         member = member or ctx.author
         async with ctx.typing():
-            data = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png'))}
+            resp = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png'))}
             async with aiohttp.ClientSession() as cs:
-                async with cs.post('https://dagpi.tk/api/obamameme', headers=data) as r:
-                    data = await r.json()
-            response = data['url']
+                async with cs.post('https://dagpi.tk/api/obamameme', headers=resp) as r:
+                    resp = await r.json()
+            res = resp['url']
             embed = discord.Embed(colour=self.client.colour)
-            embed.set_image(url=response)
+            embed.set_image(url=res)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)
     
@@ -65,13 +63,13 @@ class Images(commands.Cog):
         daggy = await self.client.fetch_user(self.daggy)
         member = member or ctx.author
         async with ctx.typing():
-            data = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png'))}
+            resp = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png'))}
             async with aiohttp.ClientSession() as cs:
-                async with cs.post('https://dagpi.tk/api/bad', headers=data) as r:
-                    data = await r.json()
-            response = data['url']
+                async with cs.post('https://dagpi.tk/api/bad', headers=resp) as r:
+                    resp = await r.json()
+            res = resp['url']
             embed = discord.Embed(colour=self.client.colour)
-            embed.set_image(url=response)
+            embed.set_image(url=res)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)
     
@@ -83,13 +81,13 @@ class Images(commands.Cog):
         member = member or ctx.author
         daggy = await self.client.fetch_user(self.daggy)
         async with ctx.typing():
-            data = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png'))}
+            resp = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png'))}
             async with aiohttp.ClientSession() as cs:
-                async with cs.post('https://dagpi.tk/api/hitler', headers=data) as r:
-                    data = await r.json()
-            response = data['url']
+                async with cs.post('https://dagpi.tk/api/hitler', headers=resp) as r:
+                    resp = await r.json()
+            res = resp['url']
             embed = discord.Embed(colour=self.client.colour)
-            embed.set_image(url=response)
+            embed.set_image(url=res)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)
     
@@ -101,14 +99,14 @@ class Images(commands.Cog):
         daggy = await self.client.fetch_user(self.daggy)
         member = member or ctx.author
         async with ctx.typing():
-            data = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png')),
+            resp = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png')),
                     'text': tweet, 'name': member.display_name}
             async with aiohttp.ClientSession() as cs:
-                async with cs.post('https://dagpi.tk/api/tweet', headers=data) as r:
-                    data = await r.json()
-            response = data['url']
+                async with cs.post('https://dagpi.tk/api/tweet', headers=resp) as r:
+                    resp = await r.json()
+            res = resp['url']
             embed = discord.Embed(colour=self.client.colour)
-            embed.set_image(url=response)
+            embed.set_image(url=res)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)
     
@@ -120,14 +118,14 @@ class Images(commands.Cog):
         daggy = await self.client.fetch_user(self.daggy)
         member = member or ctx.author
         async with ctx.typing():
-            data = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png')),
+            resp = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png')),
                     'text': quote, 'name': member.display_name}
             async with aiohttp.ClientSession() as cs:
-                async with cs.post('https://dagpi.tk/api/quote', headers=data) as r:
-                    data = await r.json()
-            response = data['url']
+                async with cs.post('https://dagpi.tk/api/quote', headers=resp) as r:
+                    resp = await r.json()
+            res = resp['url']
             embed = discord.Embed(colour=self.client.colour)
-            embed.set_image(url=response)
+            embed.set_image(url=res)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)
     
@@ -139,13 +137,13 @@ class Images(commands.Cog):
         daggy = await self.client.fetch_user(self.daggy)
         member = member or ctx.author
         async with ctx.typing():
-            data = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png'))}
+            resp = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png'))}
             async with aiohttp.ClientSession() as cs:
-                async with cs.post('https://dagpi.tk/api/triggered', headers=data) as r:
-                    data = await r.json()
-            response = data['url']
+                async with cs.post('https://dagpi.tk/api/triggered', headers=resp) as r:
+                    resp = await r.json()
+            res = resp['url']
             embed = discord.Embed(colour=self.client.colour)
-            embed.set_image(url=response)
+            embed.set_image(url=res)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)
     
@@ -157,13 +155,13 @@ class Images(commands.Cog):
         daggy = await self.client.fetch_user(self.daggy)
         member = member or ctx.author
         async with ctx.typing():
-            data = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png'))}
+            resp = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png'))}
             async with aiohttp.ClientSession() as cs:
-                async with cs.post('https://dagpi.tk/api/gay', headers=data) as r:
-                    data = await r.json()
-            response = data['url']
+                async with cs.post('https://dagpi.tk/api/gay', headers=resp) as r:
+                    resp = await r.json()
+            res = resp['url']
             embed = discord.Embed(colour=self.client.colour)
-            embed.set_image(url=response)
+            embed.set_image(url=res)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)
     
@@ -175,13 +173,13 @@ class Images(commands.Cog):
         daggy = await self.client.fetch_user(self.daggy)
         member = member or ctx.author
         async with ctx.typing():
-            data = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png'))}
+            resp = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png'))}
             async with aiohttp.ClientSession() as cs:
-                async with cs.post('https://dagpi.tk/api/paint', headers=data) as r:
-                    data = await r.json()
-            response = data['url']
+                async with cs.post('https://dagpi.tk/api/paint', headers=resp) as r:
+                    resp = await r.json()
+            res = resp['url']
             embed = discord.Embed(colour=self.client.colour)
-            embed.set_image(url=response)
+            embed.set_image(url=res)
             embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
             await ctx.send(embed=embed)
 
