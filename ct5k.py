@@ -1,3 +1,12 @@
+"""
+Aw shucks do i have to write a license? Uhh any of you can steal/copy/modify/distribute/sell this code for any purpose
+whatsoever
+
+no crediting required at all
+
+
+"""
+
 import json
 import os
 
