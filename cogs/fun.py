@@ -7,6 +7,7 @@ from discord.ext import commands
 
 from .utils import cyberformat, paginator
 from .utils.lists import INDICATOR_LETTERS
+import string
 
 
 class Fun(commands.Cog):
@@ -93,30 +94,7 @@ class Fun(commands.Cog):
     async def indicator(self, ctx, *, message):
         """reply in emojis"""
         letters = []
-        alphabet = ['A', 'B', 'C', 'D',
-                    'E',
-                    'F',
-                    'G',
-                    'H',
-                    'I',
-                    'J',
-                    'K',
-                    'L',
-                    'M',
-                    'N',
-                    'O',
-                    'P',
-                    'Q',
-                    'R',
-                    'S',
-                    'T',
-                    'U',
-                    'V',
-                    'W',
-                    'X',
-                    'Y',
-                    'Z'
-                    ]
+        alphabet = list(string.ascii_uppercase)
         numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
         for letter in message:
             if letter.upper() in alphabet:
