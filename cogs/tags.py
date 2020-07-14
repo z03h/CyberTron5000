@@ -53,7 +53,7 @@ class Tags(commands.Cog):
         menu = paginator.CatchAllMenu(source=source)
         await menu.start(ctx)
     
-    @tag.command(invoke_without_command=True)
+    @tag.command(invoke_without_command=True, aliases=['make'])
     async def create(self, ctx, *, name):
         """Creates a tag"""
         test = await self.client.pg_con.fetch("SELECT * FROM tags WHERE name = $1 AND guild_id = $2", name,
@@ -61,27 +61,27 @@ class Tags(commands.Cog):
         if test:
             return await ctx.send("This tag already exists in this guild!")
         await ctx.send(
-            f"Your tag is called `{name}`. Please enter the content of your tag or type `{ctx.prefix}canel` to cancel.")
+            f"Your tag is called `{name}`. Please enter the content of your tag or type `{ctx.prefix}cancel` to cancel.")
         try:
-            message = await self.client.wait_for('message', timeout=15, check=lambda m: m.author == ctx.author)
+            message = await self.client.wait_for('message', timeout=30, check=lambda m: m.author == ctx.author)
             if message.content.lower().startswith(f"{ctx.prefix}cancel"):
                 return await ctx.send("Ok, cancelled.")
-        except asyncio.TimeoutError():
-            return await ctx.send("You ran out of time!")
-        user_id = str(ctx.author.id)
-        guild_id = str(ctx.guild.id)
-        try:
-            await ctx.send(
-                f"```Tag Name: {name}\nContent: {message.content}```\nIs this correct? [y/n]\nYou have 15 seconds to respond")
-            msg = await self.client.wait_for('message', check=lambda m: m.author == ctx.author, timeout=15)
-            if msg.content.lower().startswith("y"):
-                await self.client.pg_con.execute(
-                    "INSERT INTO tags (user_id, guild_id, name, content) VALUES ($1, $2, $3, $4)", user_id,
-                    guild_id, name.strip(), message.content.strip()
-                )
-                await ctx.send(f"Success! Tag `{name}` created!")
-            else:
-                await ctx.send("Sorry! Try again by using the `{0}tag create` command".format(ctx.prefix))
+            user_id = str(ctx.author.id)
+            guild_id = str(ctx.guild.id)
+            try:
+                await ctx.send(
+                    f"```Tag Name: {name}\nContent: {message.content}```\nIs this correct? [y/n]\nYou have 15 seconds to respond")
+                msg = await self.client.wait_for('message', check=lambda m: m.author == ctx.author, timeout=15)
+                if msg.content.lower().startswith("y"):
+                    await self.client.pg_con.execute(
+                        "INSERT INTO tags (user_id, guild_id, name, content) VALUES ($1, $2, $3, $4)", user_id,
+                        guild_id, name.strip(), message.content.strip()
+                    )
+                    await ctx.send(f"Success! Tag `{name}` created!")
+                else:
+                    await ctx.send("Sorry! Try again by using the `{0}tag create` command".format(ctx.prefix))
+            except asyncio.TimeoutError():
+                return await ctx.send("You ran out of time!")
         except asyncio.TimeoutError:
             await ctx.send("You took too long, try again!")
     
@@ -121,7 +121,7 @@ class Tags(commands.Cog):
             try:
                 await ctx.send(
                     f"```Tag Name: {name}\nContent: {message.content}```\nIs this correct? [y/n]\nYou have 15 seconds to respond")
-                msg = await self.client.wait_for('message', check=lambda m: m.author == ctx.author, timeout=15)
+                msg = await self.client.wait_for('message', check=lambda m: m.author == ctx.author, timeout=30)
                 if msg.content.startswith("y"):
                     await self.client.pg_con.execute(
                         "UPDATE tags SET content = $1 WHERE name = $2 AND guild_id = $3",
