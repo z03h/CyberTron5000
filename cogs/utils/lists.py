@@ -176,3 +176,54 @@ badge_mapping = {
     "early_supporter": "<:early_supporter:730869784337580102>",
     "verified_bot_developer": "<:verified_bot_developer:730849897410199572>",
 }
+audit_actions = {
+    discord.AuditLogAction.guild_update: "**updated the**",
+    discord.AuditLogAction.channel_update: "**updated channel**",
+    discord.AuditLogAction.channel_create: "**created channel**",
+    discord.AuditLogAction.channel_delete: "**deleted channel**",
+    discord.AuditLogAction.overwrite_create: "**created overwrite**",
+    discord.AuditLogAction.overwrite_update: "**updated overwrite**",
+    discord.AuditLogAction.overwrite_delete: "**deleted overwrite**",
+    discord.AuditLogAction.kick: "**kicked**",
+    discord.AuditLogAction.ban: "**banned**",
+    discord.AuditLogAction.unban: "**unbanned**",
+    discord.AuditLogAction.member_role_update: "**updated roles of**",
+    discord.AuditLogAction.member_move: "**moved member**",
+    discord.AuditLogAction.member_disconnect: "**disconnected member**",
+    discord.AuditLogAction.bot_add: "**added bot**",
+    discord.AuditLogAction.role_create: "**created role**",
+    discord.AuditLogAction.role_update: "**updated role**",
+    discord.AuditLogAction.role_delete: "**deleted role**",
+    discord.AuditLogAction.invite_create: "**created invite**",
+    discord.AuditLogAction.invite_update: "**updated invite**",
+    discord.AuditLogAction.invite_delete: "**deleted invite**",
+    discord.AuditLogAction.webhook_create: "**created webhook**",
+    discord.AuditLogAction.webhook_delete: "**deleted webhook**",
+    discord.AuditLogAction.webhook_update: "**updated webhook**",
+    discord.AuditLogAction.emoji_create: "**created emoji**",
+    discord.AuditLogAction.emoji_update: "**updated emoji**",
+    discord.AuditLogAction.emoji_delete: "**deleted emoji**",
+    discord.AuditLogAction.message_delete: "**deleted message by**",
+    discord.AuditLogAction.message_pin: "**pinned a message by**",
+    discord.AuditLogAction.message_unpin: "**unpinned a message by**",
+    discord.AuditLogAction.message_bulk_delete: "**bulk deleted messages**",
+    discord.AuditLogAction.integration_create: "**created integration**",
+    discord.AuditLogAction.integration_delete: "**deleted integration**",
+    discord.AuditLogAction.integration_update: "**updated integration**",
+    discord.AuditLogAction.member_update: "**updated member**"
+}
+
+engineer_bagdes = ["<:engineer1:732745844339638334>",
+                   "<:engineer2:732745844633370684>",
+                   "<:engineer3:732745844716994690>",
+                   "<:engineer4:732745844754743306>"]
+
+popular_badges = ['<:popular1:732745781660090459>'
+    , '<:popular2:732745781856960634>'
+    , '<:popular3:732745782054092840>'
+    , '<:popular4:732745781714354198>']
+
+legend_badges = ['<:legend1:732745816564826212>',
+'<:legend2:732745816590123041>',
+'<:legend3:732745816598380636>',
+'<:legend4:732745816758026381>']

@@ -130,13 +130,30 @@ class Info(commands.Cog):
         """
         self.client.help_command = self._original_help_command
     
-    @commands.command()
+    @commands.group(invoke_without_command=True)
     async def cogs(self, ctx):
         """Shows you every cog"""
         await ctx.send(embed=discord.Embed(colour=0x00dcff, title=f"All Cogs ({len(self.client.cogs)})",
                                            description=f"Do `{ctx.prefix}help <cog>` to know more about them!" + "\n\n" + "\n".join(
                                                [f"`{cog}` • {self.client.cogs[cog].__doc__}" for cog in
                                                 self.client.cogs])))
+    
+    @cogs.command()
+    @commands.is_owner()
+    async def status(self, ctx):
+        """Shows you the status of each cog"""
+        cogs = []
+        for filename in __import__('os').listdir('cogs'):
+            if filename.endswith('.py'):
+                try:
+                    self.client.reload_extension(f'cogs.{filename[:-3]}')
+                    cogs.append(f"<:on:732805104620797965> `cogs.{filename[:-3]}`")
+                except commands.ExtensionNotLoaded:
+                    cogs.append(f"<:off:732805190582927410> `cogs.{filename[:-3]}`")
+        
+        embed = discord.Embed(colour=self.client.colour)
+        embed.description = "\n".join(cogs)
+        await ctx.send(embed=embed)
     
     @commands.command(name='paginated_help', aliases=['phelp'])
     async def phelp(self, ctx, *, command=None):

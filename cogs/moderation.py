@@ -1,10 +1,12 @@
 import discord
 import asyncio
 import json
+import humanize
 
 from discord.ext import commands
 
 from .utils.checks import check_admin_or_owner
+from .utils import lists, paginator
 
 
 # ≫
@@ -142,13 +144,25 @@ class Moderation(commands.Cog):
     async def spaceprefix(self, ctx, *, prefix):
         with open("prefixes.json", "r") as f:
             prefixes = json.load(f)
-        
         prefixes[str(ctx.guild.id)] = f"{prefix} "
-        
         with open("prefixes.json", "w") as f:
             json.dump(prefixes, f, indent=4)
         await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
         await ctx.guild.me.edit(nick=f"({prefix}) {self.client.user.name}")
+    
+    @commands.command(aliases=['audit'])
+    async def auditlog(self, ctx, limit: int = 20):
+        try:
+            actions = []
+            async for x in ctx.guild.audit_logs(limit=limit):
+                actions.append(
+                    f"{x.user.name} {lists.audit_actions[x.action]} {x.target} ({humanize.naturaltime(__import__('datetime').datetime.utcnow() - x.created_at)})")
+            source = paginator.IndexedListSource(embed=discord.Embed(colour=self.client.colour).set_author(
+                name=f"Last Audit Log Actions for {ctx.guild}", icon_url=ctx.guild.icon_url), data=actions)
+            menu = paginator.CatchAllMenu(source=source)
+            await menu.start(ctx)
+        except Exception as er:
+            await ctx.send(f'{er.__class__.__name__}, {er}')
 
 
 def setup(client):

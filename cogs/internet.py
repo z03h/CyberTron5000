@@ -256,7 +256,7 @@ class Internet(commands.Cog):
             await ctx.send(f"**{ctx.author.name}**, {send}{suff}")
     
     @commands.group(invoke_without_command=True, aliases=['trans'])
-    async def translate(self, ctx, message):
+    async def translate(self, ctx, *, message):
         translator = aiogoogletrans.Translator()
         res = await translator.translate(message)
         from_lang = aiogoogletrans.LANGUAGES[res.src]
@@ -267,7 +267,7 @@ class Internet(commands.Cog):
         return await ctx.send(embed=embed.set_footer(text=f"{round(res.confidence * 100)}% confident"))
     
     @translate.command(name='to', invoke_without_command=True)
-    async def to(self, ctx, target_lang, message):
+    async def to(self, ctx, target_lang, *, message):
         translator = aiogoogletrans.Translator()
         try:
             res = await translator.translate(message, dest=target_lang)

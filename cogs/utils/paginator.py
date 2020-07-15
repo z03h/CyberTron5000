@@ -18,6 +18,7 @@ class CatchAllMenu(menus.MenuPages, inherit_buttons=False):
     async def stop_pages(self, payload):
         """stops the pagination session."""
         self.stop()
+        await self.message.delete()
     
     @menus.button('<:arrow_right:731311292346007633>', position=menus.Last(0))
     async def go_to_next_page(self, payload):
@@ -88,7 +89,7 @@ class IndexedListSource(menus.ListPageSource):
                 index = 0
             else:
                 embed.add_field(name='Entries',
-                                value='\n'.join(f'`[{i}]` {v}' for i, v in enumerate(entries, start=offset)),
+                                value='\n'.join(f'`[{i:,d}]` {v}' for i, v in enumerate(entries, start=offset)),
                                 inline=False)
                 index = 0
         else:
@@ -100,5 +101,5 @@ class IndexedListSource(menus.ListPageSource):
                                value='No Entries')
         else:
             embed.set_field_at(index=index, name='Entries',
-                               value='\n'.join(f'`[{i}]` {v}' for i, v in enumerate(entries, start=offset)))
+                               value='\n'.join(f'`[{i:,}]` {v}' for i, v in enumerate(entries, start=offset)))
         return embed
