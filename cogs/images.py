@@ -16,7 +16,7 @@ class Images(commands.Cog):
     
     def __init__(self, client):
         self.client = client
-        self.tick = ":GreenTick:707950252434653184"
+        self.tick = ":tick:733458499777855538"
         self.daggy = 491174779278065689
     
     @commands.command()

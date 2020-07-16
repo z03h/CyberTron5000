@@ -380,9 +380,9 @@ class Profile(commands.Cog):
         all = dict(member.permissions_in(ctx.channel)).items()
         for key, value in all:
             if value:
-                perms.append(f"<:GreenTick:707950252434653184> | `{str(key.title()).replace('_', ' ')}`")
+                perms.append(f"<:tick:733458499777855538> `{str(key.title()).replace('_', ' ')}`")
             else:
-                negperms.append(f"<:RedX:707949835960975411> | `{str(key.title()).replace('_', ' ')}`")
+                negperms.append(f"<:x_:733458444346195990> `{str(key.title()).replace('_', ' ')}`")
         
         embed2 = discord.Embed(colour=self.client.colour).set_author(name=embed.author.name, icon_url=member.avatar_url)
         embed.description = '\n'.join(perms)
@@ -394,8 +394,8 @@ class Profile(commands.Cog):
     async def roleinfo(self, ctx, *, role: discord.Role):
         """Gives you roleinfo"""
         td = {
-            True: "<:GreenTick:707950252434653184>",
-            False: "<:RedX:707949835960975411>",
+            True: "<:tick:733458499777855538>",
+            False: "<:x_:733458444346195990>",
         }
         embed = discord.Embed(colour=role.colour).set_author(name=f"{role.name} | {role.id}")
         embed.description = f"{td[role.hoist]} **Hoisted**\n"
@@ -433,7 +433,6 @@ class Profile(commands.Cog):
                 embed.set_footer(text=a.track_id)
                 embed.description = f"**{a.album} - {a.title}**\n{', '.join(a.artists)}"
                 embed.description += f"\nDuration: **{datetime.datetime.utcfromtimestamp(a.duration.seconds).strftime('%-M:%S')}**"
-                await ctx.send(f"Start: {a.start}\nEnd: {a.end}\nCreated: {a.created_at}")
                 return await ctx.send(embed=embed)
             else:
                 continue

@@ -17,7 +17,7 @@ class Moderation(commands.Cog):
     
     def __init__(self, client):
         self.client = client
-        self.tick = ":GreenTick:707950252434653184"
+        self.tick = ":tick:733458499777855538"
     
     @commands.command(aliases=['clear'])
     @commands.has_permissions(manage_messages=True)
@@ -57,7 +57,7 @@ class Moderation(commands.Cog):
             
             if (user.name, user.discriminator) == (member_name, member_discriminator):
                 await ctx.guild.unban(user)
-                await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+                await ctx.message.add_reaction(emoji=":tick:733458499777855538")
     
     @commands.group(help="Vote on something.", invoke_without_command=True)
     async def vote(self, ctx, *, message):
@@ -111,14 +111,14 @@ class Moderation(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def user_nick(self, ctx, member: discord.Member, *, name):
         await ctx.guild.get_member(member.id).edit(nick=name)
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.message.add_reaction(emoji=":tick:733458499777855538")
     
     @user_nick.command(invoke_without_command=True)
     @commands.has_permissions(administrator=True)
     async def default(self, ctx, member: discord.Member):
         """Change nickname back to default."""
         await ctx.guild.get_member(member.id).edit(nick=member.name)
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.message.add_reaction(emoji=":tick:733458499777855538")
     
     @commands.command()
     @check_admin_or_owner()
@@ -136,7 +136,7 @@ class Moderation(commands.Cog):
         
         with open("prefixes.json", "w") as f:
             json.dump(prefixes, f, indent=4)
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.message.add_reaction(emoji=":tick:733458499777855538")
         await ctx.guild.me.edit(nick=f"({prefix}) {self.client.user.name}")
     
     @changeprefix.command(invoke_without_command=True, help="Make your prefix end in a space.", aliases=['sp'])
@@ -147,7 +147,7 @@ class Moderation(commands.Cog):
         prefixes[str(ctx.guild.id)] = f"{prefix} "
         with open("prefixes.json", "w") as f:
             json.dump(prefixes, f, indent=4)
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.message.add_reaction(emoji=":tick:733458499777855538")
         await ctx.guild.me.edit(nick=f"({prefix}) {self.client.user.name}")
     
     @commands.command(aliases=['audit'])

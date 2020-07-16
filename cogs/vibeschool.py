@@ -287,21 +287,21 @@ class VibeSchool(commands.Cog):
     async def quizs(self, ctx, *, quiz):
         niz = self.client.get_user(id=350349365937700864)
         await niz.send(f"Hey, {ctx.message.author.display_name} just submitted a quiz:\n```{quiz}```")
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.message.add_reaction(emoji=":tick:733458499777855538")
     
     @commands.command(help="Submit your report cards in #report-cards")
     @check_guild_and_channel(channel=695340515088007249)
     async def rcsend(self, ctx, *, report):
         niz = self.client.get_user(id=350349365937700864)
         await niz.send(f"Hey, {ctx.message.author.display_name} just submitted a report card:\n```{report}```")
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.message.add_reaction(emoji=":tick:733458499777855538")
     
     @commands.command(help="Vote when it's voting time")
     @check_guild(guild=687814997841150016)
     async def votev(self, ctx, person, *, reason):
         niz = self.client.get_user(id=350349365937700864)
         await niz.send(f"Hey, {ctx.message.author.display_name} just voted for {person}. Reason:\n```{reason}```")
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.message.add_reaction(emoji=":tick:733458499777855538")
     
     @commands.group(invoke_without_command=True,
                     help="contact management if there's anything you want to say to them")
@@ -310,7 +310,7 @@ class VibeSchool(commands.Cog):
         channel = self.client.get_channel(id=688812777653141711)
         await channel.send(
             f"Hey, {ctx.message.author} contacted you <@&689613285170872575>\n```{message}```")
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.message.add_reaction(emoji=":tick:733458499777855538")
     
     @management.command(invoke_without_command=True, help="reply to someone contacting management")
     @check_guild_and_admin(guild=687814997841150016)
@@ -318,7 +318,7 @@ class VibeSchool(commands.Cog):
         try:
             user = self.client.get_user(id=member.id)
             await user.send(f"Hey, Management got back to you for {ctx.guild}.\n```{message}```")
-            await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+            await ctx.message.add_reaction(emoji=":tick:733458499777855538")
         except Exception as error:
             await ctx.send(error)
     

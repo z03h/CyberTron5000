@@ -79,7 +79,7 @@ class Meta(commands.Cog):
     
     def __init__(self, client):
         self.client = client
-        self.tick = ":GreenTick:707950252434653184"
+        self.tick = ":tick:733458499777855538"
         self.version = "CyberTron5000 Alpha v2.5.2"
         self.counter = 0
         self.softwares = ['<:dpy:708479036518694983>', '<:python:706850228652998667>', '<:JSON:710927078513442857>']
@@ -255,14 +255,14 @@ class Meta(commands.Cog):
         """Suggest an idea for the bot."""
         owner = self.client.get_user(id=350349365937700864)
         await owner.send(f"Idea: ```{idea}```")
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.message.add_reaction(emoji=":tick:733458499777855538")
     
     @suggest.command(invoke_without_command=True)
     async def error(self, ctx, *, error):
         """Report an error for this bot."""
         owner = self.client.get_user(id=350349365937700864)
         await owner.send(f"You should fix ```{error}```")
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.message.add_reaction(emoji=":tick:733458499777855538")
 
 
 def setup(client):

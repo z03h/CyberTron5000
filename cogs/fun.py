@@ -15,7 +15,7 @@ class Fun(commands.Cog):
     
     def __init__(self, client):
         self.client = client
-        self.tick = ":GreenTick:707950252434653184"
+        self.tick = ":tick:733458499777855538"
     
     @commands.command()
     async def horror(self, ctx, limit: int = 5):
@@ -70,7 +70,7 @@ class Fun(commands.Cog):
     async def echo(self, ctx, channel: discord.TextChannel, *, message):
         await channel.send(
             cyberformat.hyper_replace(text=message, old=['@everyone', '@here'], new=['@\u200beveryone', '@\u200bhere']))
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.message.add_reaction(emoji=":tick:733458499777855538")
     
     @reply.command(invoke_without_command=True, help="Replies with what you said and deletes your message, but UwU.")
     async def owo(self, ctx, *, message):
@@ -84,7 +84,7 @@ class Fun(commands.Cog):
     async def message(self, ctx, user: discord.Member, *, message):
         person = self.client.get_user(user.id)
         await person.send(f"{message}\n\n*(Sent by {ctx.message.author})*")
-        await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+        await ctx.message.add_reaction(emoji=":tick:733458499777855538")
     
     @reply.command(help="Spams a message.", invoke_without_command=True)
     async def spam(self, ctx, *, message):

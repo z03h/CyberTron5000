@@ -21,7 +21,7 @@ def secrets():
 class dev(commands.Cog):
     def __init__(self, client):
         self.client = client
-        self.tick = ":GreenTick:707950252434653184"
+        self.tick = ":tick:733458499777855538"
     
     @commands.group(aliases=["e", "evaluate"], name='eval', invoke_without_command=True, help="Evaluates a function.")
     @commands.is_owner()
@@ -117,7 +117,7 @@ class dev(commands.Cog):
                 description="\n".join([f"{tick} `cogs.{f[:-3]}`" for f in os.listdir("cogs") if f.endswith(".py")]),
                 colour=self.client.colour)
             await ctx.send(embed=embed)
-            await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+            await ctx.message.add_reaction(emoji=":tick:733458499777855538")
     
         else:
             cogs = [c[:-3] for c in os.listdir('cogs') if c.endswith(".py")]
@@ -137,7 +137,7 @@ class dev(commands.Cog):
                 else:
                     a.append(f"{null} `cogs.{x}`")
         
-            await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+            await ctx.message.add_reaction(emoji=":tick:733458499777855538")
             await ctx.send(embed=discord.Embed(description="\n".join(a), colour=self.client.colour))
 
     @commands.command(help="Unloads Cogs")
@@ -152,7 +152,7 @@ class dev(commands.Cog):
                 description="\n".join([f"{redx} `cogs.{f[:-3]}`" for f in os.listdir("cogs") if f.endswith(".py")]),
                 colour=self.client.colour)
             await ctx.send(embed=embed)
-            await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+            await ctx.message.add_reaction(emoji=":tick:733458499777855538")
     
         else:
             cogs = [c[:-3] for c in os.listdir('cogs') if c.endswith(".py")]
@@ -169,7 +169,7 @@ class dev(commands.Cog):
                 else:
                     a.append(f"{null} `cogs.{x}`")
         
-            await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+            await ctx.message.add_reaction(emoji=":tick:733458499777855538")
             await ctx.send(embed=discord.Embed(description="\n".join(a), colour=self.client.colour))
 
     @commands.command(help="Reloads Cogs")
@@ -184,7 +184,7 @@ class dev(commands.Cog):
                 description="\n".join([f"{reload} `cogs.{f[:-3]}`" for f in os.listdir("cogs") if f.endswith(".py")]),
                 colour=self.client.colour)
             await ctx.send(embed=embed)
-            await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+            await ctx.message.add_reaction(emoji=":tick:733458499777855538")
     
         else:
             cogs = [c[:-3] for c in os.listdir('cogs') if c.endswith(".py")]
@@ -201,7 +201,7 @@ class dev(commands.Cog):
                 else:
                     a.append(f"{null} `cogs.{x}`")
         
-            await ctx.message.add_reaction(emoji=":GreenTick:707950252434653184")
+            await ctx.message.add_reaction(emoji=":tick:733458499777855538")
             await ctx.send(embed=discord.Embed(description="\n".join(a), colour=self.client.colour))
 
     @commands.command(help="Logs CyberTron5000 out.")
