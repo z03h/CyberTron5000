@@ -225,7 +225,7 @@ class Meta(commands.Cog):
                     icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png"))
         elif command == "help":
             await ctx.send(embed=discord.Embed(
-                description=f"This code was too long for Discord, you can see it instead [on GitHub](https://github.com/niztg/CyberTron5000/blob/master /cogs/info.py#L9-L109)",
+                description=f"This code was too long for Discord, you can see it instead [on GitHub](https://github.com/niztg/CyberTron5000/blob/master/cogs/info.py#L9-L109)",
                 colour=self.client.colour))
         else:
             src = f"```py\n{str(__import__('inspect').getsource(self.client.get_command(command).callback)).replace('```', f'{u}')}```"

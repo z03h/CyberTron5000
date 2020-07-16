@@ -420,6 +420,24 @@ class Profile(commands.Cog):
         embed.add_field(name='Permissions', value='\u200b' + ', '.join(perms))
         embed.description += f"\n:paintbrush: **{role.colour}**\n<:member:731190477927219231> **{len(role.members)}**\n<:ping:733142612839628830> {role.mention}"
         await ctx.send(embed=embed)
+    
+    @commands.command(aliases=['spot'])
+    async def spotify(self, ctx, member: discord.Member = None):
+        member = member or ctx.author
+        for a in member.activities:
+            if isinstance(a, discord.Spotify):
+                embed = discord.Embed(colour=a.colour).set_author(
+                    icon_url="https://cdn.discordapp.com/emojis/383172031597903872.png?v=1",
+                    name=f"Spotify Status for {member}")
+                embed.set_thumbnail(url=a.album_cover_url)
+                embed.set_footer(text=a.track_id)
+                embed.description = f"**{a.album} - {a.title}**\n{', '.join(a.artists)}"
+                embed.description += f"\nDuration: **{datetime.datetime.utcfromtimestamp(a.duration.seconds).strftime('%-M:%S')}**"
+                
+                return await ctx.send(embed=embed)
+            else:
+                continue
+        return await ctx.send(f"{member} is not listening to Spotify!")
 
 
 def setup(client):
