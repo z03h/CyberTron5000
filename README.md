@@ -19,3 +19,9 @@ These are only some of CyberTron's commands!
     <li>Join the Support Server! → https://cybertron-5k.netlify.app/server</li>
     <li>Check out the website! → https://cybertron-5k.netlify.app</li>
   </ul>
+
+### <em>License</em>
+CyberTron5000 is under the Unlicense. (See: UNLICENSE)
+
+#### <em>What exactly does this mean?</em>
+You can use, steal, copy, claim, do whatever you want with the code of CyberTron5000, no conditions or strings attached <strong>at all.</strong> (See: https://unlicense.org.)
