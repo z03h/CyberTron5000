@@ -1,18 +1,18 @@
 import asyncio
 import datetime
-import random
 import json
-import async_cleverbot
+import random
 from html import unescape as unes
 
-import aiohttp
 import aiogoogletrans
+import aiohttp
+import async_cleverbot
 import discord
 from async_timeout import timeout
 from discord.ext import commands
 
-from .utils.lists import STAT_NAMES, NUMBER_ALPHABET, TYPES
 from .utils import cyberformat
+from .utils.lists import STAT_NAMES, NUMBER_ALPHABET, TYPES
 
 
 # ≫

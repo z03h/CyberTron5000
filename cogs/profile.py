@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from discord.ext import commands
 
 from .utils.lists import REGIONS, sl, status_mapping, badge_mapping
-from .utils import cyberformat
+from .utils import cyberformat, paginator
 
 matplotlib.use('Agg')
 
@@ -372,23 +372,54 @@ class Profile(commands.Cog):
     
     @commands.command(aliases=['perms'], help="Gets a user's permissions in the current channel.")
     async def permissions(self, ctx, *, member: discord.Member = None):
+        member = member or ctx.author
         perms = []
         negperms = []
-        member = member or ctx.author
-        embed = discord.Embed(colour=0x00dcff,
-                              description=f"**Channel**: {ctx.channel.mention}")
-        permissions = ctx.channel.permissions_for(member)
-        for item, valueBool in permissions:
-            if valueBool:
-                value = ":white_check_mark:"
-                perms.append(f'{value}{item}')
+        embed = discord.Embed(colour=self.client.colour).set_author(name=f"{member}'s permissions in {ctx.channel}",
+                                                                    icon_url=member.avatar_url)
+        all = dict(member.permissions_in(ctx.channel)).items()
+        for key, value in all:
+            if value:
+                perms.append(f"<:GreenTick:707950252434653184> | `{str(key.title()).replace('_', ' ')}`")
             else:
-                value = '<:RedX:707949835960975411>'
-                negperms.append(f'{value}{item}')
-        embed.set_author(name=f"Permissions for {member}", icon_url=member.avatar_url)
-        embed.add_field(name='Has', value='\n'.join(perms), inline=True)
-        embed.add_field(name='Does Not Have', value='\n'.join(negperms), inline=True)
-        return await ctx.send(embed=embed)
+                negperms.append(f"<:RedX:707949835960975411> | `{str(key.title()).replace('_', ' ')}`")
+        
+        embed2 = discord.Embed(colour=self.client.colour).set_author(name=embed.author.name, icon_url=member.avatar_url)
+        embed.description = '\n'.join(perms)
+        embed2.description = '\n'.join(negperms)
+        source = paginator.EmbedSource([embed, embed2])
+        await paginator.CatchAllMenu(source=source).start(ctx)
+    
+    @commands.command(aliases=['ri'])
+    async def roleinfo(self, ctx, *, role: discord.Role):
+        """Gives you roleinfo"""
+        td = {
+            True: "<:GreenTick:707950252434653184>",
+            False: "<:RedX:707949835960975411>",
+        }
+        embed = discord.Embed(colour=role.colour).set_author(name=f"{role.name} | {role.id}")
+        embed.description = f"{td[role.hoist]} **Hoisted**\n"
+        embed.description += f"{td[role.managed]} **Managed**\n"
+        embed.description += f"{td[role.mentionable]} **Mentionable**\n"
+        permissions = dict(role.permissions).items()
+        perms = []
+        for k, v in permissions:
+            if v:
+                perms.append(f"`{str(k.title()).replace('_', ' ')}`")
+        roles = [f"{a.mention} ←" if a.mention == role.mention else a.mention for a in ctx.guild.roles][::-1]
+        myrole = f"{role.mention} ←"
+        r = roles
+        index = r.index(myrole)
+        if (role.position == len(ctx.guild.roles) - 1) or (role.position == len(ctx.guild.roles) - 2) or (
+                role.position == len(ctx.guild.roles) - 3):
+            one = 0
+        else:
+            one = index - 2
+        two = index + 3
+        embed.add_field(name=f'Position ({role.position})', value='\u200b' + '\n'.join(r[one:two]), inline=False)
+        embed.add_field(name='Permissions', value='\u200b' + ', '.join(perms))
+        embed.description += f"\n:paintbrush: **{role.colour}**\n<:member:731190477927219231> **{len(role.members)}**\n<:ping:733142612839628830> {role.mention}"
+        await ctx.send(embed=embed)
 
 
 def setup(client):

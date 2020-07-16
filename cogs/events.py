@@ -25,7 +25,7 @@ class Events(commands.Cog):
         
         elif isinstance(error, discord.ext.commands.BadArgument):
             await ctx.send(
-                f"<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}!")
+                f"<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}")
         
         elif isinstance(error, discord.ext.commands.MissingRequiredArgument):
             await ctx.send(

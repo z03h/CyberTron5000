@@ -151,6 +151,7 @@ class Moderation(commands.Cog):
         await ctx.guild.me.edit(nick=f"({prefix}) {self.client.user.name}")
     
     @commands.command(aliases=['audit'])
+    @commands.has_permissions(view_audit_log=True)
     async def auditlog(self, ctx, limit: int = 20):
         try:
             actions = []

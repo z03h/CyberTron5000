@@ -62,6 +62,24 @@ class Tags(commands.Cog):
         menu = paginator.CatchAllMenu(source=source)
         await menu.start(ctx)
     
+    @commands.command()
+    async def tags(self, ctx, member: discord.Member = None):
+        """Lists all the tags that a member owns"""
+        member = member or ctx.author
+        tags = await self.client.pg_con.fetch("SELECT name, uses FROM tags WHERE guild_id = $1 AND user_id = $2",
+                                              str(ctx.guild.id), str(member.id))
+        uses = [0 if v[1] is None else v[1] for v in tags]
+        names = [v[0] for v in tags]
+        f = []
+        for x, y in zip(names, uses):
+            f.append((x, y))
+        l = sorted(f, key=lambda b: b[1])
+        final = [f"{a[0]} - {a[1]:,} uses" for a in l]
+        source = paginator.IndexedListSource(final[::-1], embed=discord.Embed(colour=self.client.colour).set_author(
+            name=f"All of {member}'s tags in {ctx.guild} (Total {len(final)})", icon_url=ctx.guild.icon_url))
+        menu = paginator.CatchAllMenu(source=source)
+        await menu.start(ctx)
+    
     @tag.command(invoke_without_command=True, aliases=['make'],
                  cooldown=commands.Cooldown(1, 5, commands.BucketType.member))
     async def create(self, ctx, *, name):
@@ -224,7 +242,7 @@ class Tags(commands.Cog):
             lt = legend_badges[:2]
         elif 4 <= nf <= 10:
             lt = legend_badges[:3]
-        elif nf < 3:
+        elif nf <= 3:
             lt = legend_badges
         else:
             lt = []
