@@ -433,7 +433,7 @@ class Profile(commands.Cog):
                 embed.set_footer(text=a.track_id)
                 embed.description = f"**{a.album} - {a.title}**\n{', '.join(a.artists)}"
                 embed.description += f"\nDuration: **{datetime.datetime.utcfromtimestamp(a.duration.seconds).strftime('%-M:%S')}**"
-                
+                await ctx.send(f"Start: {a.start}\nEnd: {a.end}\nCreated: {a.created_at}")
                 return await ctx.send(embed=embed)
             else:
                 continue
