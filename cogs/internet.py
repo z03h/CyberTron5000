@@ -171,7 +171,7 @@ class Internet(commands.Cog):
                 embed.add_field(name='Evolution Line',
                                 value=f'{" → ".join(evo_line)}' or "**{0}**".format(str(pokemon).capitalize()),
                                 inline=False)
-                embed.add_field(name='Abilities', value=', '.join([f'**{i}**' for i in res[0]['abilities']]),
+                embed.add_field(name='Abilities', value=', '.join([f'`{i}`' for i in res[0]['abilities']]),
                                 inline=False)
                 embed.add_field(name='Base Stats',
                                 value=f"{f'{n}'.join([f'**{STAT_NAMES[key]}:** `{value}`' for key, value in res[0]['stats'].items()])}",
