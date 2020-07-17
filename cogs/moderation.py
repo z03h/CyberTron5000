@@ -82,7 +82,7 @@ class Moderation(commands.Cog):
             res = done.pop().result()
             print(res)
             if res[0].emoji not in valid_emojis:
-                return
+                pass
             else:
                 index = valid_emojis.index(res[0].emoji)
                 p = (len(m.reactions)) - res[0].count

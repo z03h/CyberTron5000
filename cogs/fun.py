@@ -112,7 +112,6 @@ class Fun(commands.Cog):
         ouija_responses = [
             'Help',
             'Bruh',
-            'You gay lmao',
             'dumb',
             'You dumb',
             'Hey gamers'
@@ -137,52 +136,14 @@ class Fun(commands.Cog):
         await ctx.send(ouija_says)
     
     @commands.command(aliases=['cf'], help="Flips a coin.")
-    async def coinflip(self, ctx, *, clause=None):
-        author = ctx.message.author
-        if clause is None:
-            embed = discord.Embed(
-                colour=self.client.colour, title="Tails!"
-            )
-            tails = embed.set_image(
-                url='https://upload.wikimedia.org/wikipedia/en/thumb/3/37/Quarte'
-                    'r_Reverse_2010.png/220px-Quarter_Reverse_2010.png')
-            choice = random.choice([
-                'Heads!',
-                'Tails!'
-            ])
-            if choice == 'Tails!':
-                await ctx.send(embed=tails)
-            embed = discord.Embed(
-                colour=self.client.colour, title="Heads!"
-            )
-            heads = embed.set_image(
-                url='https://upload.wikimedia.org/wikipedia/en/thumb/8/8a/Quarter_Obvers'
-                    'e_2010.png/220px-Quarter_Obverse_2010.png')
-            if choice == 'Heads!':
-                await ctx.send(embed=heads)
-        else:
-            embed = discord.Embed(
-                colour=self.client.colour, title="Tails!"
-            )
-            tails = embed.set_image(
-                url='https://upload.wikimedia.org/wikipedia/en/thumb/3/37/Quar'
-                    'ter_Reverse_2010.png/220px-Quarter_Reverse_2010.png')
-            embed.set_author(name=f'"{clause}"', icon_url=author.avatar_url)
-            choice = random.choice([
-                'Heads!',
-                'Tails!'
-            ])
-            if choice == 'Tails!':
-                await ctx.send(embed=tails)
-            embed = discord.Embed(
-                colour=self.client.colour, title="Heads!"
-            )
-            heads = embed.set_image(
-                url='https://upload.wikimedia.org/wikipedia/en/thumb/'
-                    '8/8a/Quarter_Obverse_2010.png/220px-Quarter_Obverse_2010.png')
-            embed.set_author(name=f'"{clause}"', icon_url=author.avatar_url)
-            if choice == 'Heads!':
-                await ctx.send(embed=heads)
+    async def coinflip(self, ctx, *, clause: str = None):
+        tails = discord.Embed(title="Tails!", colour=self.client.colour).set_image(
+            url='https://upload.wikimedia.org/wikipedia/en/thumb/3/37/Quarter_Reverse_2010.png/220px-Quarter_Reverse_2010.png')
+        heads = discord.Embed(title="Heads!", colour=self.client.colour).set_image(
+            url='https://upload.wikimedia.org/wikipedia/en/thumb/8/8a/Quarter_Obverse_2010.png/220px-Quarter_Obverse_2010.png')
+        embed = random.choice([heads, tails])
+        embed.set_author(name=clause, icon_url=ctx.author.avatar_url) if clause else None
+        await ctx.send(embed=embed)
     
     @commands.command(help="How bigbrain are you? Find out.")
     async def iq(self, ctx, *, member: discord.Member = None):
@@ -270,21 +231,17 @@ class Fun(commands.Cog):
     async def who(self, ctx, *, question=None):
         member = random.choice(ctx.guild.members)
         embed = discord.Embed(
-            colour=self.client.colour, title=f"Answer: {member.display_name}", timestamp=ctx.message.created_at
+            colour=self.client.colour,
+            title=f"Answer: {member.display_name}",
         )
-        if not question:
-            embed.set_author(name=f'Who?', icon_url=ctx.message.author.avatar_url)
-        else:
-            embed.set_author(name=f'Who {question}', icon_url=ctx.message.author.avatar_url)
+        question = question or "?"
+        embed.set_author(name="Who" + question)
         embed.set_image(url=member.avatar_url)
         await ctx.send(embed=embed)
     
     @commands.command(aliases=["em"], help="do an emoji from a different server that cybertron is in.")
-    async def emoji(self, ctx, emoji: discord.Emoji, react=None):
-        if react is None:
-            await ctx.send(emoji)
-        else:
-            await ctx.message.add_reaction(emoji=emoji)
+    async def emoji(self, ctx, emoji: discord.Emoji):
+        await ctx.send(emoji.url)
     
     @commands.command(aliases=['gt'])
     async def greentext(self, ctx):
@@ -292,17 +249,17 @@ class Fun(commands.Cog):
         try:
             story = []
             await ctx.send(
-                "Greentext story starting! Type `quit` or `exit` to stop the session, or `finish` to see your final story!")
+                f"Greentext story starting! Type `{ctx.prefix}quit` or `{ctx.prefix}exit` to stop the session, or `{ctx.prefix}finish` to see your final story!")
             while True:
                 message = await self.client.wait_for('message', check=lambda m: m.author == ctx.author, timeout=500)
                 async with timeout(500):
-                    if message.content == "quit" and message.author == ctx.author:
+                    if message.content == "quit":
                         await ctx.send("Session exited.")
                         return
-                    elif message.content == "exit" and message.author == ctx.author:
+                    elif message.content == "exit":
                         await ctx.send("Session exited.")
                         return
-                    elif message.content == "finish" and message.author == ctx.author:
+                    elif message.content == "finish":
                         final_story = "\n".join(story)
                         await ctx.send(f"**{ctx.author}**'s story\n```css\n" + final_story + "```")
                         return

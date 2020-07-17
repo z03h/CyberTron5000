@@ -12,8 +12,6 @@ def dagpi():
 
 
 class Images(commands.Cog):
-    """these are not working for the time being"""
-    
     def __init__(self, client):
         self.client = client
         self.tick = ":tick:733458499777855538"
@@ -176,6 +174,44 @@ class Images(commands.Cog):
             resp = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png'))}
             async with aiohttp.ClientSession() as cs:
                 async with cs.post('https://dagpi.tk/api/paint', headers=resp) as r:
+                    resp = await r.json()
+            res = resp['url']
+            embed = discord.Embed(colour=self.client.colour)
+            embed.set_image(url=res)
+            embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
+            await ctx.send(embed=embed)
+    
+    @commands.command()
+    async def whyareyougay(self, ctx, member: discord.Member, member2: discord.Member):
+        """
+        Why are you gay?
+        """
+        daggy = await self.client.fetch_user(self.daggy)
+        member = member or ctx.author
+        async with ctx.typing():
+            resp = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png')),
+                    'url2': str(member2.avatar_url_as(static_format='png'))}
+            async with aiohttp.ClientSession() as cs:
+                async with cs.post('https://dagpi.tk/api/whyareyougay', headers=resp) as r:
+                    resp = await r.json()
+            res = resp['url']
+            embed = discord.Embed(colour=self.client.colour)
+            embed.set_image(url=res)
+            embed.set_footer(text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
+            await ctx.send(embed=embed)
+    
+    @commands.command()
+    async def fiveguys(self, ctx, member: discord.Member, member2: discord.Member):
+        """
+        uwu
+        """
+        daggy = await self.client.fetch_user(self.daggy)
+        member = member or ctx.author
+        async with ctx.typing():
+            resp = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png')),
+                    'url2': str(member2.avatar_url_as(static_format='png'))}
+            async with aiohttp.ClientSession() as cs:
+                async with cs.post('https://dagpi.tk/api/5g1g', headers=resp) as r:
                     resp = await r.json()
             res = resp['url']
             embed = discord.Embed(colour=self.client.colour)
