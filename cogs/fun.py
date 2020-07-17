@@ -246,20 +246,20 @@ class Fun(commands.Cog):
     @commands.command(aliases=['gt'])
     async def greentext(self, ctx):
         """Write a greentext story"""
+        story = []
+        await ctx.send(
+            f"Greentext story starting! Type `{ctx.prefix}quit` or `{ctx.prefix}exit` to stop the session, or `{ctx.prefix}finish` to see your final story!")
         try:
-            story = []
-            await ctx.send(
-                f"Greentext story starting! Type `{ctx.prefix}quit` or `{ctx.prefix}exit` to stop the session, or `{ctx.prefix}finish` to see your final story!")
             while True:
                 message = await self.client.wait_for('message', check=lambda m: m.author == ctx.author, timeout=500)
                 async with timeout(500):
-                    if message.content == "quit":
+                    if message.content == f"{ctx.prefix}quit":
                         await ctx.send("Session exited.")
                         return
-                    elif message.content == "exit":
+                    elif message.content == f"{ctx.prefix}exit":
                         await ctx.send("Session exited.")
                         return
-                    elif message.content == "finish":
+                    elif message.content == f"{ctx.prefix}finish":
                         final_story = "\n".join(story)
                         await ctx.send(f"**{ctx.author}**'s story\n```css\n" + final_story + "```")
                         return
@@ -267,7 +267,8 @@ class Fun(commands.Cog):
                         story.append(">" + message.content)
                         await message.add_reaction(emoji=self.tick)
         except asyncio.TimeoutError:
-            await ctx.send("You ran out of time!")
+            final_story = "\n".join(story)
+            await ctx.send(f"**{ctx.author}**'s story\n```css\n" + final_story + "```")
 
 
 # @commands.Cog.listener()
