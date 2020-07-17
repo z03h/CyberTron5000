@@ -220,4 +220,4 @@ class Developer(commands.Cog):
 
 
 def setup(client):
-    client.add_cog(dev(client))
+    client.add_cog(Developer(client))
