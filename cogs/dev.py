@@ -18,7 +18,7 @@ def secrets():
         return json.load(f)
 
 
-class dev(commands.Cog):
+class Developer(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.tick = ":tick:733458499777855538"
