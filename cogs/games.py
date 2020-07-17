@@ -228,7 +228,7 @@ class Games(commands.Cog):
                 embed.set_footer(
                     text=f"Much thanks to {str(daggy)} for this amazing API, and {str(dutchy)} for the wonderful idea!")
                 embed.title = "Who's that Pokémon?"
-                embed.description = f"You have 3 attempts | You have 30 seconds\nYou can ask for a hint by doing `{ctx.prefix}hint`!"
+                embed.description = f"You have 3 attempts | You have 30 seconds\nYou can ask for a hint by doing `{ctx.prefix}hint`, or cancel by doing `{ctx.prefix}cancel`!"
                 await ctx.send(embed=embed)
             try:
                 for x in range(3):
@@ -242,6 +242,11 @@ class Games(commands.Cog):
                         await ctx.send(
                             embed=discord.Embed(description=f"**Types:**\n" + ", ".join(resp['pokemon']['type'])))
                         continue
+                    elif msg.content.lower().startswith(f"{ctx.prefix}cancel"):
+                        embed = discord.Embed(title=f"{resp['pokemon']['name']}", colour=self.client.colour)
+                        embed.set_image(url=resp['answer_image'])
+                        embed.set_author(name="The correct answer was....")
+                        return await ctx.send(embed=embed)
                     else:
                         continue
                 embed = discord.Embed(title=f"{resp['pokemon']['name']}", colour=self.client.colour)

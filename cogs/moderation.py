@@ -164,6 +164,44 @@ class Moderation(commands.Cog):
             await menu.start(ctx)
         except Exception as er:
             await ctx.send(f'{er.__class__.__name__}, {er}')
+    
+    @commands.command()
+    @commands.has_permissions(manage_messages=True)
+    async def mute(self, ctx, member: discord.Member, time: int = 10):
+        min = time * 60
+        role = discord.utils.get(ctx.guild.roles, name='CyberMute')
+        if not role:
+            try:
+                role = await ctx.guild.create_role(name='CyberMute', reason='mute')
+                for channel in ctx.guild.channels:
+                    await channel.set_permissions(role, send_messages=False,
+                                                  read_message_history=False,
+                                                  read_messages=False)
+                    positions = {
+                        role: ctx.guild.me.top_role.position - 1
+                    }
+                    await ctx.guild.edit_role_positions(positions=positions)
+            except discord.Forbidden:
+                await ctx.send("I can't mute in this guild! Please give me role privileges to enable this.")
+        if role in member.roles:
+            return await ctx.send("Member already muted!")
+        else:
+            await member.add_roles(role)
+            await ctx.message.add_reaction(emoji=self.tick)
+            await asyncio.sleep(min)
+            await ctx.send(f"{member.mention} unmuted automatically.")
+            await member.remove_roles(role)
+    
+    @commands.command()
+    async def unmute(self, ctx, *, member: discord.Member):
+        role = discord.utils.get(ctx.guild.roles, name="CyberMute")
+        if not role:
+            return await ctx.send("No one on this server was muted using me!")
+        if role not in member.roles:
+            return await ctx.send("This user is not muted!")
+        await member.remove_roles(role)
+        await ctx.message.add_reaction(emoji=self.tick)
+        await ctx.send(f"{member.mention} has been unmuted.")
 
 
 def setup(client):
