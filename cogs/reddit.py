@@ -115,7 +115,7 @@ class Reddit(commands.Cog):
                 return await ctx.send("Error! Please pick `banner` or `img`.")
     
     @commands.command(help="Shows you a wiki page for a subreddit.")
-    async def wiki(self, ctx, subreddit, *, page):
+    async def reddit_wiki(self, ctx, subreddit, *, page):
         try:
             async with ctx.typing():
                 s = self.reddit.subreddit(subreddit)

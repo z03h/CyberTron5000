@@ -416,7 +416,7 @@ class Profile(commands.Cog):
         else:
             one = index - 2
         two = index + 3
-        embed.add_field(name=f'Position ({role.position})', value='\u200b' + '\n'.join(r[one:two]), inline=False)
+        embed.add_field(name=f'Position ({index + 1})', value='\u200b' + '\n'.join(r[one:two]), inline=False)
         embed.add_field(name='Permissions', value='\u200b' + ', '.join(perms))
         embed.description += f"\n:paintbrush: **{role.colour}**\n<:member:731190477927219231> **{len(role.members)}**\n<:ping:733142612839628830> {role.mention}"
         await ctx.send(embed=embed)

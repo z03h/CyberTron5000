@@ -177,7 +177,7 @@ badge_mapping = {
     "verified_bot_developer": "<:verified_bot_developer:730849897410199572>",
 }
 audit_actions = {
-    discord.AuditLogAction.guild_update: "**updated the**",
+    discord.AuditLogAction.guild_update: "**updated the guild**",
     discord.AuditLogAction.channel_update: "**updated channel**",
     discord.AuditLogAction.channel_create: "**created channel**",
     discord.AuditLogAction.channel_delete: "**deleted channel**",
