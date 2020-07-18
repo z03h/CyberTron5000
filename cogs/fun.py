@@ -107,6 +107,11 @@ class Fun(commands.Cog):
         
         await ctx.send("\u200b".join(letters))
     
+    @reply.command()
+    async def mock(self, ctx, *, message):
+        """Like that spongebob meme"""
+        await ctx.send(await cyberformat.better_random_char(message))
+    
     @commands.command(help="Asks the mystical Ouija Board a question...")
     async def askouija(self, ctx, *, question):
         ouija_responses = [

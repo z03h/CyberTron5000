@@ -111,15 +111,4 @@ def to_emoji(c):
 
 
 async def better_random_char(s: str, c: str = None):
-    string = ''
-    for i in s:
-        if i == " ":
-            string += i
-        elif s.index(i) % 2 == 0:
-            if c:
-                string += c
-            else:
-                string += i.upper()
-        else:
-            string += i
-    return string
+    return "".join(random.choice([b, c or b.upper()]) for b in s)

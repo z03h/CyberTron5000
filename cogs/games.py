@@ -247,7 +247,8 @@ class Games(commands.Cog):
                     discord.Embed(colour=self.client.colour, title="Evolution Line", description=" → ".join(evo_line)),
                     discord.Embed(title="Pokédex Entry",
                                   description=res[0]['description'].lower().replace(pokemon['name'].lower(), "???"),
-                                  colour=self.client.colour)]
+                                  colour=self.client.colour),
+                    discord.Embed(colour=self.client.colour, title="Species", description=" ".join(res[0]['species']))]
             try:
                 for x in range(3):
                     msg = await self.client.wait_for('message',
