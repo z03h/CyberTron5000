@@ -82,7 +82,7 @@ class Meta(commands.Cog):
         self.tick = ":tick:733458499777855538"
         self.version = "CyberTron5000 Alpha v2.5.2"
         self.counter = 0
-        self.softwares = ['<:dpy:708479036518694983>', '<:python:706850228652998667>', '<:JSON:710927078513442857>']
+        self.softwares = ['<:dpy:708479036518694983>', '<:python:706850228652998667>', '<:JSON:710927078513442857>', '<:psql:733848802334736395>']
     
     @commands.Cog.listener()
     async def on_command_completion(self, ctx):

@@ -13,6 +13,7 @@ null = '<:ticknull:732660186057015317>'
 redx = '<:redx:732660210132451369>'
 reload = '<:reload:732674920873459712>'
 
+
 def secrets():
     with open("secrets.json", "r") as f:
         return json.load(f)
@@ -104,7 +105,7 @@ class Developer(commands.Cog):
         except Exception as error:
             await ctx.send(embed=discord.Embed(description=f"\n\n```python\n{error}\n```", color=0x00dcff))
             await ctx.message.add_reaction(emoji="⚠️")
-
+    
     @commands.command(help="Loads Cogs")
     @commands.is_owner()
     async def load(self, ctx, *extension):
@@ -112,19 +113,19 @@ class Developer(commands.Cog):
             for filename in os.listdir('cogs'):
                 if filename.endswith('.py'):
                     self.client.load_extension(f'cogs.{filename[:-3]}')
-        
+            
             embed = discord.Embed(
                 description="\n".join([f"{tick} `cogs.{f[:-3]}`" for f in os.listdir("cogs") if f.endswith(".py")]),
                 colour=self.client.colour)
             await ctx.send(embed=embed)
             await ctx.message.add_reaction(emoji=":tick:733458499777855538")
-    
+        
         else:
             cogs = [c[:-3] for c in os.listdir('cogs') if c.endswith(".py")]
             for i in extension:
                 if i not in cogs:
                     return await ctx.send(f"**{i}** is not a valid cog!")
-        
+            
             for f in extension:
                 try:
                     self.client.load_extension(f'cogs.{f}')
@@ -136,10 +137,10 @@ class Developer(commands.Cog):
                     a.append(f"{tick} `cogs.{x}`")
                 else:
                     a.append(f"{null} `cogs.{x}`")
-        
+            
             await ctx.message.add_reaction(emoji=":tick:733458499777855538")
             await ctx.send(embed=discord.Embed(description="\n".join(a), colour=self.client.colour))
-
+    
     @commands.command(help="Unloads Cogs")
     @commands.is_owner()
     async def unload(self, ctx, *extension):
@@ -147,19 +148,19 @@ class Developer(commands.Cog):
             for filename in os.listdir('cogs'):
                 if filename.endswith('.py'):
                     self.client.unload_extension(f'cogs.{filename[:-3]}')
-        
+            
             embed = discord.Embed(
                 description="\n".join([f"{redx} `cogs.{f[:-3]}`" for f in os.listdir("cogs") if f.endswith(".py")]),
                 colour=self.client.colour)
             await ctx.send(embed=embed)
             await ctx.message.add_reaction(emoji=":tick:733458499777855538")
-    
+        
         else:
             cogs = [c[:-3] for c in os.listdir('cogs') if c.endswith(".py")]
             for i in extension:
                 if i not in cogs:
                     return await ctx.send(f"**{i}** is not a valid cog!")
-        
+            
             for f in extension:
                 self.client.unload_extension(f'cogs.{f}')
             a = []
@@ -168,10 +169,10 @@ class Developer(commands.Cog):
                     a.append(f"{redx} `cogs.{x}`")
                 else:
                     a.append(f"{null} `cogs.{x}`")
-        
+            
             await ctx.message.add_reaction(emoji=":tick:733458499777855538")
             await ctx.send(embed=discord.Embed(description="\n".join(a), colour=self.client.colour))
-
+    
     @commands.command(help="Reloads Cogs")
     @commands.is_owner()
     async def reload(self, ctx, *extension):
@@ -179,19 +180,19 @@ class Developer(commands.Cog):
             for filename in os.listdir('cogs'):
                 if filename.endswith('.py'):
                     self.client.reload_extension(f'cogs.{filename[:-3]}')
-        
+            
             embed = discord.Embed(
                 description="\n".join([f"{reload} `cogs.{f[:-3]}`" for f in os.listdir("cogs") if f.endswith(".py")]),
                 colour=self.client.colour)
             await ctx.send(embed=embed)
             await ctx.message.add_reaction(emoji=":tick:733458499777855538")
-    
+        
         else:
             cogs = [c[:-3] for c in os.listdir('cogs') if c.endswith(".py")]
             for i in extension:
                 if i not in cogs:
                     return await ctx.send(f"**{i}** is not a valid cog!")
-        
+            
             for f in extension:
                 self.client.reload_extension(f'cogs.{f}')
             a = []
@@ -200,17 +201,17 @@ class Developer(commands.Cog):
                     a.append(f"{reload} `cogs.{x}`")
                 else:
                     a.append(f"{null} `cogs.{x}`")
-        
+            
             await ctx.message.add_reaction(emoji=":tick:733458499777855538")
             await ctx.send(embed=discord.Embed(description="\n".join(a), colour=self.client.colour))
-
+    
     @commands.command(help="Logs CyberTron5000 out.")
     @commands.is_owner()
     async def logout(self, ctx):
         await ctx.send(
             embed=discord.Embed(title=f"{self.client.user.name} logging out. Goodbye World! 🌍", color=0x00dcff))
         await self.client.logout()
-
+    
     @commands.command()
     @commands.is_owner()
     async def restart(self, ctx):

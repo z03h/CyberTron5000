@@ -235,13 +235,16 @@ class Fun(commands.Cog):
             title=f"Answer: {member.display_name}",
         )
         question = question or "?"
-        embed.set_author(name="Who" + question)
+        embed.set_author(name="Who " + question)
         embed.set_image(url=member.avatar_url)
         await ctx.send(embed=embed)
     
     @commands.command(aliases=["em"], help="do an emoji from a different server that cybertron is in.")
-    async def emoji(self, ctx, emoji: discord.Emoji):
-        await ctx.send(emoji.url)
+    async def emoji(self, ctx, *emoji: discord.Emoji):
+        a = []
+        for item in emoji:
+            a.append(self.client.get_emoji(item.id))
+        await ctx.send(" ".join([str(a) for a in a]))
     
     @commands.command(aliases=['gt'])
     async def greentext(self, ctx):
