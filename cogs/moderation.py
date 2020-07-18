@@ -193,6 +193,7 @@ class Moderation(commands.Cog):
             await member.remove_roles(role)
     
     @commands.command()
+    @commands.has_permissions(manage_messages=True)
     async def unmute(self, ctx, *, member: discord.Member):
         role = discord.utils.get(ctx.guild.roles, name="CyberMute")
         if not role:

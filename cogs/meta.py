@@ -36,6 +36,26 @@ async def lines_main():
     return nol
 
 
+async def lines_utils():
+    """
+    Same thing
+    """
+    global count
+    line_count = {}
+    directory = "./cogs/utils"
+    for filename in os.listdir(directory):
+        if filename.endswith(".py"):
+            _, ext = os.path.splitext(filename)
+            if ext not in line_count:
+                line_count[ext] = 0
+            for line in open(os.path.join(directory, filename)):
+                line_count[ext] += 1
+    
+        for ext, count in line_count.items():
+            pass
+    return count
+
+
 async def lines_of_code(cog=None):
     """
     Same thing
@@ -56,7 +76,7 @@ async def lines_of_code(cog=None):
             
             for ext, count in line_count.items():
                 pass
-        return await lines_main() + count
+        return await lines_main() + count + await lines_utils()
     elif cog:
         global counts
         line_count = {}
@@ -72,6 +92,7 @@ async def lines_of_code(cog=None):
             for ext, counts in line_count.items():
                 pass
         return counts
+    
 
 
 class Meta(commands.Cog):
@@ -186,7 +207,13 @@ class Meta(commands.Cog):
                                     color=0x00dcff))
         except Exception as err:
             await ctx.send(err)
-    
+            
+    @lines.command()
+    async def utils(self, ctx):
+        await ctx.send(
+            embed=discord.Embed(
+                title="Utils have a total of {:,.0f} lines of code!".format(await lines_utils()),
+                color=0x00dcff))
     async def get_commits(self, limit: int = 3):
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://api.github.com/repos/niztg/CyberTron5000/commits") as r:

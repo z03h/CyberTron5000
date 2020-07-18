@@ -3,6 +3,7 @@ bruh
 """
 
 import discord
+import random
 
 
 def shorten(s: str):
@@ -10,6 +11,7 @@ def shorten(s: str):
         return s[:-3] + "..."
     else:
         return s
+
 
 def minimalize(string):
     final = ''
@@ -101,3 +103,23 @@ def codeblock(body):
         return c[:-3]
     else:
         return body
+
+
+def to_emoji(c):
+    base = 0x1f1e6
+    return chr(base + c)
+
+
+async def better_random_char(s: str, c: str = None):
+    string = ''
+    for i in s:
+        if i == " ":
+            string += i
+        elif s.index(i) % 2 == 0:
+            if c:
+                string += c
+            else:
+                string += i.upper()
+        else:
+            string += i
+    return string

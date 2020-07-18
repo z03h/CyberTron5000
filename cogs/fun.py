@@ -239,12 +239,20 @@ class Fun(commands.Cog):
         embed.set_image(url=member.avatar_url)
         await ctx.send(embed=embed)
     
-    @commands.command(aliases=["em"], help="do an emoji from a different server that cybertron is in.")
+    @commands.group(invoke_without_command=True, aliases=["em"],
+                    help="do an emoji from a different server that cybertron is in.")
     async def emoji(self, ctx, *emoji: discord.Emoji):
         a = []
         for item in emoji:
             a.append(self.client.get_emoji(item.id))
         await ctx.send(" ".join([str(a) for a in a]))
+    
+    @emoji.command()
+    async def url(self, ctx, *emoji: discord.Emoji):
+        a = []
+        for item in emoji:
+            a.append(self.client.get_emoji(item.id))
+        await ctx.send(" ".join([str(a.url) for a in a]))
     
     @commands.command(aliases=['gt'])
     async def greentext(self, ctx):

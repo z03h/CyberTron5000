@@ -5,6 +5,7 @@ import discord
 import json
 from async_timeout import timeout
 from discord.ext import commands
+from .utils import cyberformat
 
 
 def dagpi():
@@ -223,6 +224,15 @@ class Games(commands.Cog):
                 async with __import__('aiohttp').ClientSession() as cs:
                     async with cs.get('https://dagpi.tk/api/wtp', headers=resp) as r:
                         resp = await r.json()
+                    pokemon = resp['pokemon']
+                    async with cs.get(f"https://some-random-api.ml/pokedex?pokemon={pokemon['name']}") as r:
+                        res = await r.json()
+                evo_line = []
+                for e in res[0]['family']['evolutionLine']:
+                    if str(e).lower() == pokemon['name'].lower():
+                        evo_line.append("???")
+                    else:
+                        evo_line.append(e)
                 embed = discord.Embed(colour=self.client.colour)
                 embed.set_image(url=resp['question_image'])
                 embed.set_footer(
@@ -230,9 +240,19 @@ class Games(commands.Cog):
                 embed.title = "Who's that Pokémon?"
                 embed.description = f"You have 3 attempts | You have 30 seconds\nYou can ask for a hint by doing `{ctx.prefix}hint`, or cancel by doing `{ctx.prefix}cancel`!"
                 await ctx.send(embed=embed)
+                dashes = await cyberformat.better_random_char(pokemon['name'], '_')
+                hints = [
+                    discord.Embed(colour=self.client.colour, title="Types", description=', '.join(pokemon['type'])),
+                    discord.Embed(title=f"`{dashes}`", colour=self.client.colour),
+                    discord.Embed(colour=self.client.colour, title="Evolution Line", description=" → ".join(evo_line)),
+                    discord.Embed(title="Pokédex Entry",
+                                  description=res[0]['description'].lower().replace(pokemon['name'].lower(), "???"),
+                                  colour=self.client.colour)]
             try:
                 for x in range(3):
-                    msg = await self.client.wait_for('message', check=lambda m: m.author == ctx.author, timeout=30.0)
+                    msg = await self.client.wait_for('message',
+                                                     check=lambda m: m.author == ctx.author and not m.author.bot,
+                                                     timeout=30.0)
                     if msg.content.lower() == str(resp['pokemon']['name']).lower():
                         embed = discord.Embed(title=f"Correct! The answer was {resp['pokemon']['name']}",
                                               colour=self.client.colour)
@@ -240,7 +260,7 @@ class Games(commands.Cog):
                         return await ctx.send(embed=embed)
                     elif msg.content.lower().startswith(f"{ctx.prefix}hint"):
                         await ctx.send(
-                            embed=discord.Embed(description=f"**Types:**\n" + ", ".join(resp['pokemon']['type'])))
+                            embed=random.choice(hints))
                         continue
                     elif msg.content.lower().startswith(f"{ctx.prefix}cancel"):
                         embed = discord.Embed(title=f"{resp['pokemon']['name']}", colour=self.client.colour)

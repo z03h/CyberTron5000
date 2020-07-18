@@ -164,7 +164,6 @@ class Tags(commands.Cog):
             return await ctx.send("That tag doesnt exist!")
     
     @tag.command()
-    @commands.is_owner()
     async def info(self, ctx, *, tag):
         """Shows you info about a tag"""
         tag = await self.client.pg_con.fetch("SELECT * FROM tags WHERE name = $1 AND guild_id = $2", tag,
