@@ -8,9 +8,9 @@ import sys
 import os
 from .utils import cyberformat, checks
 
-tick = '<:tickgreen:732660186560462958>'
+tick = "<:tick:733458499777855538>"
 null = '<:ticknull:732660186057015317>'
-redx = '<:redx:732660210132451369>'
+redx = "<:x_:733458444346195990>"
 reload = '<:reload:732674920873459712>'
 
 
@@ -106,7 +106,7 @@ class Developer(commands.Cog):
             await ctx.send(embed=discord.Embed(description=f"\n\n```python\n{error}\n```", color=0x00dcff))
             await ctx.message.add_reaction(emoji="⚠️")
     
-    @commands.command(help="Loads Cogs")
+    @commands.command(help="Loads Cogs", aliases=['l'])
     @commands.is_owner()
     async def load(self, ctx, *extension):
         if not extension:
@@ -141,7 +141,7 @@ class Developer(commands.Cog):
             await ctx.message.add_reaction(emoji=":tick:733458499777855538")
             await ctx.send(embed=discord.Embed(description="\n".join(a), colour=self.client.colour))
     
-    @commands.command(help="Unloads Cogs")
+    @commands.command(help="Unloads Cogs", aliases=['ul'])
     @commands.is_owner()
     async def unload(self, ctx, *extension):
         if not extension:
@@ -173,7 +173,7 @@ class Developer(commands.Cog):
             await ctx.message.add_reaction(emoji=":tick:733458499777855538")
             await ctx.send(embed=discord.Embed(description="\n".join(a), colour=self.client.colour))
     
-    @commands.command(help="Reloads Cogs")
+    @commands.command(help="Reloads Cogs", aliases=['rl'])
     @commands.is_owner()
     async def reload(self, ctx, *extension):
         if not extension:

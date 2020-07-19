@@ -1,7 +1,5 @@
-import asyncio
 import datetime
 import json
-import random
 from html import unescape as unes
 
 import aiogoogletrans
@@ -9,11 +7,10 @@ import aiohttp
 import async_cleverbot
 import aiowiki
 import discord
-from async_timeout import timeout
 from discord.ext import commands
 
 from .utils import cyberformat, paginator
-from .utils.lists import STAT_NAMES, NUMBER_ALPHABET, TYPES
+from .utils.lists import STAT_NAMES, TYPES
 
 
 # ≫
@@ -31,29 +28,6 @@ class Api(commands.Cog):
         self.pypi = "https://raw.githubusercontent.com/github/explore/666de02829613e0244e9441b114edb85781e972c/topics/pip/pip.png"
         self.bot = async_cleverbot.Cleverbot(secrets()['cleverbot'])
         self.bot.set_context(async_cleverbot.DictContext(self.bot))
-    
-    @commands.command(aliases=['kitty'], help="haha kitty go meow meow.")
-    async def cat(self, ctx):
-        async with aiohttp.ClientSession() as cs:
-            async with cs.get('https://aws.random.cat/meow') as r:
-                res = await r.json()
-        em = discord.Embed(colour=self.client.colour, title="OwO", url=res['file'])
-        em.set_image(url=res['file'])
-        await cs.close()
-        em.set_footer(text="https://aws.random.cat/meow")
-        await ctx.send(embed=em)
-    
-    @commands.command(aliases=['puppy', 'pup', 'pupper'], help="haha puppy go woof woof")
-    async def dog(self, ctx):
-        async with aiohttp.ClientSession() as cs:
-            async with cs.get('https://random.dog/woof.json') as r:
-                res = await r.json()
-                res = res['url']
-                await cs.close()
-        em = discord.Embed(colour=self.client.colour, title="Woof!", url=res)
-        em.set_image(url=res)
-        em.set_footer(text="https://random.dog/woof.json")
-        await ctx.send(embed=em)
     
     @commands.command(aliases=['ily'], help="compliment your friends :heart:")
     async def compliment(self, ctx, *, user: discord.Member = None):
@@ -231,10 +205,9 @@ class Api(commands.Cog):
         embed = discord.Embed(colour=self.client.colour,
                               description=f"**{from_lang.capitalize()}**\n{message}\n\n**{to_lang.capitalize()}**\n{res.text}\n\n**Pronunciation**\n{res.pronunciation}").set_author(
             name='Translated Text')
-        return await ctx.send(embed=embed.set_footer(text=f"{res.confidence * 100}% confident")) \
-        \
-               @ commands.command(aliases=['wiki'])
+        return await ctx.send(embed=embed.set_footer(text=f"{res.confidence * 100}% confident"))
     
+    @commands.command(aliases=['wiki'])
     async def wikipedia(self, ctx, *, terms):
         async with ctx.typing():
             wiki = aiowiki.Wiki.wikipedia("en")
@@ -253,6 +226,36 @@ class Api(commands.Cog):
             source = paginator.EmbedSource(embeds)
         await wiki.close()
         await paginator.CatchAllMenu(source=source).start(ctx)
+    
+    @commands.command(aliases=['af'])
+    async def animalfact(self, ctx, animal=None):
+        """Shows a fact about an animal of your choice."""
+        animals = ['dog', 'cat', 'panda', 'fox', 'bird', 'koala']
+        if not animal:
+            return await ctx.send(f"Valid Animal Choices:\n" + "\n".join([f"• {x}" for x in animals]))
+        if animal.lower() not in animals:
+            return await ctx.send(f"That is not a valid animal! Valid animals include {', '.join(animals)}.")
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f'https://some-random-api.ml/facts/{animal.lower()}') as t:
+                resp = await t.json()
+            return await ctx.send(f"Random **{animal.capitalize()}** Fact:" + "\n" + resp['fact'])
+    
+    # https://some-random-api.ml/img/cat
+    
+    @commands.command(aliases=['aimg'])
+    async def animalimg(self, ctx, *, animal=None):
+        """Shows an image of an animal of your choice."""
+        animals = ['dog', 'cat', 'panda', 'fox', 'birb', 'koala', 'fox', 'red panda']
+        if not animal:
+            return await ctx.send(f"Valid Animal Choices:\n" + "\n".join([f"• {x}" for x in animals]))
+        if animal.lower() not in animals:
+            return await ctx.send(f"That is not a valid animal! Valid animals include {', '.join(animals)}.")
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f'https://some-random-api.ml/img/{animal.lower().replace(" ", "_")}') as t:
+                resp = await t.json()
+            return await ctx.send(
+                embed=discord.Embed(description=f"Cute {animal.title()}!", colour=self.client.colour).set_image(
+                    url=resp['link']))
 
 
 def setup(client):

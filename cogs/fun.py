@@ -1,5 +1,6 @@
 import asyncio
 import random
+import aiohttp
 
 import discord
 from async_timeout import timeout
@@ -21,7 +22,7 @@ class Fun(commands.Cog):
     async def horror(self, ctx, limit: int = 5):
         """spoopy"""
         posts = []
-        async with __import__('aiohttp').ClientSession() as cs:
+        async with aiohttp.ClientSession() as cs:
             async with cs.get(f"https://www.reddit.com/r/twosentencehorror/hot.json") as r:
                 res = await r.json()
             for i in res['data']['children']:
@@ -285,6 +286,22 @@ class Fun(commands.Cog):
         except asyncio.TimeoutError:
             final_story = "\n".join(story)
             await ctx.send(f"**{ctx.author}**'s story\n```css\n" + final_story + "```")
+    
+    @commands.command(aliases=['bin'])
+    async def binary(self, ctx, *, message):
+        """Convert text to binary."""
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f"https://some-random-api.ml/binary?text={message}") as r:
+                res = await r.json()
+            await ctx.send(f'```diff\n! {res["binary"]}\n```')
+    
+    @commands.command(aliases=['fb', 'from-bin'])
+    async def from_binary(self, ctx, *, message):
+        """Convert text from binary"""
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f"https://some-random-api.ml/binary?decode={message}") as r:
+                res = await r.json()
+            await ctx.send(f'```diff\n! {res["text"]}\\n```')
 
 
 # @commands.Cog.listener()

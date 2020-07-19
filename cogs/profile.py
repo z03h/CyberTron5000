@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from discord.ext import commands
 
 from .utils.lists import REGIONS, sl, status_mapping, badge_mapping
-from .utils import cyberformat, paginator, exceptions
+from .utils import cyberformat, paginator
 
 matplotlib.use('Agg')
 
@@ -51,15 +51,6 @@ class GuildStats:
         fig = plt.savefig("guild.png", transparent=True)
         plt.close(fig=fig)
         return discord.File("guild.png", filename="guild.png")
-    
-    @property
-    def emojis_dict(self):
-        return {
-            "animated": len([e for e in self.context.guild.emojis if e.animated]),
-            "still": len([e for e in self.context.guild.emojis if not e.animated]),
-            "total": len(self.context.guild.emojis),
-            "limit": self.context.guild.emoji_limit,
-        }
     
     async def check_nitro(self, m: discord.Member):
         if m.is_avatar_animated():
@@ -106,7 +97,7 @@ class Profile(commands.Cog):
                       f"{sl[discord.Status.idle]}**{g[discord.Status.idle]:,}**",
                       f"{sl[discord.Status.dnd]}**{g[discord.Status.dnd]:,}**",
                       f"{sl[discord.Status.offline]}**{g[discord.Status.offline]:,}**",
-                      f"<:status_streaming:596576747294818305>**{len([m for m in ctx.guild.members if m.activity and m.activity.type == discord.ActivityType.streaming])}**",
+                      f"<:streaming:734276396037439628>**{len([m for m in ctx.guild.members if m.activity and m.activity.type == discord.ActivityType.streaming])}**",
                       ]
             text_channels = [text_channel for text_channel in guild.text_channels]
             voice_channels = [voice_channel for voice_channel in guild.voice_channels]
@@ -139,19 +130,13 @@ class Profile(commands.Cog):
                                 colour=self.client.colour).set_author(name=f"Staff Team for {ctx.guild}",
                                                                       icon_url=ctx.guild.icon_url))
     
-    @guildinfo.command(invoke_without_command=True, aliases=['stats'])
-    async def statistics(self, ctx):
-        """Shows you the stats of the guild"""
-        role_list = " ".join(role.mention for role in ctx.guild.roles[::-1][:10] if role.id != ctx.guild.id)
+    @guildinfo.command(invoke_without_command=True, aliases=['graph'])
+    async def chart(self, ctx):
+        """Shows a chart of the guild's activity"""
         gs = GuildStats(ctx)
-        msg = "Top 10 Roles" if len([r for r in ctx.guild.roles]) > 10 else "Roles"
         embed = discord.Embed(colour=self.client.colour,
-                              description=f"This guild has **{gs.emojis_dict['total']:,}** total emojis, **{gs.emojis_dict['animated']}** of which **({round(gs.emojis_dict['animated'] / gs.emojis_dict['total'] * 100, 1):,}%)** are animated.\nOut of this guild's limit of **{gs.emojis_dict['limit']}** for non-animated emojis, it has used **{round(gs.emojis_dict['still'] / gs.emojis_dict['limit'] * 100, 1):,}%** of it. **({gs.emojis_dict['still']}/{gs.emojis_dict['limit']})**\n<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**\n{cyberformat.bar(stat=GuildStats(ctx).num_bot, max=ctx.guild.member_count, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>', show_stat=True)}\n<:boost:726151031322443787> This guild has **{ctx.guild.premium_subscription_count}** Nitro Boosts and is Tier **{ctx.guild.premium_tier}**\n{cyberformat.bar(stat=ctx.guild.premium_subscription_count, max=30, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>', show_stat=True)}").set_author(
-            name=f"Advanced Statistics for {ctx.guild}", icon_url=ctx.guild.icon_url)
+                              name=f"Status Chart for{ctx.guild}", icon_url=ctx.guild.icon_url)
         embed.set_image(url="attachment://guild.png")
-        embed.add_field(name=f"{msg} (Total {len([r for r in ctx.guild.roles])})", value='\u200b' + role_list)
-        embed.add_field(name=f"Emojis (Total {len([e for e in ctx.guild.emojis])})",
-                        value='\u200b' + "|".join([str(a) for a in ctx.guild.emojis][:24]), inline=False)
         await ctx.send(embed=embed, file=gs.guild_graph)
     
     @guildinfo.command(aliases=['chan'])

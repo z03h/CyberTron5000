@@ -7,15 +7,19 @@ For general bot commands, basic/meta stuff.
 import datetime
 import os
 import platform
+import asyncio
+import json
 import time
 
 import aiohttp
 import discord
 import humanize
+import async_timeout
 import psutil
 from discord.ext import commands
 
 from .utils import cyberformat
+from uuid import uuid4
 from .utils.checks import check_admin_or_owner
 
 start_time = datetime.datetime.utcnow()
@@ -50,7 +54,7 @@ async def lines_utils():
                 line_count[ext] = 0
             for line in open(os.path.join(directory, filename)):
                 line_count[ext] += 1
-    
+        
         for ext, count in line_count.items():
             pass
     return count
@@ -92,7 +96,6 @@ async def lines_of_code(cog=None):
             for ext, counts in line_count.items():
                 pass
         return counts
-    
 
 
 class Meta(commands.Cog):
@@ -103,7 +106,8 @@ class Meta(commands.Cog):
         self.tick = ":tick:733458499777855538"
         self.version = "CyberTron5000 Beta v3.0.0"
         self.counter = 0
-        self.softwares = ['<:dpy:708479036518694983>', '<:python:706850228652998667>', '<:JSON:710927078513442857>', '<:psql:733848802334736395>']
+        self.softwares = ['<:dpy:708479036518694983>', '<:python:706850228652998667>', '<:JSON:710927078513442857>',
+                          '<:psql:733848802334736395>']
     
     @commands.Cog.listener()
     async def on_command_completion(self, ctx):
@@ -207,13 +211,14 @@ class Meta(commands.Cog):
                                     color=0x00dcff))
         except Exception as err:
             await ctx.send(err)
-            
+    
     @lines.command()
     async def utils(self, ctx):
         await ctx.send(
             embed=discord.Embed(
                 title="Utils have a total of {:,.0f} lines of code!".format(await lines_utils()),
                 color=0x00dcff))
+    
     async def get_commits(self, limit: int = 3):
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://api.github.com/repos/niztg/CyberTron5000/commits") as r:
@@ -278,11 +283,95 @@ class Meta(commands.Cog):
             url="https://github.com/niztg/CyberTron5000"))
     
     @commands.group(invoke_without_command=True)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def suggest(self, ctx, *, idea):
         """Suggest an idea for the bot."""
-        owner = self.client.get_user(id=350349365937700864)
-        await owner.send(f"Idea: ```{idea}```")
-        await ctx.message.add_reaction(emoji=":tick:733458499777855538")
+        tick = "<:tick:733458499777855538>"
+        redx = "<:x_:733458444346195990>"
+        c = self.client.get_channel(727277234666078220)
+        sugid = str(uuid4())[:8]
+        embed = discord.Embed(title=f"Suggestion → {sugid}", description=f"```diff\n! {idea}\n```",
+                              colour=self.client.colour)
+        embed.set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
+        mes = await c.send(embed=embed)
+        for r in ['⬆️', '⬇️']:
+            await mes.add_reaction(r)
+        with open("suggestions.json", "r") as f:
+            res = json.load(f)
+        res[str(sugid)] = []
+        with open("suggestions.json", "w") as f:
+            json.dump(res, f, indent=4)
+        ms = await ctx.send(
+            f"Do you want to follow this suggestion? If you follow it, you will recieve updates on it's status.\nIf you want to unfollow this suggestion, do `{ctx.prefix}suggest unfollow {sugid}`.\n{tick} | **Yes**\n{redx} | **No**\n(You have 15 seconds)")
+        await self.client.pg_con.execute("INSERT INTO suggestions (msg_id, suggest_id) VALUES ($1, $2)", mes.id, sugid)
+        try:
+            async with async_timeout.timeout(15):
+                await ms.add_reaction(tick)
+                await ms.add_reaction(redx)
+                r, u = await self.client.wait_for('reaction_add', timeout=15, check=lambda r, u: u.bot is False)
+                if r.emoji.name == "tick":
+                    with open("suggestions.json", "r") as f:
+                        res = json.load(f)
+                    res[str(sugid)].append(ctx.author.id)
+                    with open("suggestions.json", "w") as f:
+                        json.dump(res, f, indent=4)
+                    await ctx.send("Followed suggestion!")
+                else:
+                    await ctx.send("Ok, suggestion not followed.")
+        except asyncio.TimeoutError:
+            await ms.edit(
+                content=f"You ran out of time! Suggestion not followed. If you want to follow this suggestion, do `{ctx.prefix}suggest follow {sugid}`")
+            if ctx.guild.me.permissions_in(ctx.channel).manage_messages:
+                await ms.clear_reactions()
+                
+    @suggest.command()
+    async def follow(self, ctx, id: str):
+        """Follow a suggestion"""
+        try:
+            with open("suggestions.json", "r") as f:
+                res = json.load(f)
+            res[str(id)].append(ctx.author.id)
+            with open("suggestions.json", "w") as f:
+                json.dump(res, f, indent=4)
+            await ctx.send(f"You have successfully followed suggestion `{id}`")
+        except KeyError:
+            await ctx.send("That suggestion was not found!")
+            
+    @suggest.command()
+    async def unfollow(self, ctx, id: str):
+        """Unfollow a suggestion"""
+        try:
+            with open("suggestions.json", "r") as f:
+                res = json.load(f)
+            try:
+                index = res[str(id)].index(ctx.author.id)
+            except (ValueError, KeyError):
+                return await ctx.send("That suggestion was not found, or you aren't following it!")
+            res[str(id)].pop(index)
+            with open("suggestions.json", "w") as f:
+                json.dump(res, f, indent=4)
+            await ctx.send(f"You have successfully unfollowed suggestion `{id}`")
+        except KeyError:
+            await ctx.send("That suggestion was not found!")
+            
+    @suggest.command()
+    @commands.is_owner()
+    async def resolve(self, ctx, id: str, *, reason):
+        data = await self.client.pg_con.fetch("SELECT msg_id FROM suggestions WHERE suggest_id = $1", id)
+        if not data:
+            return await ctx.send("Not a valid suggestion.")
+        msg = await ctx.fetch_message(data[0][0])
+        embed = msg.embeds[0]
+        embed.add_field(name=f"Reply from {ctx.author}", value=reason)
+        await msg.edit(embed=embed)
+        with open('suggestions.json', 'r') as f:
+            res = json.load(f)
+        for i in res[str(id)]:
+            a = await self.client.fetch_user(i)
+            await a.send(content=f"Suggestion **{id}** has been resolved!", embed=embed)
+        res.pop(str(id))
+        with open("suggestions.json", "w") as f:
+            json.dump(res, f, indent=4)
     
     @suggest.command(invoke_without_command=True)
     async def error(self, ctx, *, error):

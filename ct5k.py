@@ -28,9 +28,9 @@ For more information, please refer to <https://unlicense.org>
 import json
 import os
 import asyncpg
-
 import discord
 from discord.ext import commands
+
 
 def get_token():
     with open("secrets.json", "r") as f:
@@ -49,6 +49,9 @@ async def get_prefix(client, message):
             command_prefix = commands.when_mentioned_or(pref)(client, message)
         except KeyError:
             command_prefix = commands.when_mentioned_or("=")(client, message)
+            data[str(message.guild.id)] = "="
+            with open("prefixes.json", "w") as f:
+                json.dump(f, data, indent=4)
         return command_prefix
     else:
         return "="
@@ -64,12 +67,14 @@ async def get_prefix(client, message):
 class CyberTron5000(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=get_prefix, pm_help=None,
-                         allowed_mentions=discord.AllowedMentions(everyone=False, roles=True, users=True))
+                         allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False), case_insensitive=True)
         
         self.colour = 0x00dcff
-        
+        self.load_extension(name='jishaku')
+    
     async def create_db_pool(self):
-        self.pg_con = await asyncpg.create_pool(user=get_token()['psql_user'], password=get_token()['psql_password'], database=get_token()['psql_db'])
+        self.pg_con = await asyncpg.create_pool(user=get_token()['psql_user'], password=get_token()['psql_password'],
+                                                database=get_token()['psql_db'])
     
     async def on_guild_join(self, guild):
         with open("prefixes.json", "r") as f:
@@ -92,8 +97,8 @@ class CyberTron5000(commands.Bot):
                 self.load_extension('cogs.{}'.format(filename[:-3]))
         print("Online!")
         await self.change_presence(
-            activity=discord.Activity(type=discord.ActivityType.listening,
-                                      name=f"{len(self.users):,} users in {len(self.guilds):,} guilds"))
+            activity=discord.Activity(type=discord.ActivityType.watching,
+                                      name=f"VIBE SCHOOL being rebuilt!"))
 
 
 client = CyberTron5000()

@@ -19,12 +19,7 @@ class VibeSchool(commands.Cog):
     def __init__(self, client):
         self.client = client
     
-    vibe = 687814997841150016
-    
-    @commands.command(help="For report card templates in <#695340515088007249>")
-    @check_guild_and_channel(channel=695340515088007249)
-    async def rct(self, ctx):
-        await ctx.send("```Mentor:[], Mentee:[]\nMentee Level: []\nGrade: []\n[]```")
+    vibe = 734159981208666134
     
     @commands.command(help="info about Vibe School.")
     @check_guild(guild=vibe)
@@ -95,51 +90,6 @@ class VibeSchool(commands.Cog):
                                            description="`!niz`- alerts Sensei Niz\n`!yv` - Alerts YeetVegetabales."
                                                        "\n`!vibecheck` - Checks your vibe\n`!rank` - Check your level.",
                                            color=ctx.message.author.color))
-    
-    @commands.command(help="Gets you info about Vibe Adulthood")
-    @check_guild(guild=vibe)
-    async def adinfo(self, ctx):
-        adEmbed = discord.Embed(color=0xa30533, title="Job Info")
-        adEmbed.add_field(name="Vibe Mentor",
-                          value="As the server has no pattern to its growth, Vibe Mentor will always be an open role. You perform the same vibe checks as your mentor did to you, but you DON'T MOVE ANYONE UP. That's The Council's job. You can become Vibe Mentor simply by asking, however usually your own Vibe Mentor or a Councilperson will recommend it for you. Nice blue colour too. This role is the bottom of the post-school job hierarchy.",
-                          inline=False)
-        adEmbed.add_field(name="Queue Manager",
-                          value="A pink role and obligation to post as much as possible on the subreddit. Ignore your morals ;).")
-        adEmbed.add_field(name="Subreddit Manager",
-                          value="Alongside a nice orangey colour - These guys are the moderators of r/VibeSchool and are in charge of frequently posting, promoting the subreddit, approving posts in new, and answering questions.",
-                          inline=False)
-        adEmbed.add_field(name="BotStyle",
-                          value="A role given to you if you if you have added a bot to the server.",
-                          inline=False)
-        adEmbed.add_field(name="\n*The roles from now on are Senior Viber roles. The roles before have been Junior.*",
-                          value="--------------------------------------------------------------------------------------------",
-                          inline=False)
-        adEmbed.add_field(name="Management Staff",
-                          value="these guys deal with the Vibe School meta - such as how to deal with specific users, big ideas, and new moderators. you can also apply for this one > [here](https://docs.google.com/forms/d/e/1FAIpQLScW5N51sTUpQexDOlxIm3XPS9BPWBJGvM8TxbGXvOytU4yYdg/viewform)",
-                          inline=False)
-        
-        adEmbed.add_field(name="Moderator",
-                          value="These guys have a sangria red colour, and a responsibility to use CyberTron5000 to mute, kick and ban people, create new channels, add new features to the server, and make announcements. ",
-                          inline=False)
-        adEmbed.add_field(name="Bot Dictator",
-                          value="Whereas BotStyle is simply for users who add bots, Bot Dicator is for users who's bots have made a meaningful, practical contribution to VibeSchool.",
-                          inline=False)
-        adEmbed.add_field(name="Head Moderator",
-                          value="moderator except more trusted with stuff.",
-                          inline=False)
-        adEmbed.add_field(name="The Council",
-                          value="These guys are the real big shots of the server. They decide on every vibe check beneath them, and vote on very important rules for the subreddit and Discord. Councilpeople usually have many or all of the roles beneath them on the job hierarchy. ",
-                          inline=False)
-        adEmbed.add_field(name="Overseer",
-                          value="Boss of management staff. Closed.",
-                          inline=False)
-        adEmbed.add_field(name="Subreddit Boss",
-                          value="Technically a closed role held by YeetVegetabales. This one person is the boss of the Subreddit managers and takes extra care of the Subreddit. Teal colour.",
-                          inline=False)
-        adEmbed.add_field(name="HEAD COUNCIL",
-                          value="While not a closed role necessarily, only becomes open once the current HEAD COUNCIL resigns. When that happens, a way to organize the next one will be made, but for now, know that this guy is the boss of The Council, and also gets final say on pretty much everything. Currently, it is YeetVegetabales.",
-                          inline=False)
-        await ctx.send(embed=adEmbed)
     
     @commands.group(invoke_without_command=True, aliases=['q', 'tq'])
     @check_guild(guild=vibe)
@@ -274,30 +224,61 @@ class VibeSchool(commands.Cog):
         except Exception as er:
             await ctx.send(er)
     
+    @commands.command(help="Gets you info about Vibe Adulthood")
+    @check_guild(guild=vibe)
+    async def adinfo(self, ctx):
+        adEmbed = discord.Embed(color=0xa30533, title="Job Info")
+        adEmbed.add_field(name="Vibe Mentor",
+                          value="As the server has no pattern to its growth, Vibe Mentor will always be an open role. You perform the same vibe checks as your mentor did to you, but you DON'T MOVE ANYONE UP. That's The Council's job. You can become Vibe Mentor simply by asking, however usually your own Vibe Mentor or a Councilperson will recommend it for you. Nice blue colour too. This role is the bottom of the post-school job hierarchy.",
+                          inline=False)
+        adEmbed.add_field(name="Queue Manager",
+                          value="A pink role and obligation to post as much as possible on the subreddit. Ignore your morals ;).")
+        adEmbed.add_field(name="Subreddit Manager",
+                          value="Alongside a nice orangey colour - These guys are the moderators of r/VibeSchool and are in charge of frequently posting, promoting the subreddit, approving posts in new, and answering questions.",
+                          inline=False)
+        adEmbed.add_field(name="BotStyle",
+                          value="A role given to you if you if you have added a bot to the server.",
+                          inline=False)
+        adEmbed.add_field(name="\n*The roles from now on are Senior Viber roles. The roles before have been Junior.*",
+                          value="--------------------------------------------------------------------------------------------",
+                          inline=False)
+        adEmbed.add_field(name="Management Staff",
+                          value="these guys deal with the Vibe School meta - such as how to deal with specific users, big ideas, and new moderators. you can also apply for this one > [here](https://docs.google.com/forms/d/e/1FAIpQLScW5N51sTUpQexDOlxIm3XPS9BPWBJGvM8TxbGXvOytU4yYdg/viewform)",
+                          inline=False)
+        
+        adEmbed.add_field(name="Moderator",
+                          value="These guys have a sangria red colour, and a responsibility to use CyberTron5000 to mute, kick and ban people, create new channels, add new features to the server, and make announcements. ",
+                          inline=False)
+        adEmbed.add_field(name="Bot Dictator",
+                          value="Whereas BotStyle is simply for users who add bots, Bot Dicator is for users who's bots have made a meaningful, practical contribution to VibeSchool.",
+                          inline=False)
+        adEmbed.add_field(name="Head Moderator",
+                          value="moderator except more trusted with stuff.",
+                          inline=False)
+        adEmbed.add_field(name="The Council",
+                          value="These guys are the real big shots of the server. They decide on every vibe check beneath them, and vote on very important rules for the subreddit and Discord. Councilpeople usually have many or all of the roles beneath them on the job hierarchy. ",
+                          inline=False)
+        adEmbed.add_field(name="Overseer",
+                          value="Boss of management staff. Closed.",
+                          inline=False)
+        adEmbed.add_field(name="Subreddit Boss",
+                          value="Technically a closed role held by YeetVegetabales. This one person is the boss of the Subreddit managers and takes extra care of the Subreddit. Teal colour.",
+                          inline=False)
+        adEmbed.add_field(name="HEAD COUNCIL",
+                          value="While not a closed role necessarily, only becomes open once the current HEAD COUNCIL resigns. When that happens, a way to organize the next one will be made, but for now, know that this guy is the boss of The Council, and also gets final say on pretty much everything. Currently, it is YeetVegetabales.",
+                          inline=False)
+        await ctx.send(embed=adEmbed)
+    
     @commands.command(help="the eppicest server in the land")
     async def vibeschool(self, ctx):
         embed = discord.Embed(
             colour=self.client.colour,
-            title="join now", url="https://discord.gg/E85ZHkt"
+            title="join now", url="https://discord.gg/m6mqkPT"
         )
         await ctx.send(embed=embed)
     
-    @commands.command(help="Submit your quizzes in #quiz-inbox")
-    @check_guild_and_channel(channel=694316034110390343)
-    async def quizs(self, ctx, *, quiz):
-        niz = self.client.get_user(id=350349365937700864)
-        await niz.send(f"Hey, {ctx.message.author.display_name} just submitted a quiz:\n```{quiz}```")
-        await ctx.message.add_reaction(emoji=":tick:733458499777855538")
-    
-    @commands.command(help="Submit your report cards in #report-cards")
-    @check_guild_and_channel(channel=695340515088007249)
-    async def rcsend(self, ctx, *, report):
-        niz = self.client.get_user(id=350349365937700864)
-        await niz.send(f"Hey, {ctx.message.author.display_name} just submitted a report card:\n```{report}```")
-        await ctx.message.add_reaction(emoji=":tick:733458499777855538")
-    
     @commands.command(help="Vote when it's voting time")
-    @check_guild(guild=687814997841150016)
+    @check_guild(guild=vibe)
     async def votev(self, ctx, person, *, reason):
         niz = self.client.get_user(id=350349365937700864)
         await niz.send(f"Hey, {ctx.message.author.display_name} just voted for {person}. Reason:\n```{reason}```")
@@ -307,13 +288,13 @@ class VibeSchool(commands.Cog):
                     help="contact management if there's anything you want to say to them")
     @check_guild(guild=vibe)
     async def management(self, ctx, *, message):
-        channel = self.client.get_channel(id=688812777653141711)
+        channel = self.client.get_channel(id=734171313253515274)
         await channel.send(
             f"Hey, {ctx.message.author} contacted you <@&689613285170872575>\n```{message}```")
         await ctx.message.add_reaction(emoji=":tick:733458499777855538")
     
     @management.command(invoke_without_command=True, help="reply to someone contacting management")
-    @check_guild_and_admin(guild=687814997841150016)
+    @check_guild_and_channel(channel=734171313253515274)
     async def reply(self, ctx, member: discord.Member, *, message):
         try:
             user = self.client.get_user(id=member.id)
@@ -323,7 +304,7 @@ class VibeSchool(commands.Cog):
             await ctx.send(error)
     
     @commands.command(help="ascend someone")
-    @check_guild_and_admin(guild=687814997841150016)
+    @check_guild_and_admin(guild=734267872683098122)
     async def ascend(self, ctx, member: discord.Member):
         roles = [role for role in member.roles]
         message = "<@&712341913575096430>"
@@ -338,6 +319,14 @@ class VibeSchool(commands.Cog):
         message = await ctx.send(message, embed=embed)
         for r in ['⬆️', '⬇️']:
             await message.add_reaction(r)
+            
+    @commands.command()
+    @check_guild(guild=vibe)
+    async def vibe_suggest(self, ctx, *, message):
+        """Suggest something for VIBE SCHOOL's rebuilding!"""
+        channel = self.client.get_channel(734171313253515274)
+        await channel.send(f"Suggestion from **{ctx.author}**\n```{message}```")
+        await ctx.message.delete()
 
 
 def setup(client):

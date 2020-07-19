@@ -31,7 +31,7 @@ class CyberTronHelpCommand(commands.HelpCommand):
         parent = command.full_parent_name
         if len(command.aliases) > 0:
             aliases = '•'.join(command.aliases)
-            fmt = f'{command.name}•{aliases}'
+            fmt = f'{command.name}•c{aliases}'
             if parent:
                 fmt = f'{parent} {fmt}'
             alias = fmt
@@ -64,7 +64,7 @@ class CyberTronHelpCommand(commands.HelpCommand):
         for cg, cm in itertools.groupby(entries, key=key):
             cats = []
             cm = sorted(cm, key=lambda c: c.name)
-            cats.append(f'**{cg}**\n{"•".join([f"`{c.name}`" for c in cm][:8])}\n')
+            cats.append(f'**{cg}**\n{"|".join([f"`{c.name}`" for c in cm][:8])}\n')
             embed.description += "\n".join(cats)
             total += len([c for c in cm])
         embed.set_author(name=f"CyberTron5000 Commands (Total {total})")
@@ -79,7 +79,7 @@ class CyberTronHelpCommand(commands.HelpCommand):
         cog_doc = cog.__doc__ or " "
         entries = await self.filter_commands(cog.get_commands(), sort=True)
         foo = "\n".join(
-            [f"→ `{c.name} {c.signature}` • {c.help or 'No help provided for this command'}" for c in entries])
+            [f"→ `{c.name} {c.signature}` | {c.help or 'No help provided for this command'}" for c in entries])
         await self.context.send(embed=discord.Embed(description=f"{cog_doc}\n\n{foo}", colour=0x00dcff).set_author(
             name=f"{cog.qualified_name} Commands (Total {len(entries)})"))
     
@@ -104,8 +104,8 @@ class CyberTronHelpCommand(commands.HelpCommand):
         entries = await self.filter_commands(group.commands)
         embed = discord.Embed(title=self.get_command_signature(group), colour=0x00dcff)
         for c in entries:
-            char = "\u200b" if not c.aliases else "•"
-            sc.append(f"→ `{group.name} {c.name}{char}{'•'.join(c.aliases)} {c.signature or f'{u}'}` • {c.help}")
+            char = "\u200b" if not c.aliases else "|"
+            sc.append(f"→ `{group.name} [{c.name}{char}{'|'.join(c.aliases)}] {c.signature or f'{u}'}` | {c.help}")
         embed.description = f"{group.help}\n\n" + "\n".join(sc)
         await self.context.send(embed=embed)
 
@@ -135,7 +135,7 @@ class Info(commands.Cog):
         """Shows you every cog"""
         await ctx.send(embed=discord.Embed(colour=0x00dcff, title=f"All Cogs ({len(self.client.cogs)})",
                                            description=f"Do `{ctx.prefix}help <cog>` to know more about them!" + "\n\n" + "\n".join(
-                                               [f"`{cog}` • {self.client.cogs[cog].__doc__}" for cog in
+                                               [f"`{cog}` | {self.client.cogs[cog].__doc__}" for cog in
                                                 self.client.cogs])))
     
     @cogs.command()
@@ -169,7 +169,7 @@ class Info(commands.Cog):
                 embed = discord.Embed(title=f"{name} Commands", colour=self.client.colour)
                 cmds = []
                 for cmd in obj.get_commands():
-                    cmds.append(f"→ `{cmd.name} {cmd.signature}` • {cmd.help}")
+                    cmds.append(f"→ `{cmd.name} {cmd.signature}` | {cmd.help}")
                 embed.description = '\n'.join(cmds)
                 if cmds:
                     embeds.append(embed)
@@ -183,14 +183,14 @@ class Info(commands.Cog):
         elif command in lcogs:
             embed = discord.Embed(colour=self.client.colour, title=f'{command.capitalize()} Help')
             embed.description = '\n'.join(
-                [f"→ `{cmd.name} {cmd.signature}` • {cmd.help}" for cmd in self.client.cogs[command].get_commands()])
+                [f"→ `{cmd.name} {cmd.signature}` | {cmd.help}" for cmd in self.client.cogs[command].get_commands()])
             await ctx.send(embed=embed)
         elif command and use:
             help_msg = use.help or "No help provided for this command"
             parent = use.full_parent_name
             if len(use.aliases) > 0:
-                aliases = '•'.join(use.aliases)
-                cmd_alias_format = f'{use.name}•{aliases}'
+                aliases = '|'.join(use.aliases)
+                cmd_alias_format = f'{use.name}|{aliases}'
                 if parent:
                     cmd_alias_format = f'{parent} {cmd_alias_format}'
                 alias = cmd_alias_format
@@ -203,7 +203,7 @@ class Info(commands.Cog):
                 for sub_cmd in use.commands:
                     u = '\u200b'
                     embed.add_field(
-                        name=f"{use.name} {sub_cmd.name}{'•' if sub_cmd.aliases else u}{'•'.join(sub_cmd.aliases)} {sub_cmd.signature}",
+                        name=f"{use.name} {sub_cmd.name}{'|' if sub_cmd.aliases else u}{'| '.join(sub_cmd.aliases)} {sub_cmd.signature}",
                         value=f"{sub_cmd.help}", inline=False)
                 await ctx.send(embed=embed)
             else:

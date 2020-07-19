@@ -333,6 +333,71 @@ class Games(commands.Cog):
                     name=f"Times up! The correct answer was {unes(data['correct_answer'])}."))
             else:
                 await ctx.send(error.__class__.__name__)
+    
+    @commands.group(aliases=['gl', 'gtl'], invoke_without_command=True)
+    async def guesslogo(self, ctx):
+        """
+        Guess a random logo!
+        """
+        td = {
+            True: "<:tick:733458499777855538>",
+            False: "<:x_:733458444346195990>",
+        }
+        daggy = await self.client.fetch_user(self.daggy)
+        async with ctx.typing():
+            resp = {'token': dagpi()}
+            async with aiohttp.ClientSession() as cs:
+                async with cs.get('https://dagpi.tk/api/logogame', headers=resp) as r:
+                    resp = await r.json()
+            if not resp['easy']:
+                hard = True
+            else:
+                hard = False
+            if not hard:
+                easy = True
+            else:
+                easy = False
+            embed = discord.Embed(
+                title="Which company is this?", colour=self.client.colour).set_image(
+                url=resp['question']).set_footer(
+                text=f"Much thanks to {str(daggy)} for this amazing API!", icon_url=daggy.avatar_url)
+            embed.add_field(name=f'**Difficulty**', value=f'{td[easy]} | **Easy?**\n{td[hard]} | **Hard?**')
+            try:
+                embed.add_field(name="**Company Description**", value=resp['clue'])
+            except KeyError:
+                pass
+            embed.description = f"Do `{ctx.prefix}hint` to see a hint, or `{ctx.prefix}cancel` to cancel."
+            await ctx.send(embed=embed)
+        try:
+            for x in range(3):
+                msg = await self.client.wait_for('message', check=lambda m: m.author == ctx.author and not m.author.bot,
+                                                 timeout=30.0)
+                if msg.content.lower() == str(resp['brand']).lower():
+                    embed = discord.Embed(title=f"Correct! The answer was {resp['brand']}", url=resp['wiki_url'],
+                                          colour=self.client.colour)
+                    embed.set_image(url=resp['answer'])
+                    return await ctx.send(embed=embed)
+                elif msg.content.lower().startswith(f"{ctx.prefix}hint"):
+                    embed = discord.Embed(title=f"`{resp['hint']}`",
+                                          colour=self.client.colour)
+                    await ctx.send(embed=embed)
+                    continue
+                elif msg.content.lower().startswith(f"{ctx.prefix}cancel"):
+                    embed = discord.Embed(title=f"The answer was {resp['brand']}", url=resp['wiki_url'],
+                                          colour=self.client.colour)
+                    embed.set_image(url=resp['answer'])
+                    return await ctx.send(embed=embed)
+                else:
+                    continue
+            embed = discord.Embed(title=f"The answer was {resp['brand']}", url=resp['wiki_url'],
+                                  colour=self.client.colour)
+            embed.set_image(url=resp['answer'])
+            return await ctx.send(embed=embed)
+        except asyncio.TimeoutError:
+            embed = discord.Embed(title=f"{resp['brand']}", colour=self.client.colour)
+            embed.set_image(url=resp['answer'])
+            embed.set_author(name="You ran out of time! The answer was...")
+            return await ctx.send(embed=embed)
 
 
 def setup(client):
