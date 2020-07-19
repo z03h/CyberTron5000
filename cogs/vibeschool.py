@@ -9,8 +9,6 @@ from discord.ext import commands
 from .utils.checks import check_guild_and_channel, check_guild, check_guild_and_admin
 
 
-
-
 # ≫
 
 class VibeSchool(commands.Cog):

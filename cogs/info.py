@@ -2,6 +2,7 @@ import itertools
 
 import discord
 from discord.ext import commands
+
 from .utils import paginator
 
 

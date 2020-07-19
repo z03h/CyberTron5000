@@ -1,5 +1,5 @@
-from discord.ext import menus
 import discord
+from discord.ext import menus
 
 
 class CatchAllMenu(menus.MenuPages, inherit_buttons=False):

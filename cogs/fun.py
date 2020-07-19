@@ -1,14 +1,14 @@
 import asyncio
 import random
-import aiohttp
+import string
 
+import aiohttp
 import discord
 from async_timeout import timeout
 from discord.ext import commands
 
 from .utils import cyberformat, paginator
 from .utils.lists import INDICATOR_LETTERS
-import string
 
 
 class Fun(commands.Cog):

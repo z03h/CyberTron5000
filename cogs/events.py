@@ -1,9 +1,11 @@
-from discord.ext import commands
-from .utils import cyberformat
-import discord
-import async_cleverbot
-import humanize
 import json
+
+import async_cleverbot
+import discord
+import humanize
+from discord.ext import commands
+
+from .utils import cyberformat
 
 
 def secrets():

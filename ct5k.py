@@ -27,6 +27,7 @@ For more information, please refer to <https://unlicense.org>
 
 import json
 import os
+
 import asyncpg
 import discord
 from discord.ext import commands

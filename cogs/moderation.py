@@ -1,12 +1,12 @@
-import discord
 import asyncio
 import json
-import humanize
 
+import discord
+import humanize
 from discord.ext import commands
 
-from .utils.checks import check_admin_or_owner
 from .utils import lists, paginator
+from .utils.checks import check_admin_or_owner
 
 
 # ≫

@@ -1,8 +1,10 @@
-from discord.ext import commands
-from .utils import checks, paginator
-from .utils.lists import engineer_bagdes, legend_badges, popular_badges
-import discord
 import asyncio
+
+import discord
+from discord.ext import commands
+
+from .utils import paginator
+from .utils.lists import engineer_bagdes, legend_badges, popular_badges
 
 
 class Tags(commands.Cog):

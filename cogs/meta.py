@@ -4,22 +4,22 @@ For general bot commands, basic/meta stuff.
 
 """
 
+import asyncio
 import datetime
+import json
 import os
 import platform
-import asyncio
-import json
 import time
+from uuid import uuid4
 
 import aiohttp
+import async_timeout
 import discord
 import humanize
-import async_timeout
 import psutil
 from discord.ext import commands
 
 from .utils import cyberformat
-from uuid import uuid4
 from .utils.checks import check_admin_or_owner
 
 start_time = datetime.datetime.utcnow()
@@ -317,7 +317,7 @@ class Meta(commands.Cog):
                         json.dump(res, f, indent=4)
                     await ctx.send("Followed suggestion!")
                 else:
-                    await ctx.send("Ok, suggestion not followed.")
+                    await ctx.send(f"Ok, suggestion not followed. If you ever want to follow it, simply do `{ctx.prefix}suggest follow {sugid}`")
         except asyncio.TimeoutError:
             await ms.edit(
                 content=f"You ran out of time! Suggestion not followed. If you want to follow this suggestion, do `{ctx.prefix}suggest follow {sugid}`")

@@ -8,8 +8,8 @@ import humanize
 import praw
 from discord.ext import commands
 
-from .utils.lists import emotes
 from .utils import checks, paginator
+from .utils.lists import emotes
 
 reddit_colour = 0xff5700
 

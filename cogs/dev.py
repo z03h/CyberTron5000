@@ -1,11 +1,13 @@
-from discord.ext import commands
-import discord
 import ast
 import json
-import praw
+import os
 import subprocess
 import sys
-import os
+
+import discord
+import praw
+from discord.ext import commands
+
 from .utils import cyberformat, checks
 
 tick = "<:tick:733458499777855538>"

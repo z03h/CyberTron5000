@@ -1,14 +1,14 @@
+import collections
 import datetime
 
-import matplotlib
 import discord
-import collections
 import humanize
+import matplotlib
 import matplotlib.pyplot as plt
 from discord.ext import commands
 
-from .utils.lists import REGIONS, sl, status_mapping, badge_mapping
 from .utils import cyberformat, paginator
+from .utils.lists import REGIONS, sl, status_mapping, badge_mapping
 
 matplotlib.use('Agg')
 

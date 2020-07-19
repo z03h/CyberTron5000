@@ -2,8 +2,9 @@
 bruh
 """
 
-import discord
 import random
+
+import discord
 
 
 def shorten(s: str):
