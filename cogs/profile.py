@@ -8,13 +8,12 @@ import matplotlib.pyplot as plt
 from discord.ext import commands
 
 from .utils.lists import REGIONS, sl, status_mapping, badge_mapping
-from .utils import cyberformat, paginator
+from .utils import cyberformat, paginator, exceptions
 
 matplotlib.use('Agg')
 
 
 # •
-
 
 class GuildStats:
     """
@@ -114,8 +113,8 @@ class Profile(commands.Cog):
             categories = [category for category in guild.categories]
             region = REGIONS[f"{str(guild.region)}"]
             embed = discord.Embed(colour=self.client.colour,
-                                  description=f"**{guild.id}**\n<:owner:730864906429136907> **{guild.owner}**\n🗺 **{region}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**"
-                                              f"\n{f'{n}'.join(people)}\n<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**\n<:boost:726151031322443787> **Nitro Tier: {guild.premium_tier}**\n{cyberformat.bar(stat=guild.premium_subscription_count, max=30, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>', show_stat=True)}")
+                                  description=f"**{guild.id}**\n<:owner:730864906429136907> **{guild.owner}**\n🗺 **{region}**\n<:emoji:734231060069613638> **{len(ctx.guild.emojis)}** | <:roles:734232012730138744> **{len(ctx.guild.roles)}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** <:voice_channel:703726554068418560>**{len(voice_channels)}**"
+                                              f"\n{f'{n}'.join(people)}\n<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**\n<:boost:726151031322443787> **Tier: {guild.premium_tier}**\n{cyberformat.bar(stat=guild.premium_subscription_count, max=30, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>', show_stat=True)}")
             embed.set_author(name=f"{guild}", icon_url=guild.icon_url)
             embed.set_footer(
                 text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - ctx.guild.created_at)}")
@@ -327,18 +326,18 @@ class Profile(commands.Cog):
         char = '\u200b' if not a or not local_emojis else " | "
         le = " ".join(local_emojis)
         if not a and not local_emojis and is_bot == '\u200b':
-            embed.description = f'\n→ ID • **{m.id}**\n'
+            embed.description = f'\n→ ID | **{m.id}**\n'
         else:
             embed.description = f"\n{' '.join(a) if a else u}{char}{le}{is_bot}"
-            embed.description += f'\n→ ID • **{m.id}**\n'
-        embed.description += f'→ Created Account • **{humanize.naturaltime(datetime.datetime.utcnow() - m.created_at)}**\n'
-        embed.description += f'→ Joined Guild • **{humanize.naturaltime(datetime.datetime.utcnow() - m.joined_at)}**\n'
-        #   embed.description += f'→ Join Position • **{(sorted(ctx.guild.members, key=lambda m: m.joined_at).index(m)) + 1:,}**\n'
-        embed.description += f'→ Guilds Shared With Bot • **{len([g for g in ctx.bot.guilds if g.get_member(m.id)]) if m != ctx.bot.user else f"bro this is literally the bot ({len(ctx.bot.guilds)})"}**'
+            embed.description += f'\n→ ID | **{m.id}**\n'
+        embed.description += f'→ Created Account | **{humanize.naturaltime(datetime.datetime.utcnow() - m.created_at)}**\n'
+        embed.description += f'→ Joined Guild | **{humanize.naturaltime(datetime.datetime.utcnow() - m.joined_at)}**\n'
+        #   embed.description += f'→ Join Position | **{(sorted(ctx.guild.members, key=lambda m: m.joined_at).index(m)) + 1:,}**\n'
+        embed.description += f'→ Guilds Shared With Bot | **{len([g for g in ctx.bot.guilds if g.get_member(m.id)]) if m != ctx.bot.user else f"bro this is literally the bot ({len(ctx.bot.guilds)})"}**'
         if m.top_role.id == ctx.guild.id:
             pass
         else:
-            embed.description += f'\n→ Roles • **{len([r for r in m.roles if r.id != ctx.guild.id])}** | Top Role • {m.top_role.mention}'
+            embed.description += f'\n→ Roles | **{len([r for r in m.roles if r.id != ctx.guild.id])}** | Top Role | {m.top_role.mention}'
         embed.description += f'\n→ [Avatar URL]({m.avatar_url_as(static_format="png", size=4096)})\n'
         embed.add_field(name='Status',
                         value=f'{sl[m.web_status]} **Web Status**\n{sl[m.desktop_status]} **Desktop Status**\n{sl[m.mobile_status]} **Mobile Status**')

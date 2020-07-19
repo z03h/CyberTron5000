@@ -80,8 +80,8 @@ class Tags(commands.Cog):
         menu = paginator.CatchAllMenu(source=source)
         await menu.start(ctx)
     
-    @tag.command(invoke_without_command=True, aliases=['make'],
-                 cooldown=commands.Cooldown(1, 5, commands.BucketType.member))
+    @tag.command(invoke_without_command=True, aliases=['make'])
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def create(self, ctx, *, name):
         """Creates a tag"""
         test = await self.client.pg_con.fetch("SELECT * FROM tags WHERE name = $1 AND guild_id = $2", name,
@@ -170,7 +170,6 @@ class Tags(commands.Cog):
                                              str(ctx.guild.id))
         if not tag:
             return await ctx.send("That tag was not found for this guild!")
-        tags = await self.client.pg_con.fetch("SELECT * FROM tags WHERE guild_id = $1", str(ctx.guild.id))
         this = await self.client.pg_con.fetch("SELECT name, uses FROM tags WHERE guild_id = $1", str(ctx.guild.id))
         uses = [0 if v[1] is None else v[1] for v in this]
         names = [v[0] for v in this]
@@ -185,7 +184,7 @@ class Tags(commands.Cog):
         embed.set_author(name=str(owner), icon_url=owner.avatar_url)
         embed.description = f'\nUses: **{tag[0][4] or 0}**'
         embed.description += f'\nRank: **{rank}**'
-        embed.description += f'\nCreated Index: **{tags.index(tag[0]) + 1}**'
+        embed.description += f'\nCreated Index: **{f.index(tup) + 1}**'
         await ctx.send(embed=embed)
     
     async def get_user_badges(self, ctx, member: discord.Member = None):
