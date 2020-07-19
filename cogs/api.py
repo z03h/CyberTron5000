@@ -23,7 +23,7 @@ def secrets():
         return json.load(f)
 
 
-class Internet(commands.Cog):
+class Api(commands.Cog):
     """Interact with various API's"""
     
     def __init__(self, client):
@@ -54,56 +54,6 @@ class Internet(commands.Cog):
         em.set_image(url=res)
         em.set_footer(text="https://random.dog/woof.json")
         await ctx.send(embed=em)
-    
-    @commands.command(help="Get's you a trivia question.", aliases=['tr', 't'])
-    async def trivia(self, ctx, difficulty: str = None):
-        try:
-            an = []
-            difficulty = random.choice(['easy', 'medium', 'hard']) if not difficulty else difficulty
-            async with aiohttp.ClientSession() as cs:
-                async with cs.get("https://opentdb.com/api.php?amount=1",
-                                  params={"amount": 1, "difficulty": difficulty}) as r:
-                    res = await r.json()
-                data = res['results'][0]
-                await cs.close()
-                answers = [unes(answer) for answer in data['incorrect_answers']]
-                answers.append(unes(data['correct_answer']))
-                random.shuffle(answers)
-                for numb, ans in enumerate(answers, 1):
-                    an.append(f'{NUMBER_ALPHABET[numb]}) **{ans}**')
-                yup = '\n'.join(an)
-                embed = discord.Embed(title=unes(data["question"]),
-                                      description=f"{yup}",
-                                      colour=self.client.colour)
-                embed.set_author(name=f"{ctx.message.author.display_name}'s question:",
-                                 icon_url=ctx.message.author.avatar_url)
-                embed.add_field(name="Question Info",
-                                value=f"This question about **{unes(data['category'])}** is of **{unes(data['difficulty']).capitalize()}** difficulty")
-                embed.set_footer(text="https://opentdb.com")
-                letter_ans = NUMBER_ALPHABET[answers.index(''.join(unes(data['correct_answer']))) + 1]
-                lower = str(letter_ans).lower()
-                message = await ctx.send("** **", embed=embed)
-                async with timeout(15):
-                    m = await self.client.wait_for(
-                        'message',
-                        timeout=15.0,
-                        check=lambda m: m.author == ctx.author)
-                    if str(lower) == m.content:
-                        await ctx.send("Correct!")
-                    elif str(letter_ans) == m.content:
-                        await ctx.send("Correct!")
-                    else:
-                        await ctx.send(
-                            f"Incorrect! The correct answer was {letter_ans}, {unes(data['correct_answer'])}.")
-        except Exception as error:
-            if isinstance(error, IndexError):
-                return await ctx.send(
-                    f"<:warning:727013811571261540> **{ctx.author.name}**, invalid difficulty! Valid difficulties include easy, medium, hard.")
-            elif isinstance(error, asyncio.TimeoutError) or isinstance(error, asyncio.CancelledError):
-                await message.edit(embed=discord.Embed(colour=self.client.colour).set_author(
-                    name=f"Times up! The correct answer was {unes(data['correct_answer'])}."))
-            else:
-                await ctx.send(error.__class__.__name__)
     
     @commands.command(aliases=['ily'], help="compliment your friends :heart:")
     async def compliment(self, ctx, *, user: discord.Member = None):
@@ -281,9 +231,10 @@ class Internet(commands.Cog):
         embed = discord.Embed(colour=self.client.colour,
                               description=f"**{from_lang.capitalize()}**\n{message}\n\n**{to_lang.capitalize()}**\n{res.text}\n\n**Pronunciation**\n{res.pronunciation}").set_author(
             name='Translated Text')
-        return await ctx.send(embed=embed.set_footer(text=f"{res.confidence * 100}% confident"))
-        
-    @commands.command(aliases=['wiki'])
+        return await ctx.send(embed=embed.set_footer(text=f"{res.confidence * 100}% confident")) \
+        \
+               @ commands.command(aliases=['wiki'])
+    
     async def wikipedia(self, ctx, *, terms):
         async with ctx.typing():
             wiki = aiowiki.Wiki.wikipedia("en")
@@ -305,4 +256,4 @@ class Internet(commands.Cog):
 
 
 def setup(client):
-    client.add_cog(Internet(client))
+    client.add_cog(Api(client))

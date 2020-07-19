@@ -3,9 +3,11 @@ import random
 
 import discord
 import json
+import aiohttp
+from html import unescape as unes
 from async_timeout import timeout
 from discord.ext import commands
-from .utils import cyberformat
+from .utils import cyberformat, lists
 
 
 def dagpi():
@@ -221,7 +223,7 @@ class Games(commands.Cog):
             daggy = await self.client.fetch_user(self.daggy)
             async with ctx.typing():
                 resp = {'token': dagpi()}
-                async with __import__('aiohttp').ClientSession() as cs:
+                async with aiohttp.ClientSession() as cs:
                     async with cs.get('https://dagpi.tk/api/wtp', headers=resp) as r:
                         resp = await r.json()
                     pokemon = resp['pokemon']
@@ -281,6 +283,56 @@ class Games(commands.Cog):
                 return await ctx.send(embed=embed)
         except Exception as erro:
             await ctx.send(erro)
+    
+    @commands.command(help="Get's you a trivia question.", aliases=['tr', 't'])
+    async def trivia(self, ctx, difficulty: str = None):
+        try:
+            an = []
+            difficulty = random.choice(['easy', 'medium', 'hard']) if not difficulty else difficulty
+            async with aiohttp.ClientSession() as cs:
+                async with cs.get("https://opentdb.com/api.php?amount=1",
+                                  params={"amount": 1, "difficulty": difficulty}) as r:
+                    res = await r.json()
+                data = res['results'][0]
+                await cs.close()
+                answers = [unes(answer) for answer in data['incorrect_answers']]
+                answers.append(unes(data['correct_answer']))
+                random.shuffle(answers)
+                for numb, ans in enumerate(answers, 1):
+                    an.append(f'{lists.NUMBER_ALPHABET[numb]}) **{ans}**')
+                yup = '\n'.join(an)
+                embed = discord.Embed(title=unes(data["question"]),
+                                      description=f"{yup}",
+                                      colour=self.client.colour)
+                embed.set_author(name=f"{ctx.message.author.display_name}'s question:",
+                                 icon_url=ctx.message.author.avatar_url)
+                embed.add_field(name="Question Info",
+                                value=f"This question about **{unes(data['category'])}** is of **{unes(data['difficulty']).capitalize()}** difficulty")
+                embed.set_footer(text="https://opentdb.com")
+                letter_ans = lists.NUMBER_ALPHABET[answers.index(''.join(unes(data['correct_answer']))) + 1]
+                lower = str(letter_ans).lower()
+                message = await ctx.send("** **", embed=embed)
+                async with timeout(15):
+                    m = await self.client.wait_for(
+                        'message',
+                        timeout=15.0,
+                        check=lambda m: m.author == ctx.author)
+                    if str(lower) == m.content:
+                        await ctx.send("Correct!")
+                    elif str(letter_ans) == m.content:
+                        await ctx.send("Correct!")
+                    else:
+                        await ctx.send(
+                            f"Incorrect! The correct answer was {letter_ans}, {unes(data['correct_answer'])}.")
+        except Exception as error:
+            if isinstance(error, IndexError):
+                return await ctx.send(
+                    f"<:warning:727013811571261540> **{ctx.author.name}**, invalid difficulty! Valid difficulties include easy, medium, hard.")
+            elif isinstance(error, asyncio.TimeoutError) or isinstance(error, asyncio.CancelledError):
+                await message.edit(embed=discord.Embed(colour=self.client.colour).set_author(
+                    name=f"Times up! The correct answer was {unes(data['correct_answer'])}."))
+            else:
+                await ctx.send(error.__class__.__name__)
 
 
 def setup(client):
