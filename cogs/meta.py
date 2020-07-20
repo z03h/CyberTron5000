@@ -127,7 +127,7 @@ class Meta(commands.Cog):
     async def invite(self, ctx):
         embed = discord.Embed(
             colour=self.client.colour,
-            title="Invite me to your server!",
+            title="<:news:730866149109137520> Invite me to your server!",
             url="https://cybertron-5k.netlify.app/invite"
         )
         await ctx.send(embed=embed)
@@ -245,6 +245,16 @@ class Meta(commands.Cog):
         embed.add_field(name="_Latest Commits_", value="\n".join(await self.get_commits()), inline=False)
         embed.set_footer(text=self.version)
         embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
+        await ctx.send(embed=embed)
+        
+    @commands.command()
+    async def support(self, ctx):
+        """Join the support server!"""
+        embed = discord.Embed(
+            title="<:news:730866149109137520> Join the support server!",
+            url="https://cybertron-5k.netlify.app/server",
+            colour=self.client.colour
+        )
         await ctx.send(embed=embed)
     
     @commands.group(aliases=["n", "changenickname", "nick"], invoke_without_command=True,
