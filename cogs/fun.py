@@ -325,7 +325,7 @@ class Fun(commands.Cog):
                  result]
         source = paginator.IndexedListSource(embed=discord.Embed(color=self.client.colour).set_author(
             name=f"{ctx.author}'s todo list (Total {len(result)})", icon_url=ctx.author.avatar_url),
-                                             data=final)
+            data=final)
         return await paginator.CatchAllMenu(source=source).start(ctx)
     
     @todo.command()
@@ -349,6 +349,37 @@ class Fun(commands.Cog):
     async def owner(self, ctx):
         """Shows you who made this bot"""
         return await ctx.send(f"it is {self.owner}")
+    
+    @commands.command()
+    async def wink(self, ctx, *, member: discord.Member = None):
+        """Wink at someone! 😉"""
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get("https://some-random-api.ml/animu/wink") as f:
+                res = await f.json()
+            if member:
+                await ctx.send(embed=discord.Embed(color=self.client.colour).set_image(url=res['link']).set_author(
+                    name=f"😉 {ctx.author} winked at {member}!"))
+            else:
+                await ctx.send(embed=discord.Embed(color=self.client.colour).set_image(url=res['link']).set_author(
+                    name=f"😉 {ctx.author} winked!"))
+    
+    @commands.command()
+    async def pat(self, ctx, *, member: discord.Member):
+        """Pat someone!"""
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get("https://some-random-api.ml/animu/pat") as f:
+                res = await f.json()
+            await ctx.send(embed=discord.Embed(color=self.client.colour).set_image(url=res['link']).set_author(
+                name=f"{ctx.author} patted {member}!"))
+    
+    @commands.command()
+    async def hug(self, ctx, *, member: discord.Member):
+        """Hug someone! 💗"""
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get("https://some-random-api.ml/animu/hug") as f:
+                res = await f.json()
+            await ctx.send(embed=discord.Embed(color=self.client.colour).set_image(url=res['link']).set_author(
+                name=f"{ctx.author} hugged {member}!"))
 
 
 # @commands.Cog.listener()

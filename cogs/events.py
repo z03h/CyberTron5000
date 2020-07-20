@@ -78,7 +78,7 @@ class Events(commands.Cog):
         embed.set_footer(text=f"Guild created"
                               f"{humanize.naturaltime(__import__('datetime').datetime.utcnow() - guild.created_at)}")
         await c.send(f"Joined Guild! This is guild **#{len(self.client.guilds)}**", embed=embed)
-        await guild.me.edit(nick=f"(=) {self.client.user.name}")
+        await guild.me.edit(nick=f"(c$) {self.client.user.name}")
     
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):

@@ -333,11 +333,11 @@ class Profile(commands.Cog):
             activities = []
             for activity in m.activities:
                 if isinstance(activity, discord.Spotify):
-                    activity = 'Listening to **Spotify**'
+                    activity = f'Listening to **{activity.title}** by **{", ".join(activity.artists)}**'
                 elif isinstance(activity, discord.Game):
                     activity = f'Playing **{activity.name}**'
                 elif isinstance(activity, discord.Streaming):
-                    activity = f'Streaming **{activity.name}**'
+                    activity = f'Streaming **{activity.name}** on **{activity.platform}**'
                 else:
                     emoji = ''
                     if activity.emoji:

@@ -321,6 +321,7 @@ class Meta(commands.Cog):
         embed = discord.Embed(title=f"Suggestion → {sugid}", description=f"```diff\n! {idea}\n```",
                               colour=self.client.colour)
         embed.set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
+        embed.set_footer(text=f'Do "suggest follow {sugid}" to follow this suggestion!')
         mes = await c.send(embed=embed)
         for r in ['⬆️', '⬇️']:
             await mes.add_reaction(r)

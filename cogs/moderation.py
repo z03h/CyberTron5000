@@ -127,7 +127,7 @@ class Moderation(commands.Cog):
         await self.client.get_guild(ctx.guild.id).leave()
     
     @commands.group(invoke_without_command=True, help="Change the guild's prefix", aliases=['prefix', 'pre'])
-    @check_admin_or_owner()
+    @commands.is_owner()
     async def changeprefix(self, ctx, *, prefix):
         with open("prefixes.json", "r") as f:
             prefixes = json.load(f)
@@ -140,7 +140,7 @@ class Moderation(commands.Cog):
         await ctx.guild.me.edit(nick=f"({prefix}) {self.client.user.name}")
     
     @changeprefix.command(invoke_without_command=True, help="Make your prefix end in a space.", aliases=['sp'])
-    @check_admin_or_owner()
+    @commands.is_owner()
     async def spaceprefix(self, ctx, *, prefix):
         with open("prefixes.json", "r") as f:
             prefixes = json.load(f)
