@@ -5,6 +5,7 @@ from html import unescape as unes
 import aiogoogletrans
 import aiohttp
 import aiowiki
+import async_cse
 import async_cleverbot
 import discord
 from discord.ext import commands
@@ -256,6 +257,35 @@ class Api(commands.Cog):
             return await ctx.send(
                 embed=discord.Embed(description=f"Cute {animal.title()}!", colour=self.client.colour).set_image(
                     url=resp['link']))
+    
+    @commands.group(aliases=['g'], invoke_without_command=True)
+    async def google(self, ctx, *, query=None):
+        """Shows you google search results for a specified query"""
+        client = async_cse.Search(secrets()['google_key'])
+        results = await client.search(query, safesearch=ctx.channel.is_nsfw())
+        embeds = []
+        for res in results:
+            embeds.append(
+                discord.Embed(colour=self.client.colour, title=res.title, description=res.description, url=res.url))
+        source = paginator.EmbedSource(embeds)
+        await client.close()
+        await paginator.CatchAllMenu(source=source).start(ctx)
+    
+    @google.command(aliases=['i'], invoke_without_command=True)
+    async def image(self, ctx, *, query=None):
+        """Shows you google image results for a specified query"""
+        client = async_cse.Search(secrets()['google_key'])
+        results = await client.search(query, safesearch=ctx.channel.is_nsfw())
+        embeds = []
+        for res in results:
+            if not res.image_url:
+                continue
+            else:
+                print(res.image_url)
+                embeds.append(discord.Embed(colour=self.client.colour, title=res.title, description=res.description,
+                                            url=res.url).set_image(url=res.image_url))
+        source = paginator.EmbedSource(embeds)
+        await paginator.CatchAllMenu(source=source).start(ctx)
 
 
 def setup(client):

@@ -228,7 +228,7 @@ class Meta(commands.Cog):
                 for item in res]
             return commits[:limit]
     
-    @commands.command(aliases=['info', 'ab', 'i'], help="Shows info on the bot.")
+    @commands.command(aliases=['info', 'ab'], help="Shows info on the bot.")
     async def about(self, ctx):
         delta_uptime = datetime.datetime.utcnow() - start_time
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)

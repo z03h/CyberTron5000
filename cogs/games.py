@@ -228,6 +228,7 @@ class Games(commands.Cog):
                     async with cs.get('https://dagpi.tk/api/wtp', headers=resp) as r:
                         resp = await r.json()
                     pokemon = resp['pokemon']
+                    print(pokemon)
                     async with cs.get(f"https://some-random-api.ml/pokedex?pokemon={pokemon['name']}") as r:
                         res = await r.json()
                 evo_line = []
@@ -374,7 +375,7 @@ class Games(commands.Cog):
                 msg = await self.client.wait_for('message', check=lambda m: m.author == ctx.author and not m.author.bot,
                                                  timeout=30.0)
                 if msg.content.lower() == str(resp['brand']).lower():
-                    embed = discord.Embed(title=f"Correct! The answer was {resp['brand']}", url=resp['wiki_url'],
+                    embed = discord.Embed(title=f"Correct! The answer was {resp['brand']}",
                                           colour=self.client.colour)
                     embed.set_image(url=resp['answer'])
                     return await ctx.send(embed=embed)
@@ -384,13 +385,13 @@ class Games(commands.Cog):
                     await ctx.send(embed=embed)
                     continue
                 elif msg.content.lower().startswith(f"{ctx.prefix}cancel"):
-                    embed = discord.Embed(title=f"The answer was {resp['brand']}", url=resp['wiki_url'],
+                    embed = discord.Embed(title=f"The answer was {resp['brand']}",
                                           colour=self.client.colour)
                     embed.set_image(url=resp['answer'])
                     return await ctx.send(embed=embed)
                 else:
                     continue
-            embed = discord.Embed(title=f"The answer was {resp['brand']}", url=resp['wiki_url'],
+            embed = discord.Embed(title=f"The answer was {resp['brand']}",
                                   colour=self.client.colour)
             embed.set_image(url=resp['answer'])
             return await ctx.send(embed=embed)
