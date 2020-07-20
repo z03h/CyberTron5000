@@ -51,16 +51,18 @@ class Events(commands.Cog):
         if "<@!697678160577429584>" == message.content:
             with open("prefixes.json", "r") as f:
                 prefix = json.load(f)
-                if str(message.guild.id) in prefix:
+                try:
                     pre = prefix[str(message.guild.id)]
-                    embed = discord.Embed(colour=self.client.colour,
-                                          description=f'**My prefix for {message.guild} is** `{pre}`\n\n**Do** '
-                                                      f'`{pre}help` **for a full list of commands.**\n\n'
-                                                      f'[Invite me to your server!]'
-                                                      f'(https://cybertron-5k.netlify.app/invite)\n\n[Join our help server!](https://discord.gg/aa9p43W)')
-                    embed.set_thumbnail(url=self.client.user.avatar_url)
-                    embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
-                    await message.channel.send(embed=embed)
+                except KeyError:
+                    pre = "="
+                embed = discord.Embed(colour=self.client.colour,
+                                      description=f'**My prefix for {message.guild} is** `{pre}`\n\n**Do** '
+                                                  f'`{pre}help` **for a full list of commands.**\n\n'
+                                                  f'[Invite me to your server!]'
+                                                  f'(https://cybertron-5k.netlify.app/invite)\n\n[Join our help server!](https://discord.gg/aa9p43W)')
+                embed.set_thumbnail(url=self.client.user.avatar_url)
+                embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
+                await message.channel.send(embed=embed)
     
     @commands.Cog.listener()
     async def on_guild_join(self, guild):

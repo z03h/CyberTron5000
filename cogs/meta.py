@@ -138,8 +138,10 @@ class Meta(commands.Cog):
         message = await ctx.send("** **")
         end = time.perf_counter()
         duration = round((end - start) * 1000, 3)
-        await message.edit(
-            content=f"```diff\n- Websocket Latency\n{round(self.client.latency * 1000, 3)} ms\n- Response Time\n{duration} ms```")
+        embed = discord.Embed(colour=self.client.colour)
+        embed.description = f"**Pong! :ping_pong:**\n→ Websocket Latency | **{round(self.client.latency * 1000, 3)}** ms | 🌐"
+        embed.description += f"\n→ Response Time | **{duration}** ms | ⏱"
+        await message.edit(embed=embed)
     
     @commands.command(aliases=["sourcecode", "src"], help="Shows source code for a given command")
     async def source(self, ctx, *, command=None):
@@ -232,7 +234,7 @@ class Meta(commands.Cog):
                     msg += f" - {item['commit']['committer']['name']}"
                 commits.append(msg)
             return commits[:limit]
-        
+    
     @commands.command(aliases=['ab', 'info'])
     @commands.is_owner()
     async def about(self, ctx):
@@ -243,9 +245,7 @@ class Meta(commands.Cog):
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
         a = f"**{days}** days, **{hours}** hours, **{minutes}** minutes, **{seconds}** seconds"
-        vc = 0
-        tc = 0
-        cc = 0
+        vc = tc = cc = 0
         for g in self.client.guilds:
             for c in g.channels:
                 if isinstance(c, discord.VoiceChannel):
@@ -260,11 +260,14 @@ class Meta(commands.Cog):
         embed.description += f"→ Latest Commits: {'|'.join(await self.get_commits(limit=3, author=False, names=False))}\n"
         embed.description += f"→ Used Memory | {cyberformat.bar(stat=psutil.virtual_memory()[2], max=100, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>')}\n→ CPU | {cyberformat.bar(stat=psutil.cpu_percent(), max=100, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>')}"
         embed.description += f"\n→ Uptime | {a}"
-        embed.description += f"\n**{(await lines_of_code()):,}** lines of code | **{len([f for f in os.listdir('cogs') if f.endswith('.py')])+1}** files\n{self.softwares[0]} {discord.__version__}\n{self.softwares[1]} {platform.python_version()}"
-        embed.add_field(name='Statistics', value=f'**{len(self.client.users):,}** users | **{len(self.client.guilds):,}** guilds | **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands | **{len(self.client.cogs)}** cogs | **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n<:category:716057680548200468> **{cc:,}** <:text_channel:703726554018086912> **{tc:,}** <:voice_channel:703726554068418560> **{vc:,}** | **{self.counter:,}** commands used since start')
-        embed.set_footer(text=f"Developed by {str(owner)} | Bot created {humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}", icon_url=owner.avatar_url)
+        embed.description += f"\n**{(await lines_of_code()):,}** lines of code | **{len([f for f in os.listdir('cogs') if f.endswith('.py')]) + 1}** files\n{self.softwares[0]} {discord.__version__}\n{self.softwares[1]} {platform.python_version()}"
+        embed.add_field(name='Statistics',
+                        value=f'**{len(self.client.users):,}** users | **{len(self.client.guilds):,}** guilds | **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands | **{len(self.client.cogs)}** cogs | **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n<:category:716057680548200468> **{cc:,}** <:text_channel:703726554018086912> **{tc:,}** <:voice_channel:703726554068418560> **{vc:,}** | **{self.counter:,}** commands used since start')
+        embed.set_footer(
+            text=f"Developed by {str(owner)} | Bot created {humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}",
+            icon_url=owner.avatar_url)
         await ctx.send(embed=embed)
-        
+    
     @commands.command()
     async def support(self, ctx):
         """Join the support server!"""
@@ -304,7 +307,8 @@ class Meta(commands.Cog):
         if limit < 1 or limit > 15:
             return await ctx.send(
                 f"<:warning:727013811571261540> **{ctx.author.name}**, limit must be greater than 0 and less than 16!")
-        commits = [f"{index}. {commit}" for index, commit in enumerate(await self.get_commits(limit, author=False, names=True), 1)]
+        commits = [f"{index}. {commit}" for index, commit in
+                   enumerate(await self.get_commits(limit, author=False, names=True), 1)]
         await ctx.send(embed=discord.Embed(description="\n".join(commits), colour=self.client.colour).set_author(
             name=f"Last {limit} GitHub Commit(s) for CyberTron5000",
             icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png",
@@ -346,13 +350,14 @@ class Meta(commands.Cog):
                         json.dump(res, f, indent=4)
                     await ctx.send("Followed suggestion!")
                 else:
-                    await ctx.send(f"Ok, suggestion not followed. If you ever want to follow it, simply do `{ctx.prefix}suggest follow {sugid}`")
+                    await ctx.send(
+                        f"Ok, suggestion not followed. If you ever want to follow it, simply do `{ctx.prefix}suggest follow {sugid}`")
         except asyncio.TimeoutError:
             await ms.edit(
                 content=f"You ran out of time! Suggestion not followed. If you want to follow this suggestion, do `{ctx.prefix}suggest follow {sugid}`")
             if ctx.guild.me.permissions_in(ctx.channel).manage_messages:
                 await ms.clear_reactions()
-                
+    
     @suggest.command()
     async def follow(self, ctx, id: str):
         """Follow a suggestion"""
@@ -365,7 +370,7 @@ class Meta(commands.Cog):
             await ctx.send(f"You have successfully followed suggestion `{id}`")
         except KeyError:
             await ctx.send("That suggestion was not found!")
-            
+    
     @suggest.command()
     async def unfollow(self, ctx, id: str):
         """Unfollow a suggestion"""
@@ -382,7 +387,7 @@ class Meta(commands.Cog):
             await ctx.send(f"You have successfully unfollowed suggestion `{id}`")
         except KeyError:
             await ctx.send("That suggestion was not found!")
-            
+    
     @suggest.command()
     @commands.is_owner()
     async def resolve(self, ctx, id: str, *, reason):

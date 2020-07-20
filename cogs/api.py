@@ -5,8 +5,8 @@ from html import unescape as unes
 import aiogoogletrans
 import aiohttp
 import aiowiki
-import async_cse
 import async_cleverbot
+import async_cse
 import discord
 from discord.ext import commands
 
