@@ -219,32 +219,50 @@ class Meta(commands.Cog):
                 title="Utils have a total of {:,.0f} lines of code!".format(await lines_utils()),
                 color=0x00dcff))
     
-    async def get_commits(self, limit: int = 3):
+    async def get_commits(self, limit: int = 3, names: bool = True, author: bool = True):
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://api.github.com/repos/niztg/CyberTron5000/commits") as r:
                 res = await r.json()
-            commits = [
-                f"[`{item['sha'][0:7]}`](https://github.com/niztg/CyberTron5000/commit/{item['sha']}) {item['commit']['message']} - {item['commit']['committer']['name']}"
-                for item in res]
+            commits = []
+            for item in res:
+                msg = f"[`{item['sha'][0:7]}`](https://github.com/niztg/CyberTron5000/commit/{item['sha']})"
+                if names:
+                    msg += f" {item['commit']['message']}"
+                if author:
+                    msg += f" - {item['commit']['committer']['name']}"
+                commits.append(msg)
             return commits[:limit]
-    
-    @commands.command(aliases=['info', 'ab'], help="Shows info on the bot.")
+        
+    @commands.command(aliases=['ab', 'info'])
+    @commands.is_owner()
     async def about(self, ctx):
+        """Shows you information regarding the bot"""
+        owner = await self.client.fetch_user(350349365937700864)
         delta_uptime = datetime.datetime.utcnow() - start_time
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
         a = f"**{days}** days, **{hours}** hours, **{minutes}** minutes, **{seconds}** seconds"
-        owner = await self.client.fetch_user(350349365937700864)
-        embed = discord.Embed(colour=self.client.colour, title=f"About {self.client.user.name}",
-                              description=f"{self.client.user.name} is a general purpose discord bot, and the best one! This project was started in April, around **{humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}**.\n\n• **[Invite me to your server!](https://cybertron-5k.netlify.app/invite)**\n• **[Join our help server!](https://discord.gg/2fxKxJH)**\n<:github:724036339426787380> **[Support this project on GitHub!](https://github.com/niztg/CyberTron5000)**\n🌐 **[Check out the website!](https://cybertron-5k.netlify.app/index.html)**\n<:reddit:703931951769190410> **[Join the subreddit!](https://www.reddit.com/r/CyberTron5000/)**\n\nCommands used since start: **{self.counter}** (cc <@!574870314928832533>)\nUptime: {a}\nUsed Memory: {cyberformat.bar(stat=psutil.virtual_memory()[2], max=100, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>')}\nCPU: {cyberformat.bar(stat=psutil.cpu_percent(), max=100, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>')}\n")
-        embed.add_field(name="_Statistics_",
-                        value=f"**{len(self.client.users):,}** users, **{len(self.client.guilds):,}** guilds • About **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands, **{len(self.client.cogs)}** cogs • About **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n**{await lines_of_code():,}** lines of code • " + '|'.join(
-                            self.softwares) + f"\ndiscord.py {discord.__version__} | Python {platform.python_version()}")
-        embed.set_thumbnail(url=self.client.user.avatar_url_as(static_format="png"))
-        embed.add_field(name="_Latest Commits_", value="\n".join(await self.get_commits()), inline=False)
-        embed.set_footer(text=self.version)
-        embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
+        vc = 0
+        tc = 0
+        cc = 0
+        for g in self.client.guilds:
+            for c in g.channels:
+                if isinstance(c, discord.VoiceChannel):
+                    vc += 1
+                elif isinstance(c, discord.TextChannel):
+                    tc += 1
+                elif isinstance(c, discord.CategoryChannel):
+                    cc += 1
+        embed = discord.Embed(colour=self.client.colour)
+        embed.set_author(name=f"About {self.client.user.name}", icon_url=self.client.user.avatar_url)
+        embed.description = f"→ [Invite](https://cybertron-5k.netlify.app/invite) | [Support](https://cybertron-5k.netlify.app/server) | <:github:724036339426787380> [GitHub](https://github.com/niztg/CyberTron5000) | <:cursor_default:734657467132411914>[Website](https://cybertron-5k.netlify.app) | <:karma:704158558547214426> [Reddit](https://reddit.com/r/CyberTron5000)\n"
+        embed.description += f"→ Latest Commits: {'|'.join(await self.get_commits(limit=3, author=False, names=False))}\n"
+        embed.description += f"→ Used Memory | {cyberformat.bar(stat=psutil.virtual_memory()[2], max=100, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>')}\n→ CPU | {cyberformat.bar(stat=psutil.cpu_percent(), max=100, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>')}"
+        embed.description += f"\n→ Uptime | {a}"
+        embed.description += f"\n**{(await lines_of_code()):,}** lines of code | **{len([f for f in os.listdir('cogs') if f.endswith('.py')])+1}** files\n{self.softwares[0]} {discord.__version__}\n{self.softwares[1]} {platform.python_version()}"
+        embed.add_field(name='Statistics', value=f'**{len(self.client.users):,}** users | **{len(self.client.guilds):,}** guilds | **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands | **{len(self.client.cogs)}** cogs | **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n<:category:716057680548200468> **{cc:,}** <:text_channel:703726554018086912> **{tc:,}** <:voice_channel:703726554068418560> **{vc:,}** | **{self.counter:,}** commands used since start')
+        embed.set_footer(text=f"Developed by {str(owner)} | Bot created {humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}", icon_url=owner.avatar_url)
         await ctx.send(embed=embed)
         
     @commands.command()
@@ -286,7 +304,7 @@ class Meta(commands.Cog):
         if limit < 1 or limit > 15:
             return await ctx.send(
                 f"<:warning:727013811571261540> **{ctx.author.name}**, limit must be greater than 0 and less than 16!")
-        commits = [f"{index}. {commit}" for index, commit in enumerate(await self.get_commits(limit), 1)]
+        commits = [f"{index}. {commit}" for index, commit in enumerate(await self.get_commits(limit, author=False, names=True), 1)]
         await ctx.send(embed=discord.Embed(description="\n".join(commits), colour=self.client.colour).set_author(
             name=f"Last {limit} GitHub Commit(s) for CyberTron5000",
             icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png",
