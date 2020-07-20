@@ -26,10 +26,12 @@ class Tags(commands.Cog):
             cm = []
             for command in ctx.command.commands:
                 cm.append(command)
-            final = [f"→ `{ctx.prefix}{ctx.command} {c.name} {c.signature}` • {c.help or 'No help provided'}" for c in
+            final = [f"`{ctx.prefix}{ctx.command} {c.name} {c.signature}` • {c.help or 'No help provided'}" for c in
                      cm]
-            final.append(f"→ `{ctx.prefix}all_tags` • Shows you all the tags in the guild")
-            return await ctx.send(f"**__Tag Functions__**\n" + "\n".join(final))
+            final.append(f"`{ctx.prefix}all_tags` • Shows you all the tags in the guild")
+            source = paginator.IndexedListSource(embed=discord.Embed(color=self.client.colour, title="Tag Commands"),
+                                                 data=final)
+            return await paginator.CatchAllMenu(source=source).start(ctx)
         tag = await self.client.pg_con.fetch("SELECT content FROM tags WHERE name = $1 AND guild_id = $2", name,
                                              str(ctx.guild.id))
         if not tag:

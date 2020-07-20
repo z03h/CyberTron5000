@@ -6,6 +6,7 @@ import aiohttp
 import discord
 from async_timeout import timeout
 from discord.ext import commands
+from uuid import uuid4
 
 from .utils import cyberformat, paginator
 from .utils.lists import INDICATOR_LETTERS
@@ -17,6 +18,7 @@ class Fun(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.tick = ":tick:733458499777855538"
+        self.owner = self.client.get_user(350349365937700864)
     
     @commands.command()
     async def horror(self, ctx, limit: int = 5):
@@ -302,6 +304,51 @@ class Fun(commands.Cog):
             async with cs.get(f"https://some-random-api.ml/binary?decode={message}") as r:
                 res = await r.json()
             await ctx.send(f'```diff\n! {res["text"]}\\n```')
+    
+    @commands.group(invoke_without_command=True)
+    async def todo(self, ctx):
+        """Shows you todo commands"""
+        cm = []
+        for command in ctx.command.commands:
+            cm.append(command)
+        final = [f"`{ctx.prefix}{ctx.command} {c.name} {c.signature}` • {c.help or 'No help provided'}" for c in
+                 cm]
+        source = paginator.IndexedListSource(embed=discord.Embed(color=self.client.colour, title="Todo Commands"),
+                                             data=final)
+        return await paginator.CatchAllMenu(source=source).start(ctx)
+    
+    @todo.command()
+    async def list(self, ctx):
+        """Shows you your todo list"""
+        result = await self.client.pg_con.fetch("SELECT * FROM todo WHERE user_id = $1", ctx.author.id)
+        final = [f"{a[1]} (ID: {a[0]})" for a in
+                 result]
+        source = paginator.IndexedListSource(embed=discord.Embed(color=self.client.colour).set_author(
+            name=f"{ctx.author}'s todo list (Total {len(result)})", icon_url=ctx.author.avatar_url),
+                                             data=final)
+        return await paginator.CatchAllMenu(source=source).start(ctx)
+    
+    @todo.command()
+    async def add(self, ctx, *, item):
+        """Adds an item to your todo list"""
+        id = str(uuid4())[:8]
+        await self.client.pg_con.execute("INSERT INTO todo (user_id, id, item) VALUES ($1, $2, $3)", ctx.author.id, id,
+                                         item)
+        await ctx.send(f"Added `{item}` to your todo list with the id `{id}`.")
+    
+    @todo.command()
+    async def resolve(self, ctx, id: str):
+        """Resolves an item from your todo list"""
+        a = await self.client.pg_con.fetch("SELECT item FROM todo WHERE id = $1", id)
+        if not a:
+            return await ctx.send("Item not found. Note that you have to remove items by their **id**, not their name.")
+        await self.client.pg_con.execute("DELETE FROM todo WHERE id = $1", id)
+        await ctx.send(f"<:tick:733458499777855538> | Item {id}, `{a[0][0]}` has been removed from your todo list!")
+    
+    @commands.command()
+    async def owner(self, ctx):
+        """Shows you who made this bot"""
+        return await ctx.send(f"it is {self.owner}")
 
 
 # @commands.Cog.listener()

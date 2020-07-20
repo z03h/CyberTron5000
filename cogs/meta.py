@@ -372,6 +372,7 @@ class Meta(commands.Cog):
         res.pop(str(id))
         with open("suggestions.json", "w") as f:
             json.dump(res, f, indent=4)
+        await self.client.pg_con.execute("DELETE FROM suggestions WHERE suggest_id = $1", id)
     
     @suggest.command(invoke_without_command=True)
     async def error(self, ctx, *, error):

@@ -32,7 +32,7 @@ class CyberTronHelpCommand(commands.HelpCommand):
         parent = command.full_parent_name
         if len(command.aliases) > 0:
             aliases = '•'.join(command.aliases)
-            fmt = f'{command.name}•c{aliases}'
+            fmt = f'{command.name}•{aliases}'
             if parent:
                 fmt = f'{parent} {fmt}'
             alias = fmt

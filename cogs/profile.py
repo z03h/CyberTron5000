@@ -103,8 +103,9 @@ class Profile(commands.Cog):
             voice_channels = [voice_channel for voice_channel in guild.voice_channels]
             categories = [category for category in guild.categories]
             region = REGIONS[f"{str(guild.region)}"]
+            banner_url = f" | [Banner URL]({ctx.guild.banner_url_as(format='png')})" if ctx.guild.banner_url else "\u200b"
             embed = discord.Embed(colour=self.client.colour,
-                                  description=f"**{guild.id}**\n<:owner:730864906429136907> **{guild.owner}**\n🗺 **{region}**\n<:emoji:734231060069613638> **{len(ctx.guild.emojis)}** | <:roles:734232012730138744> **{len(ctx.guild.roles)}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** <:voice_channel:703726554068418560>**{len(voice_channels)}**"
+                                  description=f"**{guild.id}**\n<:owner:730864906429136907> **{guild.owner}**\n🗺 **{region}**\n<:emoji:734231060069613638> **{len(ctx.guild.emojis)}** | <:roles:734232012730138744> **{len(ctx.guild.roles)}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** <:voice_channel:703726554068418560>**{len(voice_channels)}**\n<:asset:734531316741046283> [Icon URL]({ctx.guild.icon_url_as(static_format='png')}){banner_url}"
                                               f"\n{f'{n}'.join(people)}\n<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**\n<:boost:726151031322443787> **Tier: {guild.premium_tier}**\n{cyberformat.bar(stat=guild.premium_subscription_count, max=30, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>', show_stat=True)}")
             embed.set_author(name=f"{guild}", icon_url=guild.icon_url)
             embed.set_footer(
