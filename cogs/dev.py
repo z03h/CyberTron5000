@@ -220,6 +220,29 @@ class Developer(commands.Cog):
         await ctx.message.add_reaction(emoji=self.tick)
         await self.client.logout()
         subprocess.call([sys.executable, "ct5k.py"])
+    
+    @commands.group(invoke_without_command=True)
+    async def news(self, ctx):
+        """View the current news."""
+        embed = discord.Embed(colour=self.client.colour)
+        news = await self.client.pg_con.fetch("SELECT message, number FROM news")
+        if not news:
+            embed.description = "There is no news currently. Come back soon."
+        else:
+            embed.description = news[0][0]
+            embed.set_author(name=f"News update #{news[0][1]} for {self.client.user.name}",
+                             icon_url=self.client.user.avatar_url)
+        await ctx.send(embed=embed)
+    
+    @news.command()
+    @commands.is_owner()
+    async def update(self, ctx, *, message):
+        """Update the current news."""
+        number = await self.client.pg_con.fetch("SELECT number FROM news")
+        number = number[0][0] or 0
+        number += 1
+        await self.client.pg_con.execute("UPDATE news SET message = $1, number = $2", message, number)
+        await ctx.send(f"News updated to: ```{message}```")
 
 
 def setup(client):

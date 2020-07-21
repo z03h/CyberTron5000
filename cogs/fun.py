@@ -7,6 +7,7 @@ import discord
 from async_timeout import timeout
 from discord.ext import commands
 from uuid import uuid4
+from jikanpy import AioJikan
 
 from .utils import cyberformat, paginator
 from .utils.lists import INDICATOR_LETTERS
@@ -295,7 +296,7 @@ class Fun(commands.Cog):
         async with aiohttp.ClientSession() as cs:
             async with cs.get(f"https://some-random-api.ml/binary?text={message}") as r:
                 res = await r.json()
-            await ctx.send(f'```diff\n! {res["binary"]}\n```')
+            await ctx.send(f'{res["binary"]}')
     
     @commands.command(aliases=['fb', 'from-bin'])
     async def from_binary(self, ctx, *, message):
@@ -303,7 +304,7 @@ class Fun(commands.Cog):
         async with aiohttp.ClientSession() as cs:
             async with cs.get(f"https://some-random-api.ml/binary?decode={message}") as r:
                 res = await r.json()
-            await ctx.send(f'```diff\n! {res["text"]}\\n```')
+            await ctx.send(f'{res["text"]}')
     
     @commands.group(invoke_without_command=True)
     async def todo(self, ctx):
@@ -380,6 +381,26 @@ class Fun(commands.Cog):
                 res = await f.json()
             await ctx.send(embed=discord.Embed(color=self.client.colour).set_image(url=res['link']).set_author(
                 name=f"{ctx.author} hugged {member}!"))
+    
+    @commands.command()
+    async def anime(self, ctx, *, query):
+        async with AioJikan() as a:
+            naruto = await a.search(search_type='anime', query=query)
+        res = naruto['results'][0]
+        print(naruto['results'])
+        o = []
+        embed = discord.Embed(color=self.client.colour)
+        embed.set_thumbnail(url=res['image_url'])
+        embed.title = f"{res['title']}"
+        embed.url = f"{res['url']}"
+        embed.description = f"{naruto['results'][0]['synopsis']}"
+        embed.add_field(name="Info",
+                        value=f"Type | **{res['type']}**\n📺 | **{res['episodes']}**\n:star:️ | **{res['score']}**\n<:member:731190477927219231> | **{res['members']:,}**")
+        for x in range(2, len(naruto['results'])):
+            o.append(f"**{naruto['results'][x]['title']}**")
+        embed.add_field(name='\u200b', value='\u200b')
+        embed.add_field(name="Other Entries", value=f"\n".join(o[:5]))
+        await ctx.send(embed=embed)
 
 
 # @commands.Cog.listener()

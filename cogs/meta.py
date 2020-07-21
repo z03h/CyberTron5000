@@ -236,7 +236,6 @@ class Meta(commands.Cog):
             return commits[:limit]
     
     @commands.command(aliases=['ab', 'info'])
-    @commands.is_owner()
     async def about(self, ctx):
         """Shows you information regarding the bot"""
         owner = await self.client.fetch_user(350349365937700864)
@@ -254,6 +253,7 @@ class Meta(commands.Cog):
                     tc += 1
                 elif isinstance(c, discord.CategoryChannel):
                     cc += 1
+        news = await self.client.pg_con.fetch("SELECT message, number FROM news")
         embed = discord.Embed(colour=self.client.colour)
         embed.set_author(name=f"About {self.client.user.name}", icon_url=self.client.user.avatar_url)
         embed.description = f"→ [Invite](https://cybertron-5k.netlify.app/invite) | [Support](https://cybertron-5k.netlify.app/server) | <:github:724036339426787380> [GitHub](https://github.com/niztg/CyberTron5000) | <:cursor_default:734657467132411914>[Website](https://cybertron-5k.netlify.app) | <:karma:704158558547214426> [Reddit](https://reddit.com/r/CyberTron5000)\n"
@@ -261,8 +261,9 @@ class Meta(commands.Cog):
         embed.description += f"→ Used Memory | {cyberformat.bar(stat=psutil.virtual_memory()[2], max=100, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>')}\n→ CPU | {cyberformat.bar(stat=psutil.cpu_percent(), max=100, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>')}"
         embed.description += f"\n→ Uptime | {a}"
         embed.description += f"\n**{(await lines_of_code()):,}** lines of code | **{len([f for f in os.listdir('cogs') if f.endswith('.py')]) + 1}** files\n{self.softwares[0]} {discord.__version__}\n{self.softwares[1]} {platform.python_version()}"
-        embed.add_field(name='Statistics',
+        embed.add_field(name='<:popular4:732745781714354198> Statistics',
                         value=f'**{len(self.client.users):,}** users | **{len(self.client.guilds):,}** guilds | **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands | **{len(self.client.cogs)}** cogs | **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n<:category:716057680548200468> **{cc:,}** <:text_channel:703726554018086912> **{tc:,}** <:voice_channel:703726554068418560> **{vc:,}** | **{self.counter:,}** commands used since start')
+        embed.add_field(name=f"<:news:730866149109137520> News Update #{news[0][1]}", value=news[0][0], inline=False)
         embed.set_footer(
             text=f"Developed by {str(owner)} | Bot created {humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}",
             icon_url=owner.avatar_url)
