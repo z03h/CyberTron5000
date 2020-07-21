@@ -31,6 +31,7 @@ import os
 import asyncpg
 import discord
 from discord.ext import commands
+print(discord.__version__)
 
 
 def get_token():
@@ -50,12 +51,9 @@ async def get_prefix(client, message):
             command_prefix = commands.when_mentioned_or(pref)(client, message)
         except KeyError:
             command_prefix = commands.when_mentioned_or("=")(client, message)
-            data[str(message.guild.id)] = "="
-            with open("prefixes.json", "w") as f:
-                json.dump(f, data, indent=4)
         return command_prefix
     else:
-        return "="
+        return "c$"
 
 
 # client = commands.Bot(command_prefix=get_prefix, pm_help=None)
@@ -71,6 +69,8 @@ class CyberTron5000(commands.Bot):
                          allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False), case_insensitive=True)
         
         self.colour = 0x00dcff
+        self.tick = "<:tick:733458499777855538>"
+        self.x = "<:x:733458444346195990>"
         self.load_extension(name='jishaku')
     
     async def create_db_pool(self):
@@ -80,7 +80,7 @@ class CyberTron5000(commands.Bot):
     async def on_guild_join(self, guild):
         with open("prefixes.json", "r") as f:
             prefixes = json.load(f)
-        prefixes[str(guild.id)] = "="
+        prefixes[str(guild.id)] = "c$"
         with open("prefixes.json", "w") as f:
             json.dump(prefixes, f, indent=4)
     

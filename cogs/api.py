@@ -5,8 +5,8 @@ from html import unescape as unes
 import aiogoogletrans
 import aiohttp
 import aiowiki
-import async_cleverbot
 import async_cse
+import async_cleverbot
 import discord
 from discord.ext import commands
 
@@ -146,22 +146,16 @@ class Api(commands.Cog):
                     f"<:warning:727013811571261540> **{ctx.author.name}**, package not found! Check for spelling.")
             else:
                 return await ctx.send(f"Unknown error occured: {er.__class__.__name__}. Code: {r.status}")
+        
+        embed = discord.Embed(colour=self.client.colour)
         char = '\u200b' if not res['info']['author_email'] else f' • {res["info"]["author_email"]}'
-        embed = discord.Embed(title=res['info']['name'], url=res['info']['project_url'], colour=self.client.colour,
-                              description=f"{res['info']['summary']}\n:scales: **{res['info']['license']}**\n[Home Page]({res['info']['home_page']})\n[Package URL]({res['info']['package_url']})",
-                              timestamp=ctx.message.created_at)
-        embed.set_footer(text=f"{res['info']['name']} version {res['info']['version']}")
-        embed.set_author(name=res['info']['author'] + char, icon_url=self.pypi)
-        embed.add_field(name="Python Requirements", value=res['info']['requires_python'].replace("*", ""),
-                        inline=False) if res['info']['requires_python'] else None
-        pm = '\u200b' if res['info']['requires_dist'] and len(res['info']['requires_dist']) <= 5 else "\n..."
-        pm2 = '\u200b' if res['info']['requires_dist'] and len(res['info']['classifiers']) <= 5 else "\n..."
+        embed.set_author(name=f"{res['info']['name']} {res['info']['version']}", icon_url=self.pypi,
+                         url=res['info']['project_url'])
+        embed.description = f"{res['info']['summary']}\n"
+        embed.description += f"<:author:734991429843157042> | **{res['info']['author']}{char}**\n<:python:706850228652998667> | **{res['info']['requires_python'].replace('*', '') or '???'}**\n⚖️ | **{res['info']['license'] or '???'}**\n<:releases:734994325020213248> | **{len(res['releases'])}**"
         embed.add_field(name=f"Requires (Total {len(res['info']['requires_dist'])})",
-                        value="\n".join([f"• {i}" for i in res['info']['requires_dist']][:5]) + pm, inline=False) if \
-            res['info']['requires_dist'] else None
-        embed.add_field(name=f"Classifiers (Total {len(res['info']['classifiers'])})",
-                        value="\n".join([f"• {i}" for i in res['info']['classifiers']][:5]) + pm2, inline=False) if \
-            res['info']['classifiers'] else None
+                        value=", ".join([f"`{i}`" for i in res['info']['requires_dist']][:5]), inline=False) if \
+        res['info']['requires_dist'] else None
         await ctx.send(embed=embed)
     
     @commands.command(aliases=['cb'])

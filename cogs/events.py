@@ -39,6 +39,9 @@ class Events(commands.Cog):
         elif isinstance(error, commands.CommandNotFound) or isinstance(error, commands.NotOwner):
             pass
         
+        elif isinstance(error, commands.BotMissingPermissions):
+            await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}')
+        
         else:
             await ctx.message.add_reaction(self.x_r)
             await self.client.get_channel(730556685214548088).send(
@@ -81,6 +84,10 @@ class Events(commands.Cog):
                               f"{humanize.naturaltime(__import__('datetime').datetime.utcnow() - guild.created_at)}")
         await c.send(f"Joined Guild! This is guild **#{len(self.client.guilds)}**", embed=embed)
         await guild.me.edit(nick=f"(c$) {self.client.user.name}")
+        channels = sorted([t for t in guild.text_channels if t.permissions_for(guild.me).send_messages],
+                          key=lambda x: x.position)
+        await channels[0].send(embed=discord.Embed(color=self.client.colour,
+                                                   description="Hi, thanks for inviting me! My default prefix is `c$`, but you can change it by doing `c$changeprefix <new prefix>`.\n→ [Invite](https://cybertron-5k.netlify.app/invite) | [Support](https://cybertron-5k.netlify.app/server) | <:github:724036339426787380> [GitHub](https://github.com/niztg/CyberTron5000) | <:cursor_default:734657467132411914>[Website](https://cybertron-5k.netlify.app) | <:karma:704158558547214426> [Reddit](https://reddit.com/r/CyberTron5000)\n"))
     
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):

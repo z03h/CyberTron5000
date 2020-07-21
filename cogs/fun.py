@@ -1,12 +1,12 @@
 import asyncio
 import random
 import string
-from uuid import uuid4
 
 import aiohttp
 import discord
 from async_timeout import timeout
 from discord.ext import commands
+from uuid import uuid4
 
 from .utils import cyberformat, paginator
 from .utils.lists import INDICATOR_LETTERS
