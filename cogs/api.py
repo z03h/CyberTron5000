@@ -153,9 +153,6 @@ class Api(commands.Cog):
                          url=res['info']['project_url'])
         embed.description = f"{res['info']['summary']}\n"
         embed.description += f"<:author:734991429843157042> | **{res['info']['author']}{char}**\n<:python:706850228652998667> | **{res['info']['requires_python'].replace('*', '') or '???'}**\n⚖️ | **{res['info']['license'] or '???'}**\n<:releases:734994325020213248> | **{len(res['releases'])}**"
-        embed.add_field(name=f"Requires (Total {len(res['info']['requires_dist'])})",
-                        value=", ".join([f"`{i}`" for i in res['info']['requires_dist']][:5]), inline=False) if \
-        res['info']['requires_dist'] else None
         await ctx.send(embed=embed)
     
     @commands.command(aliases=['cb'])
