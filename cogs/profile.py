@@ -9,6 +9,7 @@ from discord.ext import commands
 
 from .utils import cyberformat, paginator
 from .utils.lists import REGIONS, sl, status_mapping, badge_mapping
+from typing import Union
 
 matplotlib.use('Agg')
 
@@ -52,23 +53,28 @@ class GuildStats:
         plt.close(fig=fig)
         return discord.File("guild.png", filename="guild.png")
     
-    async def check_nitro(self, m: discord.Member):
+    async def check_nitro(self, m: Union[discord.Member, int]):
+        if isinstance(m, int):
+            m = await self.context.bot.fetch_user(int)
+        else:
+            m = m
         if m.is_avatar_animated():
             return True
         if m in self.context.guild.premium_subscribers:
             return True
-        if m.activity:
-            for a in m.activities:
-                if a.type is not discord.ActivityType.custom:
-                    continue
-                else:
-                    if a.emoji:
-                        if a.emoji.is_custom_emoji():
-                            return True
+        if not isinstance(m, discord.User):
+            if m.activity:
+                for a in m.activities:
+                    if a.type is not discord.ActivityType.custom:
+                        continue
+                    else:
+                        if a.emoji:
+                            if a.emoji.is_custom_emoji():
+                                return True
+                            else:
+                                return False
                         else:
                             return False
-                    else:
-                        return False
         return False
 
 
@@ -79,8 +85,11 @@ class Profile(commands.Cog):
         self.client = client
     
     @commands.command(aliases=["av"], help="Gets the avatar of a user.")
-    async def avatar(self, ctx, *, avamember: discord.Member = None):
-        avamember = avamember or ctx.author
+    async def avatar(self, ctx, *, avamember: Union[discord.Member, int] = None):
+        if isinstance(avamember, int):
+            avamember = await self.client.fetch_user(avamember)
+        else:
+            avamember = avamember or ctx.author
         embed = discord.Embed(colour=0x00dcff).set_image(url=avamember.avatar_url_as(static_format='png'))
         embed.set_author(name=f"Showing the profile picture of {avamember}")
         return await ctx.send(embed=embed)
@@ -275,17 +284,18 @@ class Profile(commands.Cog):
         await ctx.send(embed=embed)
     
     @commands.command(aliases=['mi', 'member', 'ui', 'user', 'userinfo'])
-    async def memberinfo(self, ctx, *, member: discord.Member = None):
+    async def memberinfo(self, ctx, *, member: Union[discord.Member, int] = None):
         """
         Gives you userinfo
         """
-        m = member or ctx.author
-        u = '\u200b'
-        embed = discord.Embed(colour=0x00dcff).set_author(
-            name=f"{str(m)}{f' | {m.display_name}' if m.name != m.display_name else u}", icon_url=m.avatar_url,
-            url=m.avatar_url_as(static_format='png', size=4096))
+        embed = discord.Embed(color=self.client.colour)
+        if isinstance(member, int):
+            m = await self.client.fetch_user(member)
+        else:
+            m = member or ctx.author
+        embed.set_author(name=str(m), icon_url=m.avatar_url, url=m.avatar_url_as(static_format='png', size=4096))
         if not m.bot:
-            is_bot = "\u200b"
+            is_bot = ""
         else:
             if m.public_flags.verified_bot:
                 is_bot = "<:verifiedbot1:730904128397639682><:verifiedbot2:730904163365421128>"
@@ -302,57 +312,62 @@ class Profile(commands.Cog):
                 continue
         a = [badge_mapping[str(b)] for b in final if b in badge_mapping]
         a.append("<:nitro:730892254092198019>") if await GuildStats(ctx).check_nitro(m) else None
-        local_emojis = []
-        if m == ctx.guild.owner:
-            local_emojis.append("<:owner:730864906429136907>")
-        if m.permissions_in(ctx.channel).kick_members:
-            local_emojis.append("<:Mods:713500789670281216>")
-        if m in ctx.guild.premium_subscribers:
-            local_emojis.append("<:nitro:731722710283190332>")
-        char = '\u200b' if not a or not local_emojis else " | "
-        le = " ".join(local_emojis)
-        if not a and not local_emojis and is_bot == '\u200b':
-            embed.description = f'\n→ ID | **{m.id}**\n'
-        else:
-            embed.description = f"\n{' '.join(a) if a else u}{char}{le}{is_bot}"
-            embed.description += f'\n→ ID | **{m.id}**\n'
-        embed.description += f'→ Created Account | **{humanize.naturaltime(datetime.datetime.utcnow() - m.created_at)}**\n'
-        embed.description += f'→ Joined Guild | **{humanize.naturaltime(datetime.datetime.utcnow() - m.joined_at)}**\n'
-        #   embed.description += f'→ Join Position | **{(sorted(ctx.guild.members, key=lambda m: m.joined_at).index(m)) + 1:,}**\n'
-        embed.description += f'→ Guilds Shared With Bot | **{len([g for g in ctx.bot.guilds if g.get_member(m.id)]) if m != ctx.bot.user else f"bro this is literally the bot ({len(ctx.bot.guilds)})"}**'
-        if m.top_role.id == ctx.guild.id:
-            pass
-        else:
-            embed.description += f'\n→ Roles | **{len([r for r in m.roles if r.id != ctx.guild.id])}** | Top Role | {m.top_role.mention}'
-        embed.description += f'\n→ [Avatar URL]({m.avatar_url_as(static_format="png", size=4096)})\n'
-        embed.add_field(name='Status',
-                        value=f'{sl[m.web_status]} **Web Status**\n{sl[m.desktop_status]} **Desktop Status**\n{sl[m.mobile_status]} **Mobile Status**')
-        if m.status == discord.Status.offline or not m.activities:
-            pass
-        else:
-            activities = []
-            for activity in m.activities:
-                if isinstance(activity, discord.Spotify):
-                    activity = f'Listening to **{activity.title}** by **{", ".join(activity.artists)}**'
-                elif isinstance(activity, discord.Game):
-                    activity = f'Playing **{activity.name}**'
-                elif isinstance(activity, discord.Streaming):
-                    activity = f'Streaming **{activity.name}** on **{activity.platform}**'
-                else:
-                    emoji = ''
-                    if activity.emoji:
-                        emoji = ':thinking:' if activity.emoji.is_custom_emoji() and not ctx.bot.get_emoji(
-                            activity.emoji.id) else activity.emoji
-                        if str(emoji) == ":thinking:":
-                            embed.set_footer(text="🤔 indicates a custom emoji")
-                    char = "\u200b" if activity.type == discord.ActivityType.custom else " "
-                    if str(activity.name) == "None":
-                        ac = "\u200b"
+        if isinstance(m, discord.User):
+            embed.description = f'{is_bot} {" ".join(a)}\n→ ID | **{m.id}**\n'
+            embed.description += f'→ Created Account | **{humanize.naturaltime(datetime.datetime.utcnow() - m.created_at)}**\n'
+            embed.description += f'→ Guilds Shared With Bot | **{len([g for g in ctx.bot.guilds if g.get_member(m.id)]) if m != ctx.bot.user else f"bro this is literally the bot ({len(ctx.bot.guilds)})"}**'
+            embed.description += f'\n→ [Avatar URL]({m.avatar_url_as(static_format="png", size=4096)})\n'
+            return await ctx.send(embed=embed)
+        elif isinstance(m, discord.Member):
+            local_emojis = []
+            if m == ctx.guild.owner:
+                local_emojis.append("<:owner:730864906429136907>")
+            if m.permissions_in(ctx.channel).kick_members:
+                local_emojis.append("<:Mods:713500789670281216>")
+            if m in ctx.guild.premium_subscribers:
+                local_emojis.append("<:nitro:731722710283190332>")
+            char = '\u200b' if not a or not local_emojis else " | "
+            le = " ".join(local_emojis)
+            if not a and not local_emojis and is_bot == '':
+                embed.description = f'\n→ ID | **{m.id}**\n'
+            else:
+                embed.description = f'{is_bot}{" ".join(a)}{char}{le}\n→ ID | **{m.id}**\n'
+            embed.description += f'→ Created Account | **{humanize.naturaltime(datetime.datetime.utcnow() - m.created_at)}**\n'
+            embed.description += f'→ Joined Guild | **{humanize.naturaltime(datetime.datetime.utcnow() - m.joined_at)}**\n'
+            embed.description += f'→ Guilds Shared With Bot | **{len([g for g in ctx.bot.guilds if g.get_member(m.id)]) if m != ctx.bot.user else f"bro this is literally the bot ({len(ctx.bot.guilds)})"}**'
+            if m.top_role.id == ctx.guild.id:
+                pass
+            else:
+                embed.description += f'\n→ Roles | **{len([r for r in m.roles if r.id != ctx.guild.id])}** | Top Role | {m.top_role.mention}'
+            embed.description += f'\n→ [Avatar URL]({m.avatar_url_as(static_format="png", size=4096)})\n'
+            embed.add_field(name='Status',
+                            value=f'{sl[m.web_status]} **Web Status**\n{sl[m.desktop_status]} **Desktop Status**\n{sl[m.mobile_status]} **Mobile Status**')
+            if m.status == discord.Status.offline or not m.activities:
+                pass
+            else:
+                activities = []
+                for activity in m.activities:
+                    if isinstance(activity, discord.Spotify):
+                        activity = f'Listening to **{activity.title}** by **{", ".join(activity.artists)}**'
+                    elif isinstance(activity, discord.Game):
+                        activity = f'Playing **{activity.name}**'
+                    elif isinstance(activity, discord.Streaming):
+                        activity = f'Streaming **{activity.name}** on **{activity.platform}**'
                     else:
-                        ac = str(activity.name)
-                    activity = f'{emoji} {status_mapping[activity.type]}{char}**{ac}**'
-                activities.append(activity)
-            embed.add_field(name='Activities', value='\n'.join(activities))
+                        emoji = ''
+                        if activity.emoji:
+                            emoji = ':thinking:' if activity.emoji.is_custom_emoji() and not ctx.bot.get_emoji(
+                                activity.emoji.id) else activity.emoji
+                            if str(emoji) == ":thinking:":
+                                embed.set_footer(text="🤔 indicates a custom emoji")
+                        char = "\u200b" if activity.type == discord.ActivityType.custom else " "
+                        if str(activity.name) == "None":
+                            ac = "\u200b"
+                        else:
+                            ac = str(activity.name)
+                        activity = f'{emoji} {status_mapping[activity.type]}{char}**{ac}**'
+                    activities.append(activity)
+                embed.add_field(name='Activities', value='\n'.join(activities))
         return await ctx.send(embed=embed)
     
     @commands.command(aliases=['perms'], help="Gets a user's permissions in the current channel.")
