@@ -152,7 +152,7 @@ class Api(commands.Cog):
         embed.set_author(name=f"{res['info']['name']} {res['info']['version']}", icon_url=self.pypi,
                          url=res['info']['project_url'])
         embed.description = f"{res['info']['summary']}\n"
-        embed.description += f"<:author:734991429843157042> | **{res['info']['author']}{char}**\n<:python:706850228652998667> | **{res['info']['requires_python'].replace('*', '') or '???'}**\n⚖️ | **{res['info']['license'] or '???'}**\n<:releases:734994325020213248> | **{len(res['releases'])}**"
+        embed.description += f"<:author:734991429843157042> | **{res['info']['author']}{char}**\n<:python:706850228652998667> | **{res['info']['requires_python'].replace('*', '') or '???'}**\n⚖️ | **{res['info']['license'] or '???'}**\n<:releases:734994325020213248> | **{len(res['releases'])}**\n<:github:734999696845832252> | [Home Page]({res['info']['home_page']})"
         await ctx.send(embed=embed)
     
     @commands.command(aliases=['cb'])
