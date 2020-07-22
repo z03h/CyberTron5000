@@ -21,6 +21,7 @@ from discord.ext import commands
 
 from .utils import cyberformat
 from .utils.checks import check_admin_or_owner
+import codecs
 
 start_time = datetime.datetime.utcnow()
 
@@ -415,6 +416,36 @@ class Meta(commands.Cog):
         owner = self.client.get_user(id=350349365937700864)
         await owner.send(f"You should fix ```{error}```")
         await ctx.message.add_reaction(emoji=":tick:733458499777855538")
+
+    
+    @commands.command(aliases=['stats'])
+    async def statistics(self, ctx):
+        """Shows you statistics about the bot"""
+        cc = coro = func = cls = cmts = 0
+        for filename in os.listdir("cogs"):
+            if not filename.endswith(".py"):
+                continue
+            with codecs.open(f"./cogs/{str(filename)}", "r") as f:
+                for l in f:
+                    l = l.strip()
+                    if not len(l):
+                        continue
+                    if l.startswith('#'):
+                        cmts += 1
+                    if l.startswith('def'):
+                        func += 1
+                    if l.startswith('async def'):
+                        coro += 1
+                    if l.startswith('class'):
+                        cls += 1
+        for g in self.client.guilds:
+            for c in g.channels:
+                    cc += 1
+        embed = discord.Embed(colour=self.client.colour).set_author(name=f"Stats for {self.client.user.name}", icon_url=self.client.user.avatar_url)
+        embed.add_field(name="Code", value=f"<:class:735360032434290830> **{cls:,}**\n<:function:735517201561288775> **{func+coro:,}**\n<:coroutine:735520608183648337> **{coro:,}**\n:speech_balloon: **{cmts:,}**")
+        embed.add_field(name="Stats", value=f'<:Discord:735530547992068146> **{len(self.client.guilds)}**\n<:text_channel:703726554018086912> **{cc:,}**\n<:member:731190477927219231> **{len(self.client.users):,}**\n:gear: **{len(self.client.cogs)}** | <:command:735534754673459303> **{len(self.client.commands)}**')
+        embed.set_footer(text=f"{await lines_of_code():,} lines of code")
+        await ctx.send(embed=embed)
 
 
 def setup(client):

@@ -1,8 +1,11 @@
 import ast
 import json
 import os
+import io
 import subprocess
 import sys
+import textwrap
+import inspect
 
 import discord
 import praw
@@ -96,7 +99,7 @@ class Developer(commands.Cog):
                                       password=secrets()['password'],
                                       user_agent=secrets()['user_agent'])
             }
-            exec(compile(parsed, filename="<ast>", mode="exec"), env)
+            exec(compile(parsed, filename="<eval>", mode="exec"), env)
             
             try:
                 result = (await eval(f"{fn_name}()", env))

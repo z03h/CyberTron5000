@@ -110,18 +110,23 @@ class Api(commands.Cog):
     @commands.command(help="Urban Dictionary", aliases=['urban', 'define', 'def'])
     async def urbandict(self, ctx, *, terms):
         try:
+            embeds = []
             async with aiohttp.ClientSession() as cs:
                 async with cs.get('http://api.urbandictionary.com/v0/define', params={'term': terms}) as r:
                     res = await r.json()
-                term = res['list'][0]['definition']
-                defin = res['list'][0]['example']
-                term = cyberformat.hyper_replace(term, ['[', ']'], ['', ''])
-                example = cyberformat.hyper_replace(defin, ['[', ']'], ['', ''])
-                await cs.close()
-                await ctx.send(
-                    embed=discord.Embed(title=terms, description=term[:2000] + f"\n\n**Example:**\n{example}",
-                                        colour=self.client.colour))
-        except(IndexError, KeyError, ValueError):
+                for item in res['list']:
+                    embed = discord.Embed(color=self.client.colour)
+                    embed.title = item['word']
+                    embed.set_author(name=item['author'])
+                    embed.description = cyberformat.hyper_replace(str(item['definition']), old=['[', ']'], new=['', ''])
+                    embed.description += f"\n👍 **{item['thumbs_up']:,}** 👎 **{item['thumbs_down']}**"
+                    embed.add_field(name="Example",
+                                    value=cyberformat.hyper_replace(str(item['example']), old=['[', ']'], new=['', '']))
+                    embeds.append(embed)
+            source = paginator.EmbedSource(embeds)
+            await paginator.CatchAllMenu(source=source).start(ctx)
+        except Exception as error:
+            await ctx.send(error.__class__.__name__)
             await ctx.send(f"<:warning:727013811571261540> **{ctx.author.name}**, term not found on urban dictionary.")
     
     @commands.command()
@@ -277,6 +282,15 @@ class Api(commands.Cog):
                                             url=res.url).set_image(url=res.image_url))
         source = paginator.EmbedSource(embeds)
         await paginator.CatchAllMenu(source=source).start(ctx)
+    
+    @commands.command()
+    @commands.is_owner()
+    async def youtube(self, ctx, id=None):
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get("https://www.googleapis.com/youtube/v3/channels",
+                              params={'key': "AIzaSyDsGKHtbzNCJR-0rOhYhJJ52OdZjEX8j8s"}) as r:
+                await r.json()
+        print(r)
 
 
 def setup(client):

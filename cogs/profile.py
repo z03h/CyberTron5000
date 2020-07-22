@@ -327,6 +327,9 @@ class Profile(commands.Cog):
             if m in ctx.guild.premium_subscribers:
                 local_emojis.append("<:nitro:731722710283190332>")
             char = '\u200b' if not a or not local_emojis else " | "
+            n = f' | {m.display_name}' if m.name != m.display_name else ""
+            embed.set_author(name=str(m) + n, icon_url=m.avatar_url,
+                             url=m.avatar_url_as(static_format='png', size=4096))
             le = " ".join(local_emojis)
             if not a and not local_emojis and is_bot == '':
                 embed.description = f'\n→ ID | **{m.id}**\n'
