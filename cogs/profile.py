@@ -91,7 +91,14 @@ class Profile(commands.Cog):
         else:
             avamember = avamember or ctx.author
         embed = discord.Embed(colour=0x00dcff).set_image(url=avamember.avatar_url_as(static_format='png'))
-        embed.set_author(name=f"Showing the profile picture of {avamember}")
+        embed.add_field(name='Formats',
+                        value=f"[WEBP]({avamember.avatar_url_as(format='webp')}) | [PNG]({avamember.avatar_url_as(format='png')}) | [JPG]({avamember.avatar_url_as(format='jpg')})")
+        if ".gif" in str(avamember.avatar_url):
+            embed.set_field_at(index=0, name='Formats',
+                               value=f"[WEBP]({avamember.avatar_url_as(format='webp')}) | [PNG]({avamember.avatar_url_as(format='png')}) | [JPG]({avamember.avatar_url_as(format='jpg')}) | [GIF]({avamember.avatar_url})")
+        embed.add_field(name="Sizes",
+                        value=f'[128]({avamember.avatar_url_as(static_format="png", size=128)}) | [256]({avamember.avatar_url_as(static_format="png", size=256)}) | [512]({avamember.avatar_url_as(static_format="png", size=512)}) | [1024]({avamember.avatar_url_as(static_format="png", size=1024)}) | [2048]({avamember.avatar_url_as(static_format="png", size=2048)})')
+        embed.set_author(name=f"{avamember}")
         return await ctx.send(embed=embed)
     
     @commands.group(aliases=['si', 'serverinfo', 'gi', 'guild', 'server'], help="Gets the guild's info.",

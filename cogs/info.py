@@ -106,7 +106,7 @@ class CyberTronHelpCommand(commands.HelpCommand):
         embed = discord.Embed(title=self.get_command_signature(group), colour=0x00dcff)
         for c in entries:
             char = "\u200b" if not c.aliases else "|"
-            sc.append(f"→ `{group.name} [{c.name}{char}{'|'.join(c.aliases)}] {c.signature or f'{u}'}` | {c.help}")
+            sc.append(f"→ `{group.name} {c.name}{char}{'|'.join(c.aliases)} {c.signature or f'{u}'}` | {c.help}")
         embed.description = f"{group.help}\n\n" + "\n".join(sc)
         await self.context.send(embed=embed)
 

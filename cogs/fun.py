@@ -337,14 +337,15 @@ class Fun(commands.Cog):
                                          item)
         await ctx.send(f"Added `{item}` to your todo list with the id `{id}`.")
     
-    @todo.command()
-    async def resolve(self, ctx, id: str):
+    @todo.command(aliases=['rm', 'r', 'remove'])
+    async def resolve(self, ctx, id: str, *, reason):
         """Resolves an item from your todo list"""
         a = await self.client.pg_con.fetch("SELECT item FROM todo WHERE id = $1", id)
         if not a:
             return await ctx.send("Item not found. Note that you have to remove items by their **id**, not their name.")
         await self.client.pg_con.execute("DELETE FROM todo WHERE id = $1", id)
-        await ctx.send(f"<:tick:733458499777855538> | Item {id}, `{a[0][0]}` has been removed from your todo list!")
+        await ctx.send(
+            f"<:tick:733458499777855538> | Item {id}, `{a[0][0]}` has been removed from your todo list:\n{reason}")
     
     @commands.command()
     async def owner(self, ctx):

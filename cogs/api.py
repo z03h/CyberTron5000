@@ -140,6 +140,7 @@ class Api(commands.Cog):
     
     @commands.command()
     async def pypi(self, ctx, *, package):
+        """Shows info on a PyPi package"""
         try:
             async with aiohttp.ClientSession() as cs:
                 async with cs.get(f"https://pypi.org/pypi/{package}/json") as r:
@@ -157,7 +158,9 @@ class Api(commands.Cog):
         embed.set_author(name=f"{res['info']['name']} {res['info']['version']}", icon_url=self.pypi,
                          url=res['info']['project_url'])
         embed.description = f"{res['info']['summary']}\n"
-        embed.description += f"<:author:734991429843157042> | **{res['info']['author']}{char}**\n<:python:706850228652998667> | **{(res['info']['requires_python'] or '???').replace('*', '')}**\n⚖️ | **{res['info']['license'] or '???'}**\n<:releases:734994325020213248> | **{len(res['releases'])}**\n<:github:734999696845832252> | [Home Page]({res['info']['home_page']})"
+        embed.description += f"<:author:734991429843157042> **{res['info']['author']}{char}**\n<:python:706850228652998667> **{(res['info']['requires_python'] or '???').replace('*', '')}**\n⚖️ **{res['info']['license'] or '???'}**\n<:releases:734994325020213248> **{len(res['releases'])}**"
+        for key, value in res['info']['project_urls'].items():
+            embed.description += f"\n[{key.title()}]({value})"
         await ctx.send(embed=embed)
     
     @commands.command(aliases=['cb'])
@@ -282,7 +285,7 @@ class Api(commands.Cog):
                                             url=res.url).set_image(url=res.image_url))
         source = paginator.EmbedSource(embeds)
         await paginator.CatchAllMenu(source=source).start(ctx)
-    
+
 
 def setup(client):
     client.add_cog(Api(client))

@@ -189,8 +189,11 @@ class Moderation(commands.Cog):
             await member.add_roles(role)
             await ctx.message.add_reaction(emoji=self.tick)
             await asyncio.sleep(min)
-            await ctx.send(f"{member.mention} unmuted automatically.")
-            await member.remove_roles(role)
+            if role not in member.roles:
+                await ctx.send(f"{member.mention} unmuted automatically.")
+                await member.remove_roles(role)
+            else:
+                pass
     
     @commands.command()
     @commands.has_permissions(manage_messages=True)

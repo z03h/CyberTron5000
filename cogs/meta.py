@@ -420,12 +420,28 @@ class Meta(commands.Cog):
     
     @commands.command(aliases=['stats'])
     async def statistics(self, ctx):
-        """Shows you statistics about the bot"""
+        """Shows you statistics"""
         cc = coro = func = cls = cmts = 0
         for filename in os.listdir("cogs"):
             if not filename.endswith(".py"):
                 continue
             with codecs.open(f"./cogs/{str(filename)}", "r") as f:
+                for l in f:
+                    l = l.strip()
+                    if not len(l):
+                        continue
+                    if l.startswith('#'):
+                        cmts += 1
+                    if l.startswith('def'):
+                        func += 1
+                    if l.startswith('async def'):
+                        coro += 1
+                    if l.startswith('class'):
+                        cls += 1
+        for filename in os.listdir("cogs/utils"):
+            if not filename.endswith(".py"):
+                continue
+            with codecs.open(f"./cogs/utils/{str(filename)}", "r") as f:
                 for l in f:
                     l = l.strip()
                     if not len(l):
