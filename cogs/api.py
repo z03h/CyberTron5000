@@ -283,15 +283,6 @@ class Api(commands.Cog):
         source = paginator.EmbedSource(embeds)
         await paginator.CatchAllMenu(source=source).start(ctx)
     
-    @commands.command()
-    @commands.is_owner()
-    async def youtube(self, ctx, id=None):
-        async with aiohttp.ClientSession() as cs:
-            async with cs.get("https://www.googleapis.com/youtube/v3/channels",
-                              params={'key': "AIzaSyDsGKHtbzNCJR-0rOhYhJJ52OdZjEX8j8s"}) as r:
-                await r.json()
-        print(r)
-
 
 def setup(client):
     client.add_cog(Api(client))
