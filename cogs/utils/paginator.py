@@ -9,27 +9,27 @@ class CatchAllMenu(menus.MenuPages, inherit_buttons=False):
         """go to the first page"""
         await self.show_page(0)
     
-    @menus.button('<:arrow_left:731310897989156884>', position=menus.First(1))
+    @menus.button('<:arrow_left:731310897989156884>', position=menus.Position(0))
     async def go_to_previous_page(self, payload):
         """go to the previous page"""
         await self.show_checked_page(self.current_page - 1)
     
-    @menus.button('<:stop_button:731316755485425744>', position=menus.Last(2))
+    @menus.button('<:stop_button:731316755485425744>', position=menus.Position(3))
     async def stop_pages(self, payload):
         """stops the pagination session."""
         self.stop()
         await self.message.delete()
     
-    @menus.button('<:arrow_right:731311292346007633>', position=menus.Last(0))
+    @menus.button('<:arrow_right:731311292346007633>', position=menus.Position(5))
     async def go_to_next_page(self, payload):
         """go to the next page"""
         await self.show_checked_page(self.current_page + 1)
     
-    @menus.button('<:last_page_right:731315722986324018>', position=menus.Last(1))
+    @menus.button('<:last_page_right:731315722986324018>', position=menus.Position(6))
     async def go_to_last_page(self, payload):
         await self.show_page(self._source.get_max_pages() - 1)
     
-    @menus.button('<:1234:731401199797927986>', position=menus.Last())
+    @menus.button('<:1234:731401199797927986>', position=menus.Position(4))
     async def _1234(self, payload):
         i = await self.ctx.send("What page would you like to go to?")
         msg = await self.ctx.bot.wait_for('message', check=lambda m: m.author == self.ctx.author)
@@ -50,7 +50,7 @@ class CatchAllMenu(menus.MenuPages, inherit_buttons=False):
             await self.show_checked_page(index)
             await i.edit(content=f"Transported to page **{page}**!", delete_after=3)
     
-    @menus.button('<:info:731324830724390974>', position=menus.Last(1))
+    @menus.button('<:info:731324830724390974>', position=menus.Position(1))
     async def on_info(self, payload):
         await self.message.edit(embed=discord.Embed(description=self.info_page, colour=self.ctx.bot.colour))
     
@@ -89,7 +89,7 @@ class IndexedListSource(menus.ListPageSource):
                 index = 0
             else:
                 embed.add_field(name='Entries',
-                                value='\n'.join(f'`[{i:,d}]` {v}' for i, v in enumerate(entries, start=offset)),
+                                value='\n'.join(f'`[{i:,}]` {v}' for i, v in enumerate(entries, start=offset)),
                                 inline=False)
                 index = 0
         else:

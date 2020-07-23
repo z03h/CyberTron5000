@@ -458,8 +458,8 @@ class Meta(commands.Cog):
             for c in g.channels:
                     cc += 1
         embed = discord.Embed(colour=self.client.colour).set_author(name=f"Stats for {self.client.user.name}", icon_url=self.client.user.avatar_url)
-        embed.add_field(name="Code", value=f"<:class:735360032434290830> **{cls:,}**\n<:function:735517201561288775> **{func+coro:,}**\n<:coroutine:735520608183648337> **{coro:,}**\n:speech_balloon: **{cmts:,}**")
-        embed.add_field(name="Stats", value=f'<:Discord:735530547992068146> **{len(self.client.guilds)}**\n<:text_channel:703726554018086912> **{cc:,}**\n<:member:731190477927219231> **{len(self.client.users):,}**\n:gear: **{len(self.client.cogs)}** | <:command:735534754673459303> **{len(self.client.commands)}**')
+        embed.add_field(name="Code", value=f"<:class:735360032434290830> Classes | **{cls:,}**\n<:function:735517201561288775> Functions | **{func+coro:,}**\n<:coroutine:735520608183648337> Coroutines | **{coro:,}**\n:speech_balloon: Comments | **{cmts:,}**")
+        embed.add_field(name="Stats", value=f'<:Discord:735530547992068146> Servers | **{len(self.client.guilds)}**\n<:text_channel:703726554018086912> Channels | **{cc:,}**\n<:member:731190477927219231> Members | **{len(self.client.users):,}**\n:gear: Cogs **{len(self.client.cogs)}** | <:command:735534754673459303> Commands **{len(self.client.commands)}**')
         embed.set_footer(text=f"{await lines_of_code():,} lines of code")
         await ctx.send(embed=embed)
 

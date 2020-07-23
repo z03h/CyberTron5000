@@ -52,7 +52,12 @@ class Fun(commands.Cog):
                 'http://tinyurl.com/ycjuvusq',
                 'https://cdn.discordapp.com/avatars/350349365937700864/f38bc11cf4360a9267a55962fcd71809.png?size=1024',
                 'https://media.discordapp.net/attachments/381963689470984203/732283634190516304/coolweavile.png?width=962&height=962',
-                'https://images-ext-1.discordapp.net/external/XVtT9nLyPYTWfNw4GSjvRMKibuKafi6_VCyVwSfW4C8/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/350349365937700864/d027959b2a204f7587092a7a249e7377.png?width=962&height=962'
+                'https://images-ext-1.discordapp.net/external/XVtT9nLyPYTWfNw4GSjvRMKibuKafi6_VCyVwSfW4C8/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/350349365937700864/d027959b2a204f7587092a7a249e7377.png?width=962&height=962',
+                'https://media.discordapp.net/attachments/735325249138065468/735681377785348156/image0.png',
+                'https://media.discordapp.net/attachments/735325249138065468/735681378292596736/image1.png',
+                'https://media.discordapp.net/attachments/735325249138065468/735681378867478528/image2.png',
+                'https://media.discordapp.net/attachments/735325249138065468/735681379387441152/image3.png',
+                'https://media.discordapp.net/attachments/735325249138065468/735682125239681074/image0.png'
                 'http://i.some-random-api.ml/pokemon/weavile.png']
         embeds = [discord.Embed(colour=self.client.colour).set_image(url=p) for p in pfps]
         a = paginator.CatchAllMenu(paginator.EmbedSource(embeds))
@@ -309,13 +314,12 @@ class Fun(commands.Cog):
     @commands.group(invoke_without_command=True)
     async def todo(self, ctx):
         """Shows you todo commands"""
-        cm = []
-        for command in ctx.command.commands:
-            cm.append(command)
-        final = [f"`{ctx.prefix}{ctx.command} {c.name} {c.signature}` • {c.help or 'No help provided'}" for c in
-                 cm]
-        source = paginator.IndexedListSource(embed=discord.Embed(color=self.client.colour, title="Todo Commands"),
-                                             data=final)
+        result = await self.client.pg_con.fetch("SELECT * FROM todo WHERE user_id = $1", ctx.author.id)
+        final = [f"{a[1]} (ID: {a[0]})" for a in
+                 result]
+        source = paginator.IndexedListSource(embed=discord.Embed(color=self.client.colour).set_author(
+            name=f"{ctx.author}'s todo list (Total {len(result)})", icon_url=ctx.author.avatar_url),
+            data=final)
         return await paginator.CatchAllMenu(source=source).start(ctx)
     
     @todo.command()
@@ -338,7 +342,7 @@ class Fun(commands.Cog):
         await ctx.send(f"Added `{item}` to your todo list with the id `{id}`.")
     
     @todo.command(aliases=['rm', 'r', 'remove'])
-    async def resolve(self, ctx, id: str, *, reason):
+    async def resolve(self, ctx, id: str, *, reason=None):
         """Resolves an item from your todo list"""
         a = await self.client.pg_con.fetch("SELECT item FROM todo WHERE id = $1", id)
         if not a:
@@ -399,9 +403,22 @@ class Fun(commands.Cog):
                         value=f"Type | **{res['type']}**\n📺 | **{res['episodes']}**\n:star:️ | **{res['score']}**\n<:member:731190477927219231> | **{res['members']:,}**")
         for x in range(2, len(naruto['results'])):
             o.append(f"**{naruto['results'][x]['title']}**")
-        embed.add_field(name='\u200b', value='\u200b')
         embed.add_field(name="Other Entries", value=f"\n".join(o[:5]))
         await ctx.send(embed=embed)
+    
+    @commands.command(aliases=['choice'])
+    @commands.cooldown(1, 45, commands.BucketType.user)
+    async def chose(self, ctx, *choices):
+        c = random.choice(choices)
+        embed = discord.Embed(color=self.client.colour).set_author(name="Choice-O-Matic")
+        m = await ctx.send(embed=embed)
+        a = m.embeds[0]
+        for choice in random.sample(choices, len(choices)):
+            a.description = f"`{choice}`"
+            await m.edit(embed=a)
+            await asyncio.sleep(0.44)
+        await m.edit(embed=discord.Embed(color=self.client.colour, description=f"`{c}`").set_author(
+            name="Choice-O-Matic").add_field(name="My Choice", value=f'`{c}`!'))
 
 
 # @commands.Cog.listener()

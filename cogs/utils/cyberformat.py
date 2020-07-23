@@ -61,20 +61,35 @@ def bool_help(value: bool, true: str = None, false: str = None):
         return false
 
 
-def bar(stat: int, max: int, filled: str, empty: str, show_stat: bool = False):
-    percent = round((stat / max) * 100, 1)
-    if percent > 100:
-        bar = f"{percent}% {filled * 10} 100.0%" if not show_stat else f"{stat} {filled * 10} {max:,}"
-        return bar
-    elif percent <= 0:
-        bar = f"{percent}% {empty * 10} 100.0%" if not show_stat else f"{stat} {empty * 10} {max:,}"
-        return bar
-    elif 0 < percent < 5:
-        return f"{str(percent)}% {filled * 1}{empty * 9} 100.0%" if not show_stat else f"{str(stat)} {filled * 1}{empty * 9} {max:,}"
-    else:
-        total_filled = round(percent / 10)
-        total_empty = 10 - (round(percent / 10))
-        return f"{str(percent)}% {filled * total_filled}{empty * total_empty} 100.0%" if not show_stat else f"{str(stat)} {filled * total_filled}{empty * total_empty} {max:,}"
+def bar(stat: int, max: int, filled: str, empty: str, pointer: bool = True, show_stat: bool = None):
+    if not pointer:
+        percent = round((stat / max) * 100, 1)
+        if percent > 100:
+            bar = f"{percent}% {filled * 10} 100.0%" if not show_stat else f"{filled * 10}"
+            return bar
+        elif percent <= 0:
+            bar = f"{percent}% {empty * 10} 100.0%" if not show_stat else f"{empty * 10}"
+            return bar
+        elif 0 < percent < 5:
+            return f"{str(percent)}% {filled * 1}{empty * 9} 100.0%" if not show_stat else f"{filled * 1}{empty * 9}"
+        else:
+            total_filled = round(percent / 10)
+            total_empty = 10 - (round(percent / 10))
+            return f"{str(percent)}% {filled * total_filled}{empty * total_empty} 100.0%" if not show_stat else f"{filled * total_filled}{empty * total_empty}"
+    if pointer is True:
+        percent = round((stat / max) * 100, 1)
+        if percent > 100:
+            bar = f"{percent}% {filled * 10} 100.0%" if not show_stat else f"{filled * 10}"
+            return bar
+        elif percent <= 0:
+            bar = f"{percent}% {empty * 10} 100.0%" if not show_stat else f"{empty * 10}"
+            return bar
+        elif 0 < percent < 5:
+            return f"{str(percent)}% {filled * 1}{empty * 9} 100.0%" if not show_stat else f"{filled * 1}{empty * 9}"
+        else:
+            total_filled = round(percent / 10)
+            total_empty = 10 - (round(percent / 10))
+            return f"{str(percent)}% {filled * (total_filled-1)}{empty}{filled * total_empty} 100.0%" if not show_stat else f"{filled * (total_filled - 1)}{empty}{filled * total_empty}"
 
 
 def fieldify(embed: discord.Embed, names: list, values: list, inline: bool = True, limit: int = None):

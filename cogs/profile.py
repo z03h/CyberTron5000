@@ -90,7 +90,7 @@ class Profile(commands.Cog):
             avamember = await self.client.fetch_user(avamember)
         else:
             avamember = avamember or ctx.author
-        embed = discord.Embed(colour=0x00dcff).set_image(url=avamember.avatar_url_as(static_format='png'))
+        embed = discord.Embed(colour=self.client.colour).set_image(url=avamember.avatar_url_as(static_format='png'))
         embed.add_field(name='Formats',
                         value=f"[WEBP]({avamember.avatar_url_as(format='webp')}) | [PNG]({avamember.avatar_url_as(format='png')}) | [JPG]({avamember.avatar_url_as(format='jpg')})")
         if ".gif" in str(avamember.avatar_url):
@@ -122,7 +122,7 @@ class Profile(commands.Cog):
             banner_url = f" | [Banner URL]({ctx.guild.banner_url_as(format='png')})" if ctx.guild.banner_url else "\u200b"
             embed = discord.Embed(colour=self.client.colour,
                                   description=f"**{guild.id}**\n<:owner:730864906429136907> **{guild.owner}**\n🗺 **{region}**\n<:emoji:734231060069613638> **{len(ctx.guild.emojis)}** | <:roles:734232012730138744> **{len(ctx.guild.roles)}**\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** <:voice_channel:703726554068418560>**{len(voice_channels)}**\n<:asset:734531316741046283> [Icon URL]({ctx.guild.icon_url_as(static_format='png')}){banner_url}"
-                                              f"\n{f'{n}'.join(people)}\n<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**\n<:boost:726151031322443787> **Tier: {guild.premium_tier}**\n{cyberformat.bar(stat=guild.premium_subscription_count, max=30, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>', show_stat=True)}")
+                                              f"\n{f'{n}'.join(people)}\n<:bot:703728026512392312> **{GuildStats(ctx).num_bot}**\n<:boost:726151031322443787> **Tier: {guild.premium_tier}**\n{guild.premium_subscription_count} {cyberformat.bar(stat=guild.premium_subscription_count, max=30, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>', show_stat=True)} {30}")
             embed.set_author(name=f"{guild}", icon_url=guild.icon_url)
             embed.set_footer(
                 text=f"Guild created {humanize.naturaltime(datetime.datetime.utcnow() - ctx.guild.created_at)}")
@@ -437,12 +437,12 @@ class Profile(commands.Cog):
         for a in member.activities:
             if isinstance(a, discord.Spotify):
                 embed = discord.Embed(colour=a.colour).set_author(
-                    icon_url="https://cdn.discordapp.com/emojis/383172031597903872.png?v=1",
+                    icon_url=a.album_cover_url,
                     name=f"Spotify Status for {member}")
-                embed.set_thumbnail(url=a.album_cover_url)
-                embed.set_footer(text=a.track_id)
-                embed.description = f"**{a.album} - {a.title}**\n{', '.join(a.artists)}"
-                embed.description += f"\nDuration: **{datetime.datetime.utcfromtimestamp(a.duration.seconds).strftime('%-M:%S')}**"
+                le_bar = cyberformat.bar(stat=(datetime.datetime.utcnow() - a.start).seconds, max=a.duration.seconds,
+                                         filled='─', empty='⚪️', show_stat=True, pointer=True)
+                embed.description = f"[{a.album} | {a.title} - {', '.join(a.artists)}](https://open.spotify.com/track/{a.track_id})"
+                embed.description += f"\n`{datetime.datetime.utcfromtimestamp((datetime.datetime.utcnow() - a.start).seconds).strftime('%-M:%S')}` {le_bar} `{datetime.datetime.utcfromtimestamp(a.duration.seconds).strftime('%-M:%S')}`"
                 return await ctx.send(embed=embed)
             else:
                 continue

@@ -44,6 +44,10 @@ class Events(commands.Cog):
         
         elif isinstance(error, commands.BadUnionArgument):
             await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}')
+        
+        elif isinstance(error, commands.CommandOnCooldown):
+            await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}')
+        
         else:
             await ctx.message.add_reaction(self.x_r)
             await self.client.get_channel(730556685214548088).send(
@@ -125,6 +129,12 @@ class Events(commands.Cog):
                     suff = "\u200b"
                 send = cyberformat.hyper_replace(str(r), old=[' i ', "i'm", "i'll"], new=[' I ', "I'm", "I'll"])
                 await message.channel.send(f"**{message.author.name}**, {send}{suff}")
+    
+    @commands.Cog.listener(name='on_message')
+    async def monke(self, message):
+        if (message.channel.id == 735694049700347954) or (message.channel.id == 735690974340317216):
+            for i in ['🇲', '🇴', '🇳', '🇰', '🇪']:
+                await message.add_reaction(i)
 
 
 def setup(client):
