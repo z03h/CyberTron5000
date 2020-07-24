@@ -85,9 +85,7 @@ class Moderation(commands.Cog):
                 pass
             else:
                 index = valid_emojis.index(res[0].emoji)
-                p = (len(m.reactions)) - res[0].count
-                percent = round(p / len(m.reactions) * 100, 2)
-                embed.set_field_at(index=index, name=names[index], value=f"{res[0].count} | {percent}%", inline=False)
+                embed.set_field_at(index=index, name=names[index], value=f"{res[0].count}", inline=False)
                 await e.edit(embed=embed)
                 continue
     
@@ -159,7 +157,8 @@ class Moderation(commands.Cog):
                 actions.append(
                     f"{x.user.name} {lists.audit_actions[x.action]} {x.target} ({humanize.naturaltime(__import__('datetime').datetime.utcnow() - x.created_at)})")
             source = paginator.IndexedListSource(embed=discord.Embed(colour=self.client.colour).set_author(
-                name=f"Last Audit Log Actions for {ctx.guild}", icon_url=ctx.guild.icon_url), data=actions)
+                name=f"Last Audit Log Actions for {ctx.guild}",
+                icon_url="https://cdn.discordapp.com/emojis/446847139977625620.png?v=1"), data=actions)
             menu = paginator.CatchAllMenu(source=source)
             await menu.start(ctx)
         except Exception as er:

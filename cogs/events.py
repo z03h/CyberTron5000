@@ -52,7 +52,7 @@ class Events(commands.Cog):
             await ctx.message.add_reaction(self.x_r)
             await self.client.get_channel(730556685214548088).send(
                 embed=discord.Embed(colour=self.client.colour, title="Error!",
-                                    description=f"Error on `{ctx.command}`: {error.__class__.__name__}\n```py\n{error}```\n**Server:** {ctx.guild}\n**Author:** {ctx.author}\n[URL]({ctx.message.jump_url})"))
+                                    description=f"Error on `{ctx.command}`: `{error.__class__.__name__}`\n```py\n{error}```\n**Server:** {ctx.guild}\n**Author:** {ctx.author}\n[URL]({ctx.message.jump_url})"))
     
     @commands.Cog.listener(name="on_message")
     async def on_user_mention(self, message):
