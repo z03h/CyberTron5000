@@ -21,7 +21,5 @@ These are only some of CyberTron's commands!
   </ul>
 
 ### <em>License</em>
-CyberTron5000 is under the Unlicense. (See: UNLICENSE)
+CyberTron5000 is under the AGPLv3 License. (See: LICENSE)
 
-#### <em>What exactly does this mean?</em>
-You can use, steal, copy, claim, do whatever you want with the code of CyberTron5000, no conditions or strings attached <strong>at all.</strong> (See: https://unlicense.org.)
