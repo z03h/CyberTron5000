@@ -65,7 +65,7 @@ class CyberTronHelpCommand(commands.HelpCommand):
         for cg, cm in itertools.groupby(entries, key=key):
             cats = []
             cm = sorted(cm, key=lambda c: c.name)
-            cats.append(f'**{cg}**\n{"|".join([f"`{c.name}`" for c in cm])}\n')
+            cats.append(f'**{cg}**\n{"•".join([f"`{c.name}`" for c in cm])}\n')
             embed.description += "\n".join(cats)
             total += len([c for c in cm])
         embed.set_author(name=f"CyberTron5000 Commands (Total {total})")

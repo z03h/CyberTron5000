@@ -192,6 +192,16 @@ class Developer(commands.Cog):
             await ctx.send(embed=embed)
             await ctx.message.add_reaction(emoji=":tick:733458499777855538")
         
+        elif len(extension) == 1 and extension[0] == "~":
+            cogs = [c[:-3] for c in os.listdir('cogs') if c.endswith(".py")]
+            for f in cogs:
+                self.client.reload_extension(f'cogs.{f}')
+            a = []
+            for x in cogs:
+                a.append(f"{reload} `cogs.{x}`")
+            await ctx.message.add_reaction(emoji=":tick:733458499777855538")
+            await ctx.send(embed=discord.Embed(description="\n".join(a), colour=self.client.colour))
+        
         else:
             cogs = [c[:-3] for c in os.listdir('cogs') if c.endswith(".py")]
             for i in extension:

@@ -21,6 +21,28 @@ def secrets():
         return json.load(f)
 
 
+async def fetch_rtfm(res):
+    items = []
+    for item in res:
+        item.pop("module")
+        if item not in items:
+            items.append(item)
+        else:
+            continue
+    data = []
+    for item in items:
+        location = ''
+        if item['path'].startswith("commands"):
+            location += "https://discordpy.readthedocs.io/en/latest/ext/commands/api.html?#discord.ext.commands."
+        elif item['path'].startswith("discord"):
+            location += "https://discordpy.readthedocs.io/en/latest/api.html?#discord."
+        if not item['parent']:
+            data.append(f"[`{item['object']}`]({location}{item['object']})")
+        else:
+            data.append(f"[`{item['parent']}.{item['object']}`]({location}{item['parent']}.{item['object']})")
+    return data
+
+
 class Api(commands.Cog):
     """Interact with various API's"""
     
@@ -285,6 +307,20 @@ class Api(commands.Cog):
                                             url=res.url).set_image(url=res.image_url))
         source = paginator.EmbedSource(embeds)
         await paginator.CatchAllMenu(source=source).start(ctx)
+    
+    @commands.command(aliases=['rtfd'])
+    async def rtfm(self, ctx, *, query: str = None):
+        if not query:
+            return await ctx.send("https://discordpy.readthedocs.io/en/latest/")
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f"https://rtfs.eviee.me/dpy?search={query}") as r:
+                res = await r.json()
+            if not res:
+                return await ctx.send("no results.")
+        embed = discord.Embed(color=self.client.colour)
+        data = await fetch_rtfm(res)
+        embed.description = '\n'.join(data[:8])
+        await ctx.send(embed=embed)
 
 
 def setup(client):

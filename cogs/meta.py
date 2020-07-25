@@ -152,10 +152,7 @@ class Meta(commands.Cog):
         u = '\u200b'
         if not command:
             return await ctx.send(
-                embed=discord.Embed(colour=self.client.colour).set_author(
-                    name=f"⭐️ Check out the full sourcecode on GitHub!",
-                    url=f"https://github.com/niztg/CyberTron5000",
-                    icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png"))
+                embed=discord.Embed(title="<:github:734999696845832252> :star: Check out the full sourcecode on GitHub!", url=f"https://github.com/niztg/CyberTron5000", colour=self.client.colour))
         elif command == "help":
             await ctx.send(embed=discord.Embed(
                 description=f"This code was too long for Discord, you can see it instead [on GitHub](https://github.com/niztg/CyberTron5000/blob/master/cogs/info.py#L9-L109)",

@@ -123,16 +123,21 @@ class Reddit(commands.Cog):
                     f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
     
     @commands.command(aliases=['iu'], help="Shows you the banner or icon of a subreddit (on old Reddit).")
-    async def icon(self, ctx, subreddit, choice="img"):
+    async def icon(self, ctx, subreddit, choice="icon"):
         async with ctx.typing():
-            reddit = self.reddit.subreddit(subreddit)
-            choices = ['img', 'banner']
-            resp = [reddit.icon_img, reddit.banner_img]
-            if choice in choices:
-                embed = discord.Embed(title=f'r/{reddit.display_name}', colour=self.client.colour)
-                await ctx.send(embed=embed.set_image(url=resp[choices.index(choice)]))
-            else:
-                return await ctx.send("Error! Please pick `banner` or `img`.")
+            async with aiohttp.ClientSession() as cs:
+                async with cs.get(f"https://reddit.com/r/{subreddit}/about/.json") as r:
+                    res = await r.json()
+                data = res['data']
+            icon = data['community_icon'].split("?")[0]
+            banner = data['banner_background_image'].split("?")[0]
+            choices = ['banner', 'icon']
+            images = [banner, icon]
+            if choice not in choices:
+                return await ctx.send(f"Error! Please chose between {' or '.join([f'`{a}`' for a in choices])}!")
+            await ctx.send(embed=discord.Embed(colour=self.client.colour, title=f'r/{subreddit}',
+                                               url=images[choices.index(choice)]).set_image(
+                url=images[choices.index(choice)]))
     
     @commands.command(help="Shows you a wiki page for a subreddit.")
     async def reddit_wiki(self, ctx, subreddit, *, page):
@@ -288,7 +293,7 @@ class Reddit(commands.Cog):
                     description=f"{data['public_description']}\n**{data['subscribers']:,}** subscribers | **{data['active_user_count']:,}** active users",
                     colour=self.client.colour).set_author(name=data['display_name_prefixed'],
                                                           url=f"https://reddit.com/r/{subreddit}", icon_url=icon)
-                embed.description += f'\n[Icon URL]({str(icon)})\n[Banner URL]({str(banner)})'
+                embed.description += f'\n<:asset:734531316741046283> [Icon URL]({str(icon)}) | [Banner URL]({str(banner)})'
                 async with aiohttp.ClientSession() as cs:
                     async with cs.get(f"https://www.reddit.com/r/{subreddit}/about/moderators.json") as r:
                         resp = await r.json()
@@ -297,7 +302,7 @@ class Reddit(commands.Cog):
                     embed.add_field(name=f"Mods (Total {len(mods)})", value="\n".join(
                         [f"[{mod['name']}](https://reddit.com/user/{mod['name']})" for mod in mods[:10]]))
                     embed.set_footer(
-                        text=f"Subreddit created {datetime.datetime.utcfromtimestamp(data['created_utc']).strftime('%B %d, %Y')}")
+                        text=f"Subreddit created {humanize.naturaltime(datetime.datetime.utcnow() - datetime.datetime.utcfromtimestamp(data['created_utc']))}")
                     return await ctx.send(embed=embed) if not data['over18'] or data[
                         'over18'] and ctx.channel.is_nsfw() else await ctx.send(
                         f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
