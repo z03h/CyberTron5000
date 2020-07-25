@@ -15,7 +15,6 @@ matplotlib.use('Agg')
 
 
 # •
-
 class GuildStats:
     """
     Guild Stats
@@ -329,8 +328,8 @@ class Profile(commands.Cog):
             local_emojis = []
             if m == ctx.guild.owner:
                 local_emojis.append("<:owner:730864906429136907>")
-            if m.permissions_in(ctx.channel).kick_members:
-                local_emojis.append("<:Mods:713500789670281216>")
+            if m.permissions_in(ctx.channel).ban_members:
+                local_emojis.append("<:ban:735959654504333407>")
             if m in ctx.guild.premium_subscribers:
                 local_emojis.append("<:nitro:731722710283190332>")
             char = '\u200b' if not a or not local_emojis else " "
@@ -429,6 +428,7 @@ class Profile(commands.Cog):
         embed.add_field(name=f'Position ({index + 1})', value='\u200b' + '\n'.join(r[one:two]), inline=False)
         embed.add_field(name='Permissions', value='\u200b' + ', '.join(perms))
         embed.description += f"\n:paintbrush: **{role.colour}**\n<:member:731190477927219231> **{len(role.members)}**\n<:ping:733142612839628830> {role.mention}"
+        embed.set_footer(text=f'Role created {humanize.naturaltime(datetime.datetime.utcnow() - role.created_at)}')
         await ctx.send(embed=embed)
     
     @commands.command(aliases=['spot'])
@@ -437,16 +437,51 @@ class Profile(commands.Cog):
         for a in member.activities:
             if isinstance(a, discord.Spotify):
                 embed = discord.Embed(colour=a.colour).set_author(
-                    icon_url=a.album_cover_url,
+                    icon_url="https://www.freepnglogos.com/uploads/spotify-logo-png/spotify-logo-vector-download-11.png",
                     name=f"Spotify Status for {member}")
                 le_bar = cyberformat.bar(stat=(datetime.datetime.utcnow() - a.start).seconds, max=a.duration.seconds,
                                          filled='─', empty='⚪️', show_stat=True, pointer=True)
-                embed.description = f"[{a.album} | {a.title} - {', '.join(a.artists)}](https://open.spotify.com/track/{a.track_id})"
+                b = len([i for i in list(le_bar) if i == "⚪"])
+                while b > 1:
+                    if b > 1:
+                        le_bar = cyberformat.bar(stat=(datetime.datetime.utcnow() - a.start).seconds,
+                                                 max=a.duration.seconds,
+                                                 filled='─', empty='⚪️', show_stat=True, pointer=True)
+                        b = len([i for i in list(le_bar) if i == "⚪"])
+                    else:
+                        le_bar = le_bar
+                        b = len([i for i in list(le_bar) if i == "⚪"])
+                embed.description = f"[{', '.join(a.artists)} - {a.title}](https://open.spotify.com/track/{a.track_id})"
                 embed.description += f"\n`{datetime.datetime.utcfromtimestamp((datetime.datetime.utcnow() - a.start).seconds).strftime('%-M:%S')}` {le_bar} `{datetime.datetime.utcfromtimestamp(a.duration.seconds).strftime('%-M:%S')}`"
+                embed.description += f"\nAlbum | **{a.album}**"
+                embed.set_thumbnail(url=a.album_cover_url)
                 return await ctx.send(embed=embed)
             else:
                 continue
         return await ctx.send(f"{member} is not listening to Spotify!")
+    
+    @commands.command(aliases=['channel', 'chan', 'ci'])
+    async def channelinfo(self, ctx, channel: discord.TextChannel = None):
+        """Shows info on a channel."""
+        channel = channel or ctx.channel
+        td = {
+            True: "<:nsfw:730852009032286288>",
+            False: "<:text_channel:703726554018086912>",
+        }
+        if channel.overwrites_for(ctx.guild.default_role).read_messages is False:
+            url = "<:text_locked:730929388832686090>"
+        else:
+            if channel.is_news():
+                url = "<:news:730866149109137520>"
+            else:
+                url = td[channel.is_nsfw()]
+        embed = discord.Embed(colour=self.client.colour)
+        embed.title = f"{url} {channel.name} | {channel.id}"
+        last_message = await channel.fetch_message(channel.last_message_id)
+        embed.description = f"{channel.topic or ''}\n{f'<:category:716057680548200468> **{channel.category}**' if channel.category else ''} <:member:731190477927219231> **{len(channel.members):,}** {f'<:pin:735989723591344208> **{len([*await channel.pins()])}**' if await channel.pins() else ''} <:msg:735993207317594215> [Last Message]({last_message.jump_url})"
+        embed.set_footer(
+            text=f'Channel created {humanize.naturaltime(datetime.datetime.utcnow() - channel.created_at)}c')
+        await ctx.send(embed=embed)
 
 
 def setup(client):

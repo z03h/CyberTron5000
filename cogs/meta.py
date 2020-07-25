@@ -20,7 +20,7 @@ import psutil
 from discord.ext import commands
 
 from .utils import cyberformat
-from .utils.checks import check_admin_or_owner
+from .utils.checks import check_admin_or_owner, beta_squad
 import codecs
 
 start_time = datetime.datetime.utcnow()
@@ -136,7 +136,9 @@ class Meta(commands.Cog):
     @commands.command(help="Checks the bot's ping.")
     async def ping(self, ctx):
         start = time.perf_counter()
-        message = await ctx.send("** **")
+        a = discord.Embed(colour=self.client.colour)
+        a.description = f"**Pong! :ping_pong:**\n→ Websocket Latency | **{round(self.client.latency * 1000, 3)}** ms | 🌐"
+        message = await ctx.send(embed=a)
         end = time.perf_counter()
         duration = round((end - start) * 1000, 3)
         embed = discord.Embed(colour=self.client.colour)
@@ -263,7 +265,7 @@ class Meta(commands.Cog):
         embed.description += f"\n→ Uptime | {a}"
         embed.description += f"\n**{(await lines_of_code()):,}** lines of code | **{len([f for f in os.listdir('cogs') if f.endswith('.py')]) + 1}** files\n{self.softwares[0]} {discord.__version__}\n{self.softwares[1]} {platform.python_version()}"
         embed.add_field(name='<:popular4:732745781714354198> Statistics',
-                        value=f'**{len(self.client.users):,}** users | **{len(self.client.guilds):,}** guilds | **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len(self.client.commands)}** commands | **{len(self.client.cogs)}** cogs | **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n<:category:716057680548200468> **{cc:,}** <:text_channel:703726554018086912> **{tc:,}** <:voice_channel:703726554068418560> **{vc:,}** | **{self.counter:,}** commands used since start')
+                        value=f'**{len(self.client.users):,}** users | **{len(self.client.guilds):,}** guilds | **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len([c for c in self.client.commands if not isinstance(c, commands.Group)])}** commands | **{len(self.client.cogs)}** cogs | **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n<:category:716057680548200468> **{cc:,}** <:text_channel:703726554018086912> **{tc:,}** <:voice_channel:703726554068418560> **{vc:,}** | **{self.counter:,}** commands used since start')
         embed.add_field(name=f"<:news:730866149109137520> News Update #{news[0][1]}", value=news[0][0], inline=False)
         embed.set_footer(
             text=f"Developed by {str(owner)} | Bot created {humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}",
@@ -420,7 +422,7 @@ class Meta(commands.Cog):
     
     @commands.command(aliases=['stats'])
     async def statistics(self, ctx):
-        """Shows you statistics"""
+        """Shows you statistics. ([inspired by peanut#7343](https://github.com/spinfish/michael-bot/blob/master/cogs/help.py/#L240-#L279))"""
         cc = coro = func = cls = cmts = 0
         for filename in os.listdir("cogs"):
             if not filename.endswith(".py"):
@@ -459,10 +461,21 @@ class Meta(commands.Cog):
                     cc += 1
         embed = discord.Embed(colour=self.client.colour).set_author(name=f"Stats for {self.client.user.name}", icon_url=self.client.user.avatar_url)
         embed.add_field(name="Code", value=f"<:class:735360032434290830> Classes | **{cls:,}**\n<:function:735517201561288775> Functions | **{func+coro:,}**\n<:coroutine:735520608183648337> Coroutines | **{coro:,}**\n:speech_balloon: Comments | **{cmts:,}**")
-        embed.add_field(name="Stats", value=f'<:Discord:735530547992068146> Servers | **{len(self.client.guilds)}**\n<:text_channel:703726554018086912> Channels | **{cc:,}**\n<:member:731190477927219231> Members | **{len(self.client.users):,}**\n:gear: Cogs **{len(self.client.cogs)}** | <:command:735534754673459303> Commands **{len(self.client.commands)}**')
+        embed.add_field(name="Stats", value=f'<:Discord:735530547992068146> Servers | **{len(self.client.guilds)}**\n<:text_channel:703726554018086912> Channels | **{cc:,}**\n<:member:731190477927219231> Members | **{len(self.client.users):,}**\n:gear: Cogs **{len(self.client.cogs)}** | Commands **{len([c for c in self.client.commands if not isinstance(c, commands.Group)])}**')
         embed.set_footer(text=f"{await lines_of_code():,} lines of code")
         await ctx.send(embed=embed)
-
+        
+    @commands.command()
+    async def credits(self, ctx):
+        """The amazing peeps who make ct5k what it is"""
+        embed = discord.Embed(colour=self.client.colour)
+        embed.set_author(name=f"The People who make {self.client.user.name} what it is today!", icon_url=self.client.user.avatar_url)
+        embed.description = f"<@!561688948259422228> - Thank you for drawing {self.client.user.name}'s amazing avatar!\n\n"
+        embed.description += f"<@!357918459058978816> - Thank you for helping me in the beginning and teaching me the ropes!\n[His Bot](https://discord.com/oauth2/authorize?client_id=675542011457044512&permissions=1611000896&scope=bot) | [GitHub](https://github.com/DankDumpster) | [Support Server](https://discord.com/invite/TWjxyhC)\n\n"
+        embed.description += f"<@!574870314928832533> - Thank you for helping and giving inspiration for many commands on the bot!\n[Their Bot](https://discord.com/oauth2/authorize?client_id=628824408521441291&scope=bot&permissions=1476521159) | [GitHub](https://github.com/spinfish) | [Support Server](https://discord.gg/q3eVHeU)\n\n"
+        embed.description += f"<@!491174779278065689> - Thank you for helping a bunch on the bot and inspiring the Images cog!\n[His Bot](https://discord.com/oauth2/authorize?client_id=675589737372975124&permissions=1611000896&scope=bot) | [GitHub](https://github.com/Daggy1234) | [Support Server](https://discord.com/invite/5Y2ryNq)"
+        embed.add_field(name="And thanks to the Beta Squad for testing ct5k's beta commands!", value='\n'.join([f'<@{a}>' for a in beta_squad]))
+        await ctx.send(embed=embed)
 
 def setup(client):
     client.add_cog(Meta(client))
