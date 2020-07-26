@@ -319,8 +319,8 @@ class Api(commands.Cog):
                 return await ctx.send("no results.")
         embed = discord.Embed(color=self.client.colour)
         data = await fetch_rtfm(res)
-        embed.description = '\n'.join(data[:8])
-        await ctx.send(embed=embed)
+        source = paginator.IndexedListSource(data, embed=embed)
+        await paginator.CatchAllMenu(source=source).start(ctx)
 
 
 def setup(client):

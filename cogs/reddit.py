@@ -5,7 +5,6 @@ import random
 import aiohttp
 import discord
 import humanize
-import praw
 from discord.ext import commands
 
 from .utils import checks, paginator
@@ -28,12 +27,6 @@ class Reddit(commands.Cog):
     """Commands interacting with the Reddit API."""
     
     def __init__(self, client):
-        self.reddit = praw.Reddit(
-            client_id=client_id,
-            client_secret=client_secret,
-            username=username, password=password,
-            user_agent=user_agent
-        )
         self.client = client
         self.up = "<:upvote:718895913342337036>"
         self.share = "<:share:730823872265584680>"
@@ -139,20 +132,6 @@ class Reddit(commands.Cog):
                                                url=images[choices.index(choice)]).set_image(
                 url=images[choices.index(choice)]))
     
-    @commands.command(help="Shows you a wiki page for a subreddit.")
-    async def reddit_wiki(self, ctx, subreddit, *, page):
-        try:
-            async with ctx.typing():
-                s = self.reddit.subreddit(subreddit)
-                wikipage = s.wiki[page]
-                em = discord.Embed(title="/{}".format(page), description=(wikipage.content_md[:2000]),
-                                   colour=self.client.colour,
-                                   timestamp=ctx.message.created_at)
-                em.set_footer(text="r/" + s.display_name, icon_url=s.icon_img)
-                await ctx.send(embed=em)
-        except Exception as err:
-            await ctx.send(err)
-    
     @commands.command(aliases=['mod'])
     async def moderator(self, ctx, mod, subreddit):
         async with ctx.typing():
@@ -228,27 +207,6 @@ class Reddit(commands.Cog):
                                 value=f"Subreddits with 0 subscribers: **{zero_subs}**\nSubreddits with 1 subscriber: **{one_subs}**\nSubreddits with 100 or more subscribers: **{hundred_subs}**\nSubreddits with 1,000 or more subscribers: **{thousand_subs}**\nSubreddits with 100,000 or more subscribers: **{hundred_thousand_subs}**\nSubreddits with 1,000,000 or more subscribers: **{million}**\nSubreddits with 10,000,000 or more subscribers: **{ten_million}**\n\nAverage Subscribers Per Subreddit: **{humanize.intcomma(round(sum(numbas) / len(numbas)))}**")
             await ctx.send(embed=embed)
     
-    @commands.command(aliases=['ask'])
-    async def askreddit(self, ctx):
-        """Ask Reddit..."""
-        async with ctx.typing():
-            posts = []
-            comments = []
-            for submission in self.reddit.subreddit("AskReddit").hot(limit=50):
-                posts.append(submission)
-            final_post = random.choice(posts)
-            embed = discord.Embed(title=final_post.title, url=final_post.url,
-                                  description=final_post.selftext + f"\n<:upvote:718895913342337036> **{final_post.score:,}** 💬 **{final_post.num_comments:,}**",
-                                  colour=self.client.colour)
-            embed.set_author(name=final_post.author, icon_url=final_post.author.icon_img)
-            for top_level_comment in final_post.comments:
-                comments.append(top_level_comment)
-            final_comment = random.choice(comments)
-            embed.add_field(
-                name=f"{final_comment.author} • <:upvote:718895913342337036> **{final_comment.score:,}** 💬 **{len(final_comment.replies):,}**",
-                value=final_comment.body)
-            await ctx.send(embed=embed)
-    
     @commands.command(help="Gets a post from a subreddit of your choosing.")
     async def post(self, ctx, subreddit, sort='hot'):
         posts = []
@@ -306,32 +264,6 @@ class Reddit(commands.Cog):
                     return await ctx.send(embed=embed) if not data['over18'] or data[
                         'over18'] and ctx.channel.is_nsfw() else await ctx.send(
                         f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
-    
-    @commands.command(aliases=['a'], help="Ask Reddit...", hidden=True)
-    @checks.betasquad()
-    async def bask(self, ctx):
-        try:
-            posts = []
-            async with ctx.typing():
-                async with aiohttp.ClientSession() as cs:
-                    async with cs.get(f"https://www.reddit.com/r/AskReddit/hot.json") as r:
-                        res = await r.json()
-                    for i in res['data']['children']:
-                        posts.append(i['data'])
-                    s = random.choice([p for p in posts if not p['stickied']])
-                    embed = discord.Embed(title=str(s['title']), colour=self.client.colour,
-                                          url=f"https://reddit.com/{s['permalink']}",
-                                          description=f"{self.up} **{s['score']:,}** :speech_balloon: **{s['num_comments']:,}** {self.share} **{s['num_crossposts']:,}** :medal: **{s['total_awards_received']}**")
-                    embed.set_author(name=s['author'])
-                    embed.set_footer(text=f"{s['upvote_ratio'] * 100:,}% upvote ratio | posted to r/{s['subreddit']}")
-                    async with aiohttp.ClientSession() as cs:
-                        async with cs.get(f'https://reddit.com{s["permalink"]}/.json') as r:
-                            resp = await r.json()
-                    return await ctx.send(embed=embed) if not s['over_18'] or s[
-                        'over_18'] and ctx.channel.is_nsfw() else await ctx.send(
-                        f"<:warning:727013811571261540> **{ctx.author.name}**, NSFW Channel required!")
-        except Exception as er:
-            await ctx.send(er)
     
     @commands.command(aliases=['pages', 'paginate'])
     async def reddit_pages(self, ctx, subreddit, limit: int = 5):
