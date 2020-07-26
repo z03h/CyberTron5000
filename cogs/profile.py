@@ -320,7 +320,7 @@ class Profile(commands.Cog):
         a.append("<:nitro:730892254092198019>") if await GuildStats(ctx).check_nitro(m) else None
         if isinstance(m, discord.User):
             embed.description = f'{is_bot} {" ".join(a)}\n→ ID | **{m.id}**\n'
-            embed.description += f'→ Created Account | **{humanize.naturaltime(datetime.datetime.utcnow() - m.created_at)}**\n'
+            embed.description += f'→ Created Account **{humanize.naturaltime(datetime.datetime.utcnow() - m.created_at)}**\n'
             embed.description += f'→ Guilds Shared With Bot | **{len([g for g in ctx.bot.guilds if g.get_member(m.id)]) if m != ctx.bot.user else f"bro this is literally the bot ({len(ctx.bot.guilds)})"}**'
             embed.description += f'\n→ [Avatar URL]({m.avatar_url_as(static_format="png", size=4096)})\n'
             return await ctx.send(embed=embed)
@@ -341,8 +341,8 @@ class Profile(commands.Cog):
                 embed.description = f'\n→ ID | **{m.id}**\n'
             else:
                 embed.description = f'{is_bot}{" ".join(a)}{char}{le}\n→ ID | **{m.id}**\n'
-            embed.description += f'→ Created Account | **{humanize.naturaltime(datetime.datetime.utcnow() - m.created_at)}**\n'
-            embed.description += f'→ Joined Guild | **{humanize.naturaltime(datetime.datetime.utcnow() - m.joined_at)}**\n'
+            embed.description += f'→ Created Account **{humanize.naturaltime(datetime.datetime.utcnow() - m.created_at)}**\n'
+            embed.description += f'→ Joined Guild **{humanize.naturaltime(datetime.datetime.utcnow() - m.joined_at)}**\n'
             embed.description += f'→ Guilds Shared With Bot | **{len([g for g in ctx.bot.guilds if g.get_member(m.id)]) if m != ctx.bot.user else f"bro this is literally the bot ({len(ctx.bot.guilds)})"}**'
             if m.top_role.id == ctx.guild.id:
                 pass

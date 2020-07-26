@@ -139,14 +139,19 @@ class Api(commands.Cog):
                 for item in res['list']:
                     embed = discord.Embed(color=self.client.colour)
                     embed.title = item['word']
-                    embed.set_author(name=item['author'])
+                    embed.set_author(name=item['author'],
+                                     icon_url="https://images-ext-1.discordapp.net/external/Gp2DBilGEcbI2YR0qkOGVkivomBLwmkW_7v3K8cD1mg/https/cdn.discordapp.com/emojis/734991429843157042.png")
                     embed.description = cyberformat.hyper_replace(str(item['definition']), old=['[', ']'], new=['', ''])
                     embed.description += f"\n👍 **{item['thumbs_up']:,}** 👎 **{item['thumbs_down']}**"
                     embed.add_field(name="Example",
                                     value=cyberformat.hyper_replace(str(item['example']), old=['[', ']'], new=['', '']))
                     embeds.append(embed)
             source = paginator.EmbedSource(embeds)
-            await paginator.CatchAllMenu(source=source).start(ctx)
+            menu = paginator.CatchAllMenu(source=source)
+            menu.add_info_fields({"<:author:734991429843157042>": "The author of the post",
+                                  ":thumbsup:": "How many thumbs up the post has",
+                                  ":thumbsdown:": "How many thumbs down the post has"})
+            await menu.start(ctx)
         except Exception as error:
             await ctx.send(error.__class__.__name__)
             await ctx.send(f"<:warning:727013811571261540> **{ctx.author.name}**, term not found on urban dictionary.")
@@ -310,8 +315,15 @@ class Api(commands.Cog):
     
     @commands.command(aliases=['rtfd'])
     async def rtfm(self, ctx, *, query: str = None):
+        """Shows results from the discord.py documentation"""
         if not query:
             return await ctx.send("https://discordpy.readthedocs.io/en/latest/")
+        if query.startswith("discord."):
+            query = query[8:]
+        elif query.startswith("commands."):
+            query = query[9:]
+        else:
+            query = query
         async with aiohttp.ClientSession() as cs:
             async with cs.get(f"https://rtfs.eviee.me/dpy?search={query}") as r:
                 res = await r.json()
@@ -319,7 +331,7 @@ class Api(commands.Cog):
                 return await ctx.send("no results.")
         embed = discord.Embed(color=self.client.colour)
         data = await fetch_rtfm(res)
-        source = paginator.IndexedListSource(data, embed=embed)
+        source = paginator.IndexedListSource(data, embed=embed, per_page=5)
         await paginator.CatchAllMenu(source=source).start(ctx)
 
 

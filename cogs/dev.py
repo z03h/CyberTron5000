@@ -32,84 +32,36 @@ class Developer(commands.Cog):
     @commands.group(aliases=["e", "evaluate"], name='eval', invoke_without_command=True, help="Evaluates a function.")
     @commands.is_owner()
     async def eval_fn(self, ctx, *, cmd):
-        fn_name = "_eval_expr"
-        
-        cmd = cyberformat.codeblock(cmd)
-        cmd = cmd.strip("` ")
-        cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
-        
-        body = f"async def {fn_name}():\n{cmd}"
-        
-        parsed = ast.parse(body)
-        body = parsed.body[0].body
-        
-        checks.insert_returns(body)
-        
-        env = {
-            'client': ctx.bot,
-            'discord': discord,
-            'commands': commands,
-            'ctx': ctx,
-            '__import__': __import__,
-            'author': ctx.author,
-            'guild': ctx.guild,
-            'channel': ctx.channel,
-            'reddit': praw.Reddit(client_id=secrets()['client_id'],
-                                  client_secret=secrets()['client_secret'],
-                                  username="CyberTron5000",
-                                  password=secrets()['password'],
-                                  user_agent=secrets()['user_agent'])
-        }
-        exec(compile(parsed, filename="<ast>", mode="exec"), env)
-        
-        await ctx.message.add_reaction(emoji=self.tick)
-        result = (await eval(f"{fn_name}()", env))
-        await ctx.send('{}'.format(result))
-    
-    @eval_fn.command(aliases=["rtrn", "r"], name='return', invoke_without_command=True,
-                     help="Evaluates a function and returns output.")
-    @commands.is_owner()
-    async def r(self, ctx, *, cmd):
         try:
             fn_name = "_eval_expr"
-            
             cmd = cyberformat.codeblock(cmd)
             cmd = cmd.strip("` ")
             cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
-            
             body = f"async def {fn_name}():\n{cmd}"
-            
             parsed = ast.parse(body)
             body = parsed.body[0].body
-            
             checks.insert_returns(body)
-            
             env = {
                 'client': ctx.bot,
                 'discord': discord,
                 'commands': commands,
                 'ctx': ctx,
+                '__import__': __import__,
                 'author': ctx.author,
                 'guild': ctx.guild,
                 'channel': ctx.channel,
-                '__import__': __import__,
-                'reddit': praw.Reddit(client_id=secrets()['client_id'],
-                                      client_secret=secrets()['client_secret'],
-                                      username="CyberTron5000",
-                                      password=secrets()['password'],
-                                      user_agent=secrets()['user_agent'])
             }
-            exec(compile(parsed, filename="<eval>", mode="exec"), env)
-            
             try:
+                exec(compile(parsed, filename="<ast>", mode="exec"), env)
+                await ctx.message.add_reaction(emoji=self.tick)
                 result = (await eval(f"{fn_name}()", env))
                 await ctx.send(f'{result}')
-                await ctx.message.add_reaction(emoji=self.tick)
             except Exception as error:
-                await ctx.send(f'```python\n{error}\n```')
+                await ctx.send(embed=discord.Embed(color=self.client.colour,
+                                                   description=f"{error.__class__.__name__}```py\n{error}\n```"))
         except Exception as error:
-            await ctx.send(embed=discord.Embed(description=f"\n\n```python\n{error}\n```", color=0x00dcff))
-            await ctx.message.add_reaction(emoji="⚠️")
+            await ctx.send(embed=discord.Embed(color=self.client.colour,
+                                               description=f"{error.__class__.__name__}```py\n{error}\n```"))
     
     @commands.command(help="Loads Cogs", aliases=['l'])
     @commands.is_owner()

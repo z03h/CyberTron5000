@@ -21,6 +21,10 @@ class CyberTronHelpCommand(commands.HelpCommand):
                 'aliases': ['?']
             }
         )
+        self._help_dict = {"<argument>": "This means the argument is **required**",
+                           "[argument]": "This means the argument is **optional**",
+                           "[A|B]": "This means it could be either **A or B**",
+                           "[argument...]": "This means you can have **multiple arguments**"}
     
     def get_command_signature(self, command):
         """
@@ -65,7 +69,7 @@ class CyberTronHelpCommand(commands.HelpCommand):
         for cg, cm in itertools.groupby(entries, key=key):
             cats = []
             cm = sorted(cm, key=lambda c: c.name)
-            cats.append(f'**{cg}**\n{"•".join([f"`{c.name}`" for c in cm])}\n')
+            cats.append(f'**{cg}**\n{" • ".join([f"{c.name}" for c in cm])}\n')
             embed.description += "\n".join(cats)
             total += len([c for c in cm])
         embed.set_author(name=f"CyberTron5000 Commands (Total {total})")
@@ -79,10 +83,13 @@ class CyberTronHelpCommand(commands.HelpCommand):
         """
         cog_doc = cog.__doc__ or " "
         entries = await self.filter_commands(cog.get_commands(), sort=True)
-        foo = "\n".join(
-            [f"→ `{c.name} {c.signature}` | {c.help or 'No help provided for this command'}" for c in entries])
-        await self.context.send(embed=discord.Embed(description=f"{cog_doc}\n\n{foo}", colour=0x00dcff).set_author(
-            name=f"{cog.qualified_name} Commands (Total {len(entries)})"))
+        foo = [f"→ `{c.name} {c.signature}` | {c.help or 'No help provided for this command'}" for c in entries]
+        embed = discord.Embed(description=f"{cog_doc}", colour=0x00dcff).set_author(
+            name=f"{cog.qualified_name} Commands (Total {len(entries)})")
+        source = paginator.IndexedListSource(show_index=False, embed=embed, data=foo, per_page=6)
+        menu = paginator.CatchAllMenu(source=source)
+        menu.add_info_fields(self._help_dict)
+        await menu.start(self.context)
     
     async def send_command_help(self, command):
         """
@@ -107,8 +114,11 @@ class CyberTronHelpCommand(commands.HelpCommand):
         for c in entries:
             char = "\u200b" if not c.aliases else "|"
             sc.append(f"→ `{group.name} {c.name}{char}{'|'.join(c.aliases)} {c.signature or f'{u}'}` | {c.help}")
-        embed.description = f"{group.help}\n\n" + "\n".join(sc)
-        await self.context.send(embed=embed)
+        embed.description = f"{group.help}"
+        source = paginator.IndexedListSource(show_index=False, data=sc, embed=embed, per_page=6)
+        menu = paginator.CatchAllMenu(source=source)
+        menu.add_info_fields(self._help_dict)
+        await menu.start(self.context)
 
 
 class Info(commands.Cog):

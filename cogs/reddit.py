@@ -16,13 +16,6 @@ def secrets():
         return json.load(f)
 
 
-client_id = secrets()['client_id']
-client_secret = secrets()['client_secret']
-username = "CyberTron5000"
-password = secrets()['password']
-user_agent = secrets()['user_agent']
-
-
 class Reddit(commands.Cog):
     """Commands interacting with the Reddit API."""
     
@@ -80,11 +73,11 @@ class Reddit(commands.Cog):
             embed.set_author(name=f"{k['data']['subreddit']['title']}",
                              url=f"https://reddit.com/user/{user}") if f"{k['data']['subreddit']['title']}" else None
             embed.title = k['data']['name'] + cake
-            embed.description = ' '.join(i)
-            embed.description += f"\n<:karma:704158558547214426> **{k['data']['link_karma'] + k['data']['comment_karma']:,}** | 🔗 **{k['data']['link_karma']:,}** 💬 **{k['data']['comment_karma']:,}**"
+            embed.description = f"<:karma:704158558547214426> **{k['data']['link_karma'] + k['data']['comment_karma']:,}** | 🔗 **{k['data']['link_karma']:,}** 💬 **{k['data']['comment_karma']:,}**"
             embed.description += f"\n<:asset:734531316741046283> [Icon URL]({icon})"
             if banner:
                 embed.description += f" | [Banner URL]({banner})"
+            embed.description += "\n" + ' '.join(i)
             dt = datetime.datetime.utcfromtimestamp(k['data']['created_utc'])
             created = humanize.naturaltime(datetime.datetime.utcnow() - dt)
             embed.add_field(name="Account Settings",
@@ -295,6 +288,9 @@ class Reddit(commands.Cog):
                     else:
                         continue
         p = paginator.CatchAllMenu(paginator.EmbedSource(embeds))
+        p.add_info_fields({self.up: "How many upvotes the post has", "💬": "How many comments the post has",
+                           self.share: "How many shares/cross-posts the post has",
+                           ":medal:": "How many awards the post has"})
         await p.start(ctx)
 
 

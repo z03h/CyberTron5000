@@ -3,6 +3,9 @@ from discord.ext import menus
 
 
 class CatchAllMenu(menus.MenuPages, inherit_buttons=False):
+    def __init__(self, source, **kwargs):
+        super().__init__(source, **kwargs)
+        self._info_page = f"Info:\n<:arrow_left:731310897989156884> • Go back one page\n<:arrow_right:731311292346007633> • Go forward one page\n<:last_page_left:731315722554310740> • Go the the first page\n<:last_page_right:731315722986324018> • Go to the last page\n<:stop_button:731316755485425744> • Stop the paginator\n<:1234:731401199797927986> • Go to a page of your choosing\n<:info:731324830724390974> • Brings you here"
     
     @menus.button('<:last_page_left:731315722554310740>', position=menus.First(0))
     async def go_to_first_page(self, payload):
@@ -56,14 +59,11 @@ class CatchAllMenu(menus.MenuPages, inherit_buttons=False):
     
     @property
     def info_page(self):
-        return f"Info:" \
-               f"\n<:arrow_left:731310897989156884> • Go back one page" \
-               f"\n<:arrow_right:731311292346007633> • Go forward one page" \
-               f"\n<:last_page_left:731315722554310740> • Go the the first page" \
-               f"\n<:last_page_right:731315722986324018> • Go to the last page" \
-               f"\n<:stop_button:731316755485425744> • Stop the paginator" \
-               f"\n<:1234:731401199797927986> • Go to a page of your choosing" \
-               f"\n<:info:731324830724390974> • Brings you here"
+        return self._info_page
+    
+    def add_info_fields(self, fields: dict):
+        for key, value in fields.items():
+            self._info_page += f"\n{key} • {value}"
 
 
 class EmbedSource(menus.ListPageSource):
@@ -76,9 +76,10 @@ class EmbedSource(menus.ListPageSource):
 
 
 class IndexedListSource(menus.ListPageSource):
-    def __init__(self, data: list, embed: discord.Embed, per_page: int = 10):
+    def __init__(self, data: list, embed: discord.Embed, per_page: int = 10, show_index: bool = True):
         super().__init__(per_page=per_page, entries=data)
         self.embed = embed
+        self._show_index = show_index
     
     async def format_page(self, menu, entries: list):
         offset = menu.current_page * self.per_page + 1
@@ -88,9 +89,14 @@ class IndexedListSource(menus.ListPageSource):
                 embed.add_field(name='Entries', value='No Entries')
                 index = 0
             else:
-                embed.add_field(name='Entries',
-                                value='\n'.join(f'`[{i:,}]` {v}' for i, v in enumerate(entries, start=offset)),
-                                inline=False)
+                if self._show_index:
+                    embed.add_field(name='Entries',
+                                    value='\n'.join(f'`[{i:,}]` {v}' for i, v in enumerate(entries, start=offset)),
+                                    inline=False)
+                else:
+                    embed.add_field(name='Entries',
+                                    value='\n'.join(f'{v}' for i, v in enumerate(entries, start=offset)),
+                                    inline=False)
                 index = 0
         else:
             index = len(embed.fields) - 1
@@ -100,6 +106,10 @@ class IndexedListSource(menus.ListPageSource):
             embed.set_field_at(index=index, name='Entries',
                                value='No Entries')
         else:
-            embed.set_field_at(index=index, name='Entries',
-                               value='\n'.join(f'`[{i:,}]` {v}' for i, v in enumerate(entries, start=offset)))
+            if self._show_index:
+                embed.set_field_at(index=index, name='Entries',
+                                   value='\n'.join(f'`[{i:,}]` {v}' for i, v in enumerate(entries, start=offset)))
+            else:
+                embed.set_field_at(index=index, name='Entries',
+                                   value='\n'.join(f'{v}' for i, v in enumerate(entries, start=offset)))
         return embed

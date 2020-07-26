@@ -11,6 +11,7 @@ import os
 import platform
 import time
 from uuid import uuid4
+from collections import Counter
 
 import aiohttp
 import async_timeout
@@ -21,6 +22,7 @@ from discord.ext import commands
 
 from .utils import cyberformat
 from .utils.checks import check_admin_or_owner, beta_squad
+from .utils.lists import sl
 import codecs
 
 start_time = datetime.datetime.utcnow()
@@ -137,13 +139,13 @@ class Meta(commands.Cog):
     async def ping(self, ctx):
         start = time.perf_counter()
         a = discord.Embed(colour=self.client.colour)
-        a.description = f"**Pong! :ping_pong:**\n→ Websocket Latency | **{round(self.client.latency * 1000, 3)}** ms | 🌐"
+        a.description = f"**Pong! :ping_pong:**\n→ Websocket Latency | **{round(self.client.latency * 1000, 3)}** ms | ✦"
         message = await ctx.send(embed=a)
         end = time.perf_counter()
         duration = round((end - start) * 1000, 3)
         embed = discord.Embed(colour=self.client.colour)
-        embed.description = f"**Pong! :ping_pong:**\n→ Websocket Latency | **{round(self.client.latency * 1000, 3)}** ms | 🌐"
-        embed.description += f"\n→ Response Time | **{duration}** ms | ⏱"
+        embed.description = f"**Pong! :ping_pong:**\n→ Websocket Latency | **{round(self.client.latency * 1000, 3)}** ms | ✦"
+        embed.description += f"\n→ Response Time | **{duration}** ms | ✦"
         await message.edit(embed=embed)
     
     @commands.command(aliases=["sourcecode", "src"], help="Shows source code for a given command")
@@ -260,9 +262,9 @@ class Meta(commands.Cog):
         embed.description += f"→ Latest Commits: {'|'.join(await self.get_commits(limit=3, author=False, names=False))}\n"
         embed.description += f"→ Used Memory | {cyberformat.bar(stat=psutil.virtual_memory()[2], max=100, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>')}\n→ CPU | {cyberformat.bar(stat=psutil.cpu_percent(), max=100, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>')}"
         embed.description += f"\n→ Uptime | {a}"
-        embed.description += f"\n**{(await lines_of_code()):,}** lines of code | **{len([f for f in os.listdir('cogs') if f.endswith('.py')]) + 1}** files\n{self.softwares[0]} {discord.__version__}\n{self.softwares[1]} {platform.python_version()}"
-        embed.add_field(name='<:popular4:732745781714354198> Statistics',
-                        value=f'**{len(self.client.users):,}** users | **{len(self.client.guilds):,}** guilds | **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len([c for c in self.client.commands if not isinstance(c, commands.Group)])}** commands | **{len(self.client.cogs)}** cogs | **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n<:category:716057680548200468> **{cc:,}** <:text_channel:703726554018086912> **{tc:,}** <:voice_channel:703726554068418560> **{vc:,}** | **{self.counter:,}** commands used since start')
+        embed.description += f"\n**{(await lines_of_code()):,}** lines of code | **{len([f for f in os.listdir('cogs') if f.endswith('.py')]) + 1 + (len([a for a in os.listdir('cogs/utils') if a.endswith('.py')]))}** files\n{self.softwares[0]} {discord.__version__}\n{self.softwares[1]} {platform.python_version()}"
+        # embed.add_field(name='<:popular4:732745781714354198> Statistics',
+        #                 value=f'<:member:731190477927219231> **{len(self.client.users):,}** | **{len(self.client.guilds):,}** guilds | **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len([c for c in self.client.commands if not isinstance(c, commands.Group)])}** commands | **{len(self.client.cogs)}** cogs | **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n<:category:716057680548200468> **{cc:,}** <:text_channel:703726554018086912> **{tc:,}** <:voice_channel:703726554068418560> **{vc:,}** | **{self.counter:,}** commands used since start')
         embed.add_field(name=f"<:news:730866149109137520> News Update #{news[0][1]}", value=news[0][0], inline=False)
         embed.set_footer(
             text=f"Developed by {str(owner)} | Bot created {humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}",
@@ -457,8 +459,8 @@ class Meta(commands.Cog):
             for c in g.channels:
                     cc += 1
         embed = discord.Embed(colour=self.client.colour).set_author(name=f"Stats for {self.client.user.name}", icon_url=self.client.user.avatar_url)
-        embed.add_field(name="Code", value=f"<:class:735360032434290830> Classes | **{cls:,}**\n<:function:735517201561288775> Functions | **{func+coro:,}**\n<:coroutine:735520608183648337> Coroutines | **{coro:,}**\n:speech_balloon: Comments | **{cmts:,}**")
-        embed.add_field(name="Stats", value=f'<:Discord:735530547992068146> Servers | **{len(self.client.guilds)}**\n<:text_channel:703726554018086912> Channels | **{cc:,}**\n<:member:731190477927219231> Members | **{len(self.client.users):,}**\n:gear: Cogs **{len(self.client.cogs)}** | Commands **{len([c for c in self.client.commands if not isinstance(c, commands.Group)])}**')
+        embed.add_field(name="Statistics", value=f"<:class:735360032434290830> Classes | **{cls:,}**\n<:function:735517201561288775> Functions | **{func+coro:,}**\n<:coroutine:735520608183648337> Coroutines | **{coro:,}**\n:speech_balloon: Comments | **{cmts:,}**")
+        embed.add_field(name="\u200b", value=f'<:Discord:735530547992068146> Servers | **{len(self.client.guilds)}**\n<:text_channel:703726554018086912> Channels | **{cc:,}**\n<:member:731190477927219231> Members | **{len(self.client.users):,}**\n:gear: Cogs **{len(self.client.cogs)}** | Commands **{len([c for c in self.client.commands])}**')
         embed.set_footer(text=f"{await lines_of_code():,} lines of code")
         await ctx.send(embed=embed)
         
