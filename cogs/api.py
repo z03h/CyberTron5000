@@ -285,6 +285,7 @@ class Api(commands.Cog):
         async with aiohttp.ClientSession() as cs:
             async with cs.get(f'https://some-random-api.ml/img/{animal.lower().replace(" ", "_")}') as t:
                 resp = await t.json()
+            await cs.close()
             return await ctx.send(
                 embed=discord.Embed(description=f"Cute {animal.title()}!", colour=self.client.colour).set_image(
                     url=resp['link']))
@@ -334,6 +335,7 @@ class Api(commands.Cog):
                 res = await r.json()
             if not res:
                 return await ctx.send("no results.")
+        await cs.close()
         embed = discord.Embed(color=self.client.colour)
         data = await fetch_rtfm(res)
         source = paginator.IndexedListSource(data, embed=embed, per_page=5)

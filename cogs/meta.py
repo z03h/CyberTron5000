@@ -294,7 +294,7 @@ class Meta(commands.Cog):
     @check_admin_or_owner()
     async def nickname(self, ctx, *, nickname=None):
         if nickname:
-            await ctx.guild.me.edit(nick=f"({ctx.prefix}) {nickname}")
+            await ctx.guild.me.edit(nick=f"{nickname}")
             await ctx.message.add_reaction(emoji=self.tick)
         else:
             await ctx.guild.me.edit(nick=self.client.user.name)
@@ -303,7 +303,7 @@ class Meta(commands.Cog):
     @nickname.command(invoke_without_command=True, help="Change the bot's nickname back to the default.")
     @check_admin_or_owner()
     async def default(self, ctx):
-        await ctx.guild.me.edit(nick=f"({ctx.prefix}) {self.client.user.name}")
+        await ctx.guild.me.edit(nick=f"{self.client.user.name}")
         await ctx.message.add_reaction(emoji=self.tick)
     
     @nickname.command(invoke_without_command=True, help="Change the bot's nickname to the default, without the prefix.")
