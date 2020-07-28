@@ -222,6 +222,16 @@ class Moderation(commands.Cog):
             await ctx.send(f'`{prefix}` is no longer a prefix for {ctx.guild}')
         else:
             await ctx.send(f"`{prefix}` is not a prefix in {ctx.guild}!")
+    
+    @add.error
+    async def on_command_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send(f"You need the **Manage Server** permission to run this command.")
+    
+    @remove.error
+    async def on_command_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send(f"You need the **Manage Server** permission to run this command.")
 
 
 def setup(client):

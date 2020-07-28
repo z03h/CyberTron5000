@@ -30,17 +30,6 @@ def get_token():
         res = json.load(f)
     return res
 
-
-# ⤗
-
-
-# client = commands.Bot(command_prefix=get_prefix, pm_help=None)
-# client.remove_command('help')
-# client.colour = 0x00dcff
-
-
-# client.load_extension("jishaku")
-
 class CyberTron5000(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=self.get_prefix, pm_help=None,

@@ -236,7 +236,7 @@ class Developer(commands.Cog):
     @commands.is_owner()
     async def logout(self, ctx):
         await ctx.send(
-            embed=discord.Embed(title=f"{self.client.user.name} logging out. Goodbye World! 🌍", color=0x00dcff))
+            embed=discord.Embed(title=f"{self.client.user.name} logging out. Goodbye World! 🌍", color=self.client.colour))
         await self.client.logout()
     
     @commands.command()

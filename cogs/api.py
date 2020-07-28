@@ -187,8 +187,8 @@ class Api(commands.Cog):
         embed.set_author(name=f"{res['info']['name']} {res['info']['version']}", icon_url=self.pypi,
                          url=res['info']['project_url'])
         embed.description = f"{res['info']['summary']}\n"
-        versions = res['info']['requires_python'][:-1].replace("*", "").split(",")
-        embed.description += f"<:author:734991429843157042> **{res['info']['author']}{char}**\n<:python:706850228652998667> **{' | '.join(versions) or '???'}**\n⚖️ **{res['info']['license'] or '???'}**\n<:releases:734994325020213248> **{len(res['releases'])}**"
+        versions = res['info']['requires_python'].replace("*", "").split(",")
+        embed.description += f"<:author:734991429843157042> **{res['info']['author']}{char}**\n<:python:706850228652998667> {' | '.join([f'**{version}**' for version in versions]) or '???'}\n<:license:737733205645590639> **{res['info']['license'] or '???'}**\n<:releases:734994325020213248> **{len(res['releases'])}**"
         for key, value in res['info']['project_urls'].items():
             embed.description += f"\n[{key.title()}]({value})"
         await ctx.send(embed=embed)

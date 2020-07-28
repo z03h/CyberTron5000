@@ -63,7 +63,7 @@ class CyberTronHelpCommand(commands.HelpCommand):
             return c.cog_name or '\u200bUncategorized Commands'
         
         total = 0
-        embed = discord.Embed(colour=0x00dcff,
+        embed = discord.Embed(colour=self.context.bot.colour,
                               description=f'You can do `{self.clean_prefix}help [command/category]` for more info.\n\n')
         entries = await self.filter_commands(self.context.bot.commands, sort=True, key=key)
         for cg, cm in itertools.groupby(entries, key=key):
@@ -84,7 +84,7 @@ class CyberTronHelpCommand(commands.HelpCommand):
         cog_doc = cog.__doc__ or " "
         entries = await self.filter_commands(cog.get_commands(), sort=True)
         foo = [f"→ `{c.name} {c.signature}` | {c.help or 'No help provided for this command'}" for c in entries]
-        embed = discord.Embed(description=f"{cog_doc}", colour=0x00dcff).set_author(
+        embed = discord.Embed(description=f"{cog_doc}", colour=self.context.bot.colour).set_author(
             name=f"{cog.qualified_name} Commands (Total {len(entries)})")
         source = paginator.IndexedListSource(show_index=False, embed=embed, data=foo, per_page=6)
         menu = paginator.CatchAllMenu(source=source)
@@ -97,7 +97,7 @@ class CyberTronHelpCommand(commands.HelpCommand):
         :param command:
         :return:
         """
-        embed = discord.Embed(title=self.get_command_signature(command), colour=0x00dcff,
+        embed = discord.Embed(title=self.get_command_signature(command), colour=self.context.bot.colour,
                               description=command.help or "No help provided for this command.")
         await self.context.send(embed=embed)
     
@@ -110,7 +110,7 @@ class CyberTronHelpCommand(commands.HelpCommand):
         sc = []
         u = '\u200b'
         entries = await self.filter_commands(group.commands)
-        embed = discord.Embed(title=self.get_command_signature(group), colour=0x00dcff)
+        embed = discord.Embed(title=self.get_command_signature(group), colour=self.context.bot.colour)
         for c in entries:
             char = "\u200b" if not c.aliases else "|"
             sc.append(f"→ `{group.name} {c.name}{char}{'|'.join(c.aliases)} {c.signature or f'{u}'}` | {c.help}")
@@ -144,7 +144,7 @@ class Info(commands.Cog):
     @commands.group(invoke_without_command=True)
     async def cogs(self, ctx):
         """Shows you every cog"""
-        await ctx.send(embed=discord.Embed(colour=0x00dcff, title=f"All Cogs ({len(self.client.cogs)})",
+        await ctx.send(embed=discord.Embed(colour=self.context.bot.colour, title=f"All Cogs ({len(self.client.cogs)})",
                                            description=f"Do `{ctx.prefix}help <cog>` to know more about them!" + "\n\n" + "\n".join(
                                                [f"`{cog}` | {self.client.cogs[cog].__doc__}" for cog in
                                                 self.client.cogs])))

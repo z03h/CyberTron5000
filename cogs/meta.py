@@ -27,6 +27,11 @@ import codecs
 
 start_time = datetime.datetime.utcnow()
 
+servers = {
+    "CyberTron5000 Emotes 1": "https://discord.gg/29vqZfm",
+    "CyberTron5000 Emotes 2": "https://discord.gg/Qn7VYg8",
+    "CyberTron5000 Emotes 3": "https://discord.gg/Xgddz6W"
+}
 
 # ≫
 
@@ -126,15 +131,6 @@ class Meta(commands.Cog):
         await ctx.send(embed=discord.Embed(description=a, colour=self.client.colour).set_author(
             name=f"I have been up for {str(humanize.naturaltime(datetime.datetime.utcnow() - start_time)).split('ago')[0]}"))
     
-    @commands.command(help="Fetches the bot's invite link.")
-    async def invite(self, ctx):
-        embed = discord.Embed(
-            colour=self.client.colour,
-            title="<:news:730866149109137520> Invite me to your server!",
-            url="https://cybertron-5k.netlify.app/invite"
-        )
-        await ctx.send(embed=embed)
-    
     @commands.command(help="Checks the bot's ping.")
     async def ping(self, ctx):
         websocket = round(self.client.latency*1000, 3)
@@ -163,8 +159,16 @@ class Meta(commands.Cog):
         # inspired by r.danny https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/meta.py#L328-L366
         u = '\u200b'
         if not command:
-            return await ctx.send(
-                embed=discord.Embed(title="<:github:734999696845832252> :star: Check out the full sourcecode on GitHub!", url=f"https://github.com/niztg/CyberTron5000", colour=self.client.colour))
+            embed = discord.Embed(color=self.client.colour,
+                                  title="<:star:737736250718421032> Check out the source code on GitHub!",
+                                  url="https://github.com/niztg/CyberTron5000")
+            embed.description = "Star the GitHub repository to support the bot!"
+            embed.add_field(name="<:license:737733205645590639> LICENSE",
+                            value=f"[AGPLv3](https://www.gnu.org/licenses/)")
+            embed.set_thumbnail(url=self.client.user.avatar_url)
+            embed.set_image(
+                url='https://media.discordapp.net/attachments/381963689470984203/737734220755107900/Screen_Shot_2020-07-28_at_2.12.15_PM.png')
+            return await ctx.send(embed=embed)
         elif command == "help":
             await ctx.send(embed=discord.Embed(
                 description=f"This code was too long for Discord, you can see it instead [on GitHub](https://github.com/niztg/CyberTron5000/blob/master/cogs/info.py#L9-L109)",
@@ -172,16 +176,29 @@ class Meta(commands.Cog):
         else:
             src = f"```py\n{str(__import__('inspect').getsource(self.client.get_command(command).callback)).replace('```', f'{u}')}```"
             if len(src) > 2000:
-                cmd = self.client.get_command(command).callback
+                cmd = self.client.get_command(command)
                 if not cmd:
                     return await ctx.send("Command not found.")
-                file = cmd.__code__.co_filename
+                file = cmd.callback.__code__.co_filename
                 location = os.path.relpath(file)
-                total, fl = __import__('inspect').getsourcelines(cmd)
+                total, fl = __import__('inspect').getsourcelines(cmd.callback)
                 ll = fl + (len(total) - 1)
-                await ctx.send(embed=discord.Embed(
-                    description=f"This code was too long for Discord, you can see it instead [on GitHub](https://github.com/niztg/CyberTron5000/blob/master/{location}#L{fl}-L{ll})",
-                    colour=self.client.colour))
+                url = f"https://github.com/niztg/CyberTron5000/blob/master/{location}#L{fl}-L{ll}"
+                if not cmd.aliases:
+                    char = '\u200b'
+                else:
+                    char = '/'
+                embed = discord.Embed(color=self.client.colour,
+                                      title=f"<:star:737736250718421032> Sourcecode for command {cmd.name}{char}{'/'.join(cmd.aliases)}",
+                                      url=url)
+                embed.description = "Star the GitHub repository to support the bot!"
+                embed.add_field(name="<:license:737733205645590639> LICENSE",
+                                value=f"[AGPLv3](https://www.gnu.org/licenses/)")
+                embed.set_thumbnail(url=self.client.user.avatar_url)
+                embed.set_image(
+                    url='https://media.discordapp.net/attachments/381963689470984203/737734220755107900/Screen_Shot_2020-07-28_at_2.12.15_PM.png')
+                await ctx.send(embed=embed)
+                
             else:
                 await ctx.send(src)
     
@@ -190,27 +207,27 @@ class Meta(commands.Cog):
         await ctx.send(
             embed=discord.Embed(
                 title="CyberTron5000 was made with {:,.0f} lines of code!".format(await lines_of_code()),
-                color=0x00dcff))
+                color=self.client.colour))
     
     @lines.command(invoke_without_command=True, help="Shows total lines in the main file.")
     async def main(self, ctx):
         await ctx.send(
             embed=discord.Embed(title="File ct5k.py currently has {:,.0f} lines of code!".format(await lines_main()),
-                                color=0x00dcff))
+                                color=self.client.colour))
     
     @lines.command(invoke_without_command=True, help="Shows total lines in the cogs.")
     async def cogs(self, ctx):
         await ctx.send(
             embed=discord.Embed(
                 title="Cogs have a total of {:,.0f} lines of code!".format(await lines_of_code() - await lines_main()),
-                color=0x00dcff))
+                color=self.client.colour))
     
     @lines.command(invoke_without_command=True, help="Shows total lines in a single cog.")
     async def cog(self, ctx, cog):
         await ctx.send(
             embed=discord.Embed(
                 title="{}.py has a total of {:,.0f} lines of code!".format(cog.lower(), await lines_of_code(cog=cog)),
-                color=0x00dcff))
+                color=self.client.colour))
     
     @lines.command(aliases=['cmd'], invoke_without_command=True)
     async def command(self, ctx, *, command):
@@ -222,7 +239,7 @@ class Meta(commands.Cog):
             ll = fl + (len(total) - 1)
             await ctx.send(
                 embed=discord.Embed(title="{} command has a total of {:,.0f} lines of code!".format(cmd.name, ll - fl),
-                                    color=0x00dcff))
+                                    color=self.client.colour))
         except Exception as err:
             await ctx.send(err)
     
@@ -231,7 +248,7 @@ class Meta(commands.Cog):
         await ctx.send(
             embed=discord.Embed(
                 title="Utils have a total of {:,.0f} lines of code!".format(await lines_utils()),
-                color=0x00dcff))
+                color=self.client.colour))
     
     async def get_commits(self, limit: int = 3, names: bool = True, author: bool = True):
         async with aiohttp.ClientSession() as cs:
@@ -279,16 +296,6 @@ class Meta(commands.Cog):
             icon_url=owner.avatar_url)
         await ctx.send(embed=embed)
     
-    @commands.command()
-    async def support(self, ctx):
-        """Join the support server!"""
-        embed = discord.Embed(
-            title="<:news:730866149109137520> Join the support server!",
-            url="https://cybertron-5k.netlify.app/server",
-            colour=self.client.colour
-        )
-        await ctx.send(embed=embed)
-    
     @commands.group(aliases=["n", "changenickname", "nick"], invoke_without_command=True,
                     help="Change the bot's nickname to a custom one.")
     @check_admin_or_owner()
@@ -312,7 +319,7 @@ class Meta(commands.Cog):
         await ctx.guild.me.edit(nick=self.client.user.name)
         await ctx.message.add_reaction(emoji=self.tick)
     
-    @commands.command(aliases=['commits', 'git'])
+    @commands.command(name='git_commits', aliases=['gitc', 'commits', 'git'])
     async def github(self, ctx, limit: int = 5):
         """Shows you recent github commits"""
         if limit < 1 or limit > 15:
@@ -483,6 +490,35 @@ class Meta(commands.Cog):
         embed.description += f"<@!491174779278065689> - Thank you for helping a bunch on the bot and inspiring the Images cog!\n[His Bot](https://discord.com/oauth2/authorize?client_id=675589737372975124&permissions=1611000896&scope=bot) | [GitHub](https://github.com/Daggy1234) | [Support Server](https://discord.com/invite/5Y2ryNq)"
         embed.add_field(name="And thanks to the Beta Squad for testing ct5k's beta commands!", value='\n'.join([f'<@{a}>' for a in beta_squad]))
         await ctx.send(embed=embed)
+        
+    @commands.command()
+    async def invite(self, ctx):
+        """Invite me to your server!"""
+        embed = discord.Embed(color=self.client.colour, title=f"Invite me to your guilds today!", url="https://cybertron-5k.netlify.app/invit")
+        embed.add_field(name="Other Links", value=f"[`No Permissions (0)`](https://discord.com/oauth2/authorize?client_id=697678160577429584&scope=bot&permissions=0)\n[`Chose your own permissions`](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2147483639&scope=bot)\n[`Administrator Permissions`](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=8&scope=bot)")
+        embed.set_thumbnail(url=self.client.user.avatar_url)
+        await ctx.send(embed=embed)
+        
+    @commands.command()
+    async def support(self, ctx):
+        """Join our help server!"""
+        embed = discord.Embed(colour=self.client.colour, title="Join the Support Server", url="https://cybertron-5k.netlify.app/server")
+        embed.description = f"Join the support server to get regular updates on {self.client.user.name}!"
+        embed.add_field(name=f"CyberTron5000 Emote Servers", value=f"\n".join([f"[`{key}`]({value})" for key, value in servers.items()]))
+        embed.set_footer(text=f"Note: You must be in the main support server to add your bot to the emote servers!")
+        embed.set_thumbnail(url=self.client.user.avatar_url)
+        await ctx.send(embed=embed)
+        
+    @commands.command()
+    async def github(self, ctx):
+        """View the sourcecode for CyberTron5000!"""
+        embed = discord.Embed(color=self.client.colour, title="<:star:737736250718421032> Check out the source code on GitHub!", url="https://github.com/niztg/CyberTron5000")
+        embed.description = "Star the GitHub repository to support the bot!"
+        embed.add_field(name="<:license:737733205645590639> LICENSE", value=f"[AGPLv3](https://www.gnu.org/licenses/)")
+        embed.set_thumbnail(url=self.client.user.avatar_url)
+        embed.set_image(url='https://media.discordapp.net/attachments/381963689470984203/737734220755107900/Screen_Shot_2020-07-28_at_2.12.15_PM.png')
+        await ctx.send(embed=embed)
+
 
 def setup(client):
     client.add_cog(Meta(client))
