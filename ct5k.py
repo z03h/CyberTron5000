@@ -1,6 +1,6 @@
 """
 CyberTron5000 Discord Bot
-Copyright (C) 2020 nizcomix
+Copyright (C) 2020  nizcomix
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -33,19 +33,6 @@ def get_token():
 
 # ⤗
 
-async def get_prefix(client, message):
-    with open("prefixes.json", "r") as f:
-        data = json.load(f)
-    if message.guild:
-        try:
-            pref = str(data[str(message.guild.id)])
-            command_prefix = commands.when_mentioned_or(pref)(client, message)
-        except KeyError:
-            command_prefix = commands.when_mentioned_or("=")(client, message)
-        return command_prefix
-    else:
-        return "c$"
-
 
 # client = commands.Bot(command_prefix=get_prefix, pm_help=None)
 # client.remove_command('help')
@@ -56,7 +43,7 @@ async def get_prefix(client, message):
 
 class CyberTron5000(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=get_prefix, pm_help=None,
+        super().__init__(command_prefix=self.get_prefix, pm_help=None,
                          allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False), case_insensitive=True)
         
         self.colour = 0x00dcff
@@ -67,21 +54,23 @@ class CyberTron5000(commands.Bot):
     async def create_db_pool(self):
         self.pg_con = await asyncpg.create_pool(user=get_token()['psql_user'], password=get_token()['psql_password'],
                                                 database=get_token()['psql_db'])
+        
+    async def get_prefix(self, message):
+        resp = await self.pg_con.fetch("SELECT prefix FROM prefixes WHERE guild_id = $1", message.guild.id)
+        if not resp:
+            await self.pg_con.execute("INSERT INTO prefixes (guild_id, prefix) VALUES ($1, $2)", message.guild.id, "c$")
+            resp = await self.pg_con.fetch("SELECT prefix FROM prefixes WHERE guild_id = $1", message.guild.id)
+            a = [p[0] for p in resp]
+        else:
+            a = [p[0] for p in resp]
+        return commands.when_mentioned_or(*a)(self, message)
     
     async def on_guild_join(self, guild):
-        with open("prefixes.json", "r") as f:
-            prefixes = json.load(f)
-        prefixes[str(guild.id)] = "c$"
-        with open("prefixes.json", "w") as f:
-            json.dump(prefixes, f, indent=4)
-    
+        await self.pg_con.execute("INSERT INTO prefixes (guild_id, prefix) VALUES ($1, $2)", guild.id, "c$")
+
     async def on_guild_remove(self, guild):
-        with open("prefixes.json", "r") as f:
-            prefixes = json.load(f)
-        prefixes.pop(str(guild.id))
-        with open("prefixes.json", "w") as f:
-            json.dump(prefixes, f, indent=4)
-    
+        await self.pg_con.execute("DELETE FROM prefixes WHERE guild_id = $1", guild.id)
+
     async def on_ready(self):
         print("online!")
         for filename in os.listdir('cogs'):

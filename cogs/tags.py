@@ -136,6 +136,13 @@ class Tags(commands.Cog):
     @tag.command()
     async def edit(self, ctx, *, name):
         """Edits a tag"""
+        user_id = str(ctx.author.id)
+        guild_id = str(ctx.guild.id)
+        tag = await self.client.pg_con.fetch("SELECT * FROM tags WHERE name = $1 AND guild_id = $2", name, guild_id)
+        if not tag:
+            return await ctx.send("That tag doesnt exist!")
+        if tag[0][0] != user_id:
+            return await ctx.send("You do not own this tag!")
         await ctx.send(
             f"Your tag is called `{name}`. Please enter the content of your tag or type `{ctx.prefix}cancel` to cancel.")
         try:
@@ -144,17 +151,12 @@ class Tags(commands.Cog):
                 return await ctx.send("Ok, cancelled.")
         except asyncio.TimeoutError():
             return await ctx.send("You ran out of time!")
-        user_id = str(ctx.author.id)
-        guild_id = str(ctx.guild.id)
-        tag = await self.client.pg_con.fetch("SELECT * FROM tags WHERE name = $1 AND guild_id = $2", name, guild_id)
-        if tag[0][0] != user_id:
-            return await ctx.send("You do not own this tag!")
         if tag:
             try:
                 await ctx.send(
                     f"```Tag Name: {name}\nContent: {message.content}```\nIs this correct? [y/n]\nYou have 15 seconds to respond")
                 msg = await self.client.wait_for('message', check=lambda m: m.author == ctx.author, timeout=30)
-                if msg.content.startswith("y"):
+                if msg.content.lower().startswith("y"):
                     await self.client.pg_con.execute(
                         "UPDATE tags SET content = $1 WHERE name = $2 AND guild_id = $3",
                         message.content.strip(), name, guild_id

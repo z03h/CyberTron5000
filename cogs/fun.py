@@ -259,7 +259,7 @@ class Fun(commands.Cog):
         a = []
         for item in emoji:
             a.append(self.client.get_emoji(item.id))
-        await ctx.send(" ".join([str(a) for a in a]))
+        await ctx.send("".join([str(a) for a in a]))
     
     @emoji.command()
     async def url(self, ctx, *emoji: discord.Emoji):

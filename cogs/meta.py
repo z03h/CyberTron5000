@@ -107,7 +107,7 @@ class Meta(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.tick = ":tick:733458499777855538"
-        self.version = "CyberTron5000 Beta v3.0.0"
+        self.version = f"{self.client.user.name} Beta v3.0.0"
         self.counter = 0
         self.softwares = ['<:dpy:708479036518694983>', '<:python:706850228652998667>', '<:JSON:710927078513442857>',
                           '<:psql:733848802334736395>']
@@ -137,15 +137,25 @@ class Meta(commands.Cog):
     
     @commands.command(help="Checks the bot's ping.")
     async def ping(self, ctx):
+        websocket = round(self.client.latency*1000, 3)
         start = time.perf_counter()
-        a = discord.Embed(colour=self.client.colour)
-        a.description = f"**Pong! :ping_pong:**\n→ Websocket Latency | **{round(self.client.latency * 1000, 3)}** ms | ✦"
-        message = await ctx.send(embed=a)
+        if websocket < 70:
+            health = sl[discord.Status.online]
+        elif 60 < websocket < 150:
+            health = sl[discord.Status.idle]
+        else:
+            health = sl[discord.Status.dnd]
+        embed = discord.Embed(color=self.client.colour, description=f"**Pong! :ping_pong:**\nWebsocket Latency **{websocket}** | {health}")
+        message = await ctx.send(embed=embed)
         end = time.perf_counter()
         duration = round((end - start) * 1000, 3)
-        embed = discord.Embed(colour=self.client.colour)
-        embed.description = f"**Pong! :ping_pong:**\n→ Websocket Latency | **{round(self.client.latency * 1000, 3)}** ms | ✦"
-        embed.description += f"\n→ Response Time | **{duration}** ms | ✦"
+        if duration < 145:
+            health = sl[discord.Status.online]
+        elif 145 < duration < 250:
+            health = sl[discord.Status.idle]
+        else:
+            health = sl[discord.Status.dnd]
+        embed.description += f"\nResponse Time **{duration}** | {health}"
         await message.edit(embed=embed)
     
     @commands.command(aliases=["sourcecode", "src"], help="Shows source code for a given command")
@@ -257,14 +267,12 @@ class Meta(commands.Cog):
                     cc += 1
         news = await self.client.pg_con.fetch("SELECT message, number FROM news")
         embed = discord.Embed(colour=self.client.colour)
-        embed.set_author(name=f"About {self.client.user.name}", icon_url=self.client.user.avatar_url)
+        embed.set_author(name=f"About {self.version}", icon_url=self.client.user.avatar_url)
         embed.description = f"→ [Invite](https://cybertron-5k.netlify.app/invite) | [Support](https://cybertron-5k.netlify.app/server) | <:github:724036339426787380> [GitHub](https://github.com/niztg/CyberTron5000) | <:cursor_default:734657467132411914>[Website](https://cybertron-5k.netlify.app) | <:karma:704158558547214426> [Reddit](https://reddit.com/r/CyberTron5000)\n"
         embed.description += f"→ Latest Commits: {'|'.join(await self.get_commits(limit=3, author=False, names=False))}\n"
         embed.description += f"→ Used Memory | {cyberformat.bar(stat=psutil.virtual_memory()[2], max=100, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>')}\n→ CPU | {cyberformat.bar(stat=psutil.cpu_percent(), max=100, filled='<:loading_filled:730823516059992204>', empty='<:loading_empty:730823515862859897>')}"
         embed.description += f"\n→ Uptime | {a}"
         embed.description += f"\n**{(await lines_of_code()):,}** lines of code | **{len([f for f in os.listdir('cogs') if f.endswith('.py')]) + 1 + (len([a for a in os.listdir('cogs/utils') if a.endswith('.py')]))}** files\n{self.softwares[0]} {discord.__version__}\n{self.softwares[1]} {platform.python_version()}"
-        # embed.add_field(name='<:popular4:732745781714354198> Statistics',
-        #                 value=f'<:member:731190477927219231> **{len(self.client.users):,}** | **{len(self.client.guilds):,}** guilds | **{round(len(self.client.users) / len(self.client.guilds)):,}** users per guild\n**{len([c for c in self.client.commands if not isinstance(c, commands.Group)])}** commands | **{len(self.client.cogs)}** cogs | **{round(len(self.client.commands) / len(self.client.cogs)):,}** commands per cog\n<:category:716057680548200468> **{cc:,}** <:text_channel:703726554018086912> **{tc:,}** <:voice_channel:703726554068418560> **{vc:,}** | **{self.counter:,}** commands used since start')
         embed.add_field(name=f"<:news:730866149109137520> News Update #{news[0][1]}", value=news[0][0], inline=False)
         embed.set_footer(
             text=f"Developed by {str(owner)} | Bot created {humanize.naturaltime(datetime.datetime.utcnow() - self.client.user.created_at)}",

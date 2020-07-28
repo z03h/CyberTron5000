@@ -440,17 +440,7 @@ class Profile(commands.Cog):
                     icon_url="https://www.freepnglogos.com/uploads/spotify-logo-png/spotify-logo-vector-download-11.png",
                     name=f"Spotify Status for {member}")
                 le_bar = cyberformat.bar(stat=(datetime.datetime.utcnow() - a.start).seconds, max=a.duration.seconds,
-                                         filled='─', empty='⚪️', show_stat=True, pointer=True)
-                b = len([i for i in list(le_bar) if i == "⚪"])
-                while b > 1:
-                    if b > 1:
-                        le_bar = cyberformat.bar(stat=(datetime.datetime.utcnow() - a.start).seconds,
-                                                 max=a.duration.seconds,
-                                                 filled='─', empty='⚪️', show_stat=True, pointer=True)
-                        b = len([i for i in list(le_bar) if i == "⚪"])
-                    else:
-                        le_bar = le_bar
-                        b = len([i for i in list(le_bar) if i == "⚪"])
+                                         filled='─', empty='🔘', show_stat=True, pointer=True)
                 embed.description = f"[{', '.join(a.artists)} - {a.title}](https://open.spotify.com/track/{a.track_id})"
                 embed.description += f"\n`{datetime.datetime.utcfromtimestamp((datetime.datetime.utcnow() - a.start).seconds).strftime('%-M:%S')}` {le_bar} `{datetime.datetime.utcfromtimestamp(a.duration.seconds).strftime('%-M:%S')}`"
                 embed.description += f"\nAlbum | **{a.album}**"

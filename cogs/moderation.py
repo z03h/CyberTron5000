@@ -124,30 +124,30 @@ class Moderation(commands.Cog):
         """Makes bot leave server"""
         await self.client.get_guild(ctx.guild.id).leave()
     
-    @commands.group(invoke_without_command=True, help="Change the guild's prefix", aliases=['prefix', 'pre'])
-    @commands.is_owner()
-    async def changeprefix(self, ctx, *, prefix):
-        with open("prefixes.json", "r") as f:
-            prefixes = json.load(f)
-        
-        prefixes[str(ctx.guild.id)] = prefix
-        
-        with open("prefixes.json", "w") as f:
-            json.dump(prefixes, f, indent=4)
-        await ctx.message.add_reaction(emoji=":tick:733458499777855538")
-        await ctx.guild.me.edit(nick=f"({prefix}) {self.client.user.name}")
-    
-    @changeprefix.command(invoke_without_command=True, help="Make your prefix end in a space.", aliases=['sp'])
-    @commands.is_owner()
-    async def spaceprefix(self, ctx, *, prefix):
-        with open("prefixes.json", "r") as f:
-            prefixes = json.load(f)
-        prefixes[str(ctx.guild.id)] = f"{prefix} "
-        with open("prefixes.json", "w") as f:
-            json.dump(prefixes, f, indent=4)
-        await ctx.message.add_reaction(emoji=":tick:733458499777855538")
-        await ctx.guild.me.edit(nick=f"({prefix}) {self.client.user.name}")
-    
+    # @commands.group(invoke_without_command=True, help="Change the guild's prefix", aliases=['prefix', 'pre'])
+    # @commands.is_owner()
+    # async def changeprefix(self, ctx, *, prefix):
+    #     with open("prefixes.json", "r") as f:
+    #         prefixes = json.load(f)
+    #     
+    #     prefixes[str(ctx.guild.id)] = prefix
+    #     
+    #     with open("prefixes.json", "w") as f:
+    #         json.dump(prefixes, f, indent=4)
+    #     await ctx.message.add_reaction(emoji=":tick:733458499777855538")
+    #     await ctx.guild.me.edit(nick=f"({prefix}) {self.client.user.name}")
+    # 
+    # @changeprefix.command(invoke_without_command=True, help="Make your prefix end in a space.", aliases=['sp'])
+    # @commands.is_owner()
+    # async def spaceprefix(self, ctx, *, prefix):
+    #     with open("prefixes.json", "r") as f:
+    #         prefixes = json.load(f)
+    #     prefixes[str(ctx.guild.id)] = f"{prefix} "
+    #     with open("prefixes.json", "w") as f:
+    #         json.dump(prefixes, f, indent=4)
+    #     await ctx.message.add_reaction(emoji=":tick:733458499777855538")
+    #     await ctx.guild.me.edit(nick=f"({prefix}) {self.client.user.name}")
+    #     
     @commands.command(aliases=['audit'])
     @commands.has_permissions(view_audit_log=True)
     async def auditlog(self, ctx, limit: int = 20):
@@ -205,6 +205,39 @@ class Moderation(commands.Cog):
         await member.remove_roles(role)
         await ctx.message.add_reaction(emoji=self.tick)
         await ctx.send(f"{member.mention} has been unmuted.")
+    
+    @commands.group(invoke_without_command=True, aliases=['pre', 'prefix'], name='changeprefix')
+    async def _prefix(self, ctx):
+        prefixes = await self.client.pg_con.fetch("SELECT prefix FROM prefixes WHERE guild_id = $1", ctx.guild.id)
+        a = [p[0] for p in prefixes]
+        embed = discord.Embed(color=self.client.colour)
+        embed.set_author(name=f"Prefixes for {ctx.guild}", icon_url=ctx.guild.icon_url)
+        embed.add_field(name="Prefixes", value=", ".join([f"`{a}`" for a in a]))
+        await ctx.send(embed=embed)
+    
+    @_prefix.command()
+    @check_admin_or_owner()
+    async def add(self, ctx, *, prefix):
+        _ = await self.client.pg_con.fetch("SELECT * FROM prefixes WHERE prefix = $1 AND guild_id = $2", prefix,
+                                           ctx.guild.id)
+        if not _:
+            await self.client.pg_con.execute("INSERT INTO prefixes (guild_id, prefix) VALUES ($1, $2)", ctx.guild.id,
+                                             prefix)
+            await ctx.send(f'Success! `{prefix}` is now a prefix in {ctx.guild}!')
+        else:
+            await ctx.send(f"`{prefix}` is already a prefix for this guild!")
+    
+    @_prefix.command(aliases=['rm'])
+    @check_admin_or_owner()
+    async def remove(self, ctx, *, prefix):
+        _ = await self.client.pg_con.fetch("SELECT * FROM prefixes WHERE prefix = $1 AND guild_id = $2", prefix,
+                                           ctx.guild.id)
+        if _:
+            await self.client.pg_con.execute("DELETE FROM prefixes WHERE prefix = $1 AND guild_id = $2", prefix,
+                                             ctx.guild.id)
+            await ctx.send(f'`{prefix}` is no longer a prefix for {ctx.guild}')
+        else:
+            await ctx.send(f"`{prefix}` is not a prefix in {ctx.guild}!")
 
 
 def setup(client):

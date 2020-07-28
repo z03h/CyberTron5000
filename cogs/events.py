@@ -58,6 +58,7 @@ class Events(commands.Cog):
     async def on_user_mention(self, message):
         owner = await self.client.fetch_user(350349365937700864)
         if "<@!697678160577429584>" == message.content:
+            # "Hi, thanks for inviting me! My default prefix is `c$`, but you can change it by doing `c$changeprefix <new prefix>`.\n→ [Invite](https://cybertron-5k.netlify.app/invite) | [Support](https://cybertron-5k.netlify.app/server) | <:github:724036339426787380> [GitHub](https://github.com/niztg/CyberTron5000) | <:cursor_default:734657467132411914>[Website](https://cybertron-5k.netlify.app) | <:karma:704158558547214426> [Reddit](https://reddit.com/r/CyberTron5000)\n
             with open("prefixes.json", "r") as f:
                 prefix = json.load(f)
                 try:
@@ -65,10 +66,8 @@ class Events(commands.Cog):
                 except KeyError:
                     pre = "="
                 embed = discord.Embed(colour=self.client.colour,
-                                      description=f'**My prefix for {message.guild} is** `{pre}`\n\n**Do** '
-                                                  f'`{pre}help` **for a full list of commands.**\n\n'
-                                                  f'[Invite me to your server!]'
-                                                  f'(https://cybertron-5k.netlify.app/invite)\n\n[Join our help server!](https://discord.gg/aa9p43W)')
+                                      description=f'**My prefix for {message.guild} is** `c$`\n**Do** '
+                                                  f'`c$help` **for a full list of commands**\n→ [Invite](https://cybertron-5k.netlify.app/invite) | [Support](https://cybertron-5k.netlify.app/server) | <:github:724036339426787380> [GitHub](https://github.com/niztg/CyberTron5000) | <:cursor_default:734657467132411914>[Website](https://cybertron-5k.netlify.app) | <:karma:704158558547214426> [Reddit](https://reddit.com/r/CyberTron5000)')
                 embed.set_thumbnail(url=self.client.user.avatar_url)
                 embed.set_author(name=f"Developed by {owner}", icon_url=owner.avatar_url)
                 await message.channel.send(embed=embed)

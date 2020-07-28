@@ -36,6 +36,8 @@ async def fetch_rtfm(res):
             location += "https://discordpy.readthedocs.io/en/latest/ext/commands/api.html?#discord.ext.commands."
         elif item['path'].startswith("discord"):
             location += "https://discordpy.readthedocs.io/en/latest/api.html?#discord."
+        if "utils" in item['path']:
+            location = "https://discordpy.readthedocs.io/en/latest/api.html?#discord.utils."
         if not item['parent']:
             data.append(f"[`{item['object']}`]({location}{item['object']})")
         else:
@@ -185,7 +187,8 @@ class Api(commands.Cog):
         embed.set_author(name=f"{res['info']['name']} {res['info']['version']}", icon_url=self.pypi,
                          url=res['info']['project_url'])
         embed.description = f"{res['info']['summary']}\n"
-        embed.description += f"<:author:734991429843157042> **{res['info']['author']}{char}**\n<:python:706850228652998667> **{(res['info']['requires_python'] or '???').replace('*', '')}**\n⚖️ **{res['info']['license'] or '???'}**\n<:releases:734994325020213248> **{len(res['releases'])}**"
+        versions = res['info']['requires_python'][:-1].replace("*", "").split(",")
+        embed.description += f"<:author:734991429843157042> **{res['info']['author']}{char}**\n<:python:706850228652998667> **{' | '.join(versions) or '???'}**\n⚖️ **{res['info']['license'] or '???'}**\n<:releases:734994325020213248> **{len(res['releases'])}**"
         for key, value in res['info']['project_urls'].items():
             embed.description += f"\n[{key.title()}]({value})"
         await ctx.send(embed=embed)
@@ -216,7 +219,8 @@ class Api(commands.Cog):
         to_lang = aiogoogletrans.LANGUAGES[res.dest]
         embed = discord.Embed(colour=self.client.colour,
                               description=f"**{from_lang.title()}**\n{message}\n\n**{to_lang.title()}**\n{res.text}\n\n**Pronunciation**\n{res.pronunciation}").set_author(
-            name='Translated Text')
+            name='Translated Text',
+            icon_url="https://cdn3.iconfinder.com/data/icons/google-suits-1/32/18_google_translate_text_language_translation-512.png")
         return await ctx.send(embed=embed.set_footer(text=f"{round(res.confidence * 100)}% confident"))
     
     @translate.command(name='to', invoke_without_command=True)
@@ -231,7 +235,8 @@ class Api(commands.Cog):
         to_lang = aiogoogletrans.LANGUAGES[res.dest]
         embed = discord.Embed(colour=self.client.colour,
                               description=f"**{from_lang.capitalize()}**\n{message}\n\n**{to_lang.capitalize()}**\n{res.text}\n\n**Pronunciation**\n{res.pronunciation}").set_author(
-            name='Translated Text')
+            name='Translated Text',
+            icon_url="https://cdn3.iconfinder.com/data/icons/google-suits-1/32/18_google_translate_text_language_translation-512.png")
         return await ctx.send(embed=embed.set_footer(text=f"{res.confidence * 100}% confident"))
     
     @commands.command(aliases=['wiki'])

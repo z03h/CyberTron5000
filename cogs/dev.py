@@ -5,6 +5,8 @@ import io
 import subprocess
 import sys
 import textwrap
+import asyncio
+import aiohttp
 import inspect
 
 import discord
@@ -28,10 +30,12 @@ class Developer(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.tick = ":tick:733458499777855538"
+        self._ = None
     
     @commands.group(aliases=["e", "evaluate"], name='eval', invoke_without_command=True, help="Evaluates a function.")
     @commands.is_owner()
     async def eval_fn(self, ctx, *, cmd):
+        global result
         try:
             fn_name = "_eval_expr"
             cmd = cyberformat.codeblock(cmd)
@@ -42,26 +46,82 @@ class Developer(commands.Cog):
             body = parsed.body[0].body
             checks.insert_returns(body)
             env = {
-                'client': ctx.bot,
+                'me': ctx.guild.me,
+                'bot': ctx.bot,
                 'discord': discord,
                 'commands': commands,
+                'get': discord.utils.get,
                 'ctx': ctx,
+                'asyncio': asyncio,
+                'session': aiohttp.ClientSession(loop=self.client.loop),
                 '__import__': __import__,
                 'author': ctx.author,
                 'guild': ctx.guild,
                 'channel': ctx.channel,
+                '_': self._,
             }
             try:
                 exec(compile(parsed, filename="<ast>", mode="exec"), env)
-                await ctx.message.add_reaction(emoji=self.tick)
                 result = (await eval(f"{fn_name}()", env))
-                await ctx.send(f'{result}')
+            except Exception as error:
+                return await ctx.send(embed=discord.Embed(color=self.client.colour,
+                                                          description=f"{error.__class__.__name__}```py\n{error}\n```"))
+        except Exception as error:
+            return await ctx.send(embed=discord.Embed(color=self.client.colour,
+                                                      description=f"{error.__class__.__name__}```py\n{error}\n```"))
+        
+        await ctx.message.add_reaction(emoji=self.tick)
+        await ctx.send(f'{result}')
+        self._ = result
+    
+    @commands.command()
+    @commands.is_owner()
+    async def repl(self, ctx):
+        """Starts a REPL session"""
+        global result
+        await ctx.send(embed=discord.Embed(description="```Starting REPL Session```", colour=self.client.colour))
+        while True:
+            ms = await self.client.wait_for('message', check=lambda m: m.author == ctx.author)
+            if ms.content.lower().startswith(f"{ctx.prefix}exit"):
+                return await ctx.send(
+                    embed=discord.Embed(description="```Exiting REPL Session```", color=self.client.colour))
+            try:
+                fn_name = "_eval_expr"
+                cmd = cyberformat.codeblock(ms.content)
+                cmd = cmd.strip("` ")
+                cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
+                body = f"async def {fn_name}():\n{cmd}"
+                parsed = ast.parse(body)
+                body = parsed.body[0].body
+                checks.insert_returns(body)
+                env = {
+                    'me': ctx.guild.me,
+                    'bot': ctx.bot,
+                    'discord': discord,
+                    'commands': commands,
+                    'get': discord.utils.get,
+                    'ctx': ctx,
+                    'asyncio': asyncio,
+                    'session': aiohttp.ClientSession(),
+                    '__import__': __import__,
+                    'author': ctx.author,
+                    'guild': ctx.guild,
+                    'channel': ctx.channel,
+                    '_': self._,
+                }
+                try:
+                    exec(compile(parsed, filename="<ast>", mode="exec"), env)
+                    result = (await eval(f"{fn_name}()", env))
+                except Exception as error:
+                    await ctx.send(embed=discord.Embed(color=self.client.colour,
+                                                       description=f"{error.__class__.__name__}```py\n{error}\n```"))
+                    continue
             except Exception as error:
                 await ctx.send(embed=discord.Embed(color=self.client.colour,
                                                    description=f"{error.__class__.__name__}```py\n{error}\n```"))
-        except Exception as error:
-            await ctx.send(embed=discord.Embed(color=self.client.colour,
-                                               description=f"{error.__class__.__name__}```py\n{error}\n```"))
+                continue
+            await ctx.send(f'{result}')
+            self._ = result
     
     @commands.command(help="Loads Cogs", aliases=['l'])
     @commands.is_owner()
