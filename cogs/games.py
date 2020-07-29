@@ -291,7 +291,7 @@ class Games(commands.Cog):
     async def trivia(self, ctx, difficulty: str = None):
         try:
             an = []
-            difficulty = difficulty if difficulty.lower() in ['easy', 'medium', 'hard'] else random.choice(['easy', 'medium', 'hard'])
+            difficulty = difficulty if difficulty and difficulty.lower() in ['easy', 'medium', 'hard'] else random.choice(['easy', 'medium', 'hard'])
             async with aiohttp.ClientSession() as cs:
                 async with cs.get("https://opentdb.com/api.php?amount=1",
                                   params={"amount": 1, "difficulty": difficulty}) as r:
