@@ -38,7 +38,7 @@ class Tags(commands.Cog):
             await ctx.send("not found")
         else:
             await ctx.send(tag[0][0])
-            await self.client.pg_con.execute("UPDATE tags SET uses = $1 WHERE name = $2 AND guild_id = $3", tag[0][1]+1,
+            await self.client.pg_con.execute("UPDATE tags SET uses = $1 WHERE name = $2 AND guild_id = $3", (tag[0][1] or 0)+1,
                                              name, str(ctx.guild.id))
             #u = await self.client.pg_con.fetch("SELECT uses FROM tags WHERE name = $1 AND guild_id = $2", name,
             #                                   str(ctx.guild.id))
