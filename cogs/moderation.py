@@ -51,9 +51,9 @@ class Moderation(commands.Cog):
         """Ban a member from a guild."""
         if not hierarchy(member):
             return await ctx.send('I cannot moderate that user')
+        r = "No reason specified" if not reason else reason
         await member.send(
             f"Hello, you have been kicked from participating in {ctx.guild}. Please see your reason for removal: `{r}`")
-        r = "No reason specified" if not reason else reason
         await member.ban(reason=r)
         await ctx.message.add_reaction(self.tick)
     
