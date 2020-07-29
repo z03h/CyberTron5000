@@ -56,8 +56,8 @@ class Events(commands.Cog):
     
     @commands.Cog.listener(name="on_message")
     async def on_user_mention(self, message):
-        owner = await self.client.fetch_user(350349365937700864)
         if "<@!697678160577429584>" == message.content:
+            owner = await self.client.fetch_user(350349365937700864)
             prefixes = await self.client.pg_con.fetch("SELECT prefix FROM prefixes WHERE guild_id = $1",
                                                       message.guild.id)
             a = [p[0] for p in prefixes]

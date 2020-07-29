@@ -212,7 +212,7 @@ class Moderation(commands.Cog):
         self.client.prefixes[ctx.guild.id].append(prefix)
         await ctx.send(f'Success! `{prefix}` is now a prefix in {ctx.guild}!')
     
-    @commands.command(aliases=['sp-add'])
+    @_prefix.command(aliases=['sp-add'])
     @check_admin_or_owner()
     async def spaceprefix_add(self, ctx, *, prefix):
         """Add a prefix for the guild that ends in a space."""
@@ -242,7 +242,7 @@ class Moderation(commands.Cog):
         self.client.prefixes[ctx.guild.id].remove(prefix)
         await ctx.send(f'`{prefix}` is no longer a prefix for {ctx.guild}')
     
-    @commands.command(aliases=['sp-rm'])
+    @_prefix.command(aliases=['sp-rm'])
     @check_admin_or_owner()
     async def spaceprefix_remove(self, ctx, *, prefix):
         """Remove a prefix for the guild."""
