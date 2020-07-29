@@ -89,7 +89,7 @@ class Reddit(commands.Cog):
     async def meme(self, ctx):
         subreddit = random.choice(
             ['memes', 'dankmemes', 'okbuddyretard', 'memeeconomy', 'dankexchange', 'pewdiepiesubmissions',
-             'memes_of_the_dank', 'wholesomememes'])
+             'wholesomememes'])
         posts = []
         async with ctx.typing():
             async with aiohttp.ClientSession() as cs:

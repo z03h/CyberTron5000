@@ -55,7 +55,7 @@ class Events(commands.Cog):
     
     @commands.Cog.listener(name="on_message")
     async def on_user_mention(self, message):
-        owner = self.client.get_user(350349365937700864) or self.client.fetch_user(350349365937700864)
+        owner = self.client.get_user(350349365937700864) or await self.client.fetch_user(350349365937700864)
         if message.content in ("<@!697678160577429584>", "<@697678160577429584>"):
             DEFAULT_PREFIX = ["c$"]
             a = self.client.prefixes.get(message.guild.id, DEFAULT_PREFIX)
