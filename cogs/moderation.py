@@ -212,6 +212,24 @@ class Moderation(commands.Cog):
         self.client.prefixes[ctx.guild.id].append(prefix)
         await ctx.send(f'Success! `{prefix}` is now a prefix in {ctx.guild}!')
     
+    @commands.command(aliases=['sp-add'])
+    @check_admin_or_owner()
+    async def spaceprefix_add(self, ctx, *, prefix):
+        """Add a prefix for the guild that ends in a space."""
+        prefixes = self.client.prefixes
+        try:
+            prefixes = prefixes.get(ctx.guild.id, ["c$"])
+        except KeyError:
+            prefixes[ctx.guild.id] = ["c$"]
+        if prefix in prefixes:
+            return await ctx.send(f"`{prefix}` is already a prefix for this guild!")
+        if len(prefixes) > 15:
+            return await ctx.send("This guild already has 15 prefixes! Please remove some before continuing.")
+        await self.client.pg_con.execute("INSERT INTO prefixes (guild_id, prefix) VALUES ($1, $2)", ctx.guild.id,
+                                         f"{prefix} ")
+        self.client.prefixes[ctx.guild.id].append(f"{prefix} ")
+        await ctx.send(f'Success! `{prefix} ` is now a prefix in {ctx.guild}!')
+    
     @_prefix.command(aliases=['rm'])
     @check_admin_or_owner()
     async def remove(self, ctx, *, prefix):
@@ -223,6 +241,18 @@ class Moderation(commands.Cog):
                                          ctx.guild.id)
         self.client.prefixes[ctx.guild.id].remove(prefix)
         await ctx.send(f'`{prefix}` is no longer a prefix for {ctx.guild}')
+    
+    @commands.command(aliases=['sp-rm'])
+    @check_admin_or_owner()
+    async def spaceprefix_remove(self, ctx, *, prefix):
+        """Remove a prefix for the guild."""
+        prefixes = self.client.prefixes.get(ctx.guild.id)
+        if f"{prefix} " not in prefixes:
+            return await ctx.send(f"`{prefix} ` is not a prefix in {ctx.guild}!")
+        await self.client.pg_con.execute("DELETE FROM prefixes WHERE prefix = $1 AND guild_id = $2", f"{prefix} ",
+                                         ctx.guild.id)
+        self.client.prefixes[ctx.guild.id].remove(f"{prefix} ")
+        await ctx.send(f'`{prefix} ` is no longer a prefix for {ctx.guild}')
     
     @add.error
     async def on_command_error(self, ctx, error):
