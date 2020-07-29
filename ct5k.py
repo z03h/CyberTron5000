@@ -39,20 +39,17 @@ class CyberTron5000(commands.Bot):
         self.tick = "<:tick:733458499777855538>"
         self.x = "<:x:733458444346195990>"
         self.load_extension(name='jishaku')
+        self.ready = False
+        self.prefixes = {}
     
     async def create_db_pool(self):
         self.pg_con = await asyncpg.create_pool(user=get_token()['psql_user'], password=get_token()['psql_password'],
                                                 database=get_token()['psql_db'])
         
     async def get_prefix(self, message):
-        resp = await self.pg_con.fetch("SELECT prefix FROM prefixes WHERE guild_id = $1", message.guild.id)
-        if not resp:
-            await self.pg_con.execute("INSERT INTO prefixes (guild_id, prefix) VALUES ($1, $2)", message.guild.id, "c$")
-            resp = await self.pg_con.fetch("SELECT prefix FROM prefixes WHERE guild_id = $1", message.guild.id)
-            a = [p[0] for p in resp]
-        else:
-            a = [p[0] for p in resp]
-        return commands.when_mentioned_or(*a)(self, message)
+        DEFAULT_PREFIX = ["c$"]
+        prefixes = self.prefixes.get(message.guild.id, DEFAULT_PREFIX)
+        return commands.when_mentioned_or(*prefixes)(self, message)
     
     async def on_guild_join(self, guild):
         await self.pg_con.execute("INSERT INTO prefixes (guild_id, prefix) VALUES ($1, $2)", guild.id, "c$")
@@ -61,14 +58,19 @@ class CyberTron5000(commands.Bot):
         await self.pg_con.execute("DELETE FROM prefixes WHERE guild_id = $1", guild.id)
 
     async def on_ready(self):
-        print("online!")
-        for filename in os.listdir('cogs'):
-            if filename.endswith('.py'):
-                self.load_extension('cogs.{}'.format(filename[:-3]))
-        print("Online!")
-        await self.change_presence(
-            activity=discord.Activity(type=discord.ActivityType.watching,
-                                      name=f"VIBE SCHOOL being rebuilt!"))
+        if not self.ready:
+            print("online!")
+            for filename in os.listdir('cogs'):
+                if filename.endswith('.py'):
+                    self.load_extension('cogs.{}'.format(filename[:-3]))
+            print("Online!")
+            await self.change_presence(
+                activity=discord.Activity(type=discord.ActivityType.watching,
+                                          name=f"VIBE SCHOOL being rebuilt!"))
+            prefix_data = await self.pg_con.fetch("SELECT guild_id, array_agg(prefix) FROM prefixes GROUP BY guild_id")
+            for entry in prefix_data:
+                self.prefixes[entry['guild_id']] = entry['array_agg']
+            self.ready = True
 
 
 client = CyberTron5000()
