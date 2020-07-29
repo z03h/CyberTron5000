@@ -19,8 +19,9 @@ import discord
 import humanize
 import psutil
 from discord.ext import commands
+from tabulate import tabulate as tb
 
-from .utils import cyberformat
+from .utils import cyberformat, paginator
 from .utils.checks import check_admin_or_owner, beta_squad
 from .utils.lists import sl
 import codecs
@@ -113,13 +114,20 @@ class Meta(commands.Cog):
         self.client = client
         self.tick = ":tick:733458499777855538"
         self.version = f"{self.client.user.name} Beta v3.0.0"
-        self.counter = 0
         self.softwares = ['<:dpy:708479036518694983>', '<:python:706850228652998667>', '<:JSON:710927078513442857>',
                           '<:psql:733848802334736395>']
-    
-    @commands.Cog.listener()
-    async def on_command_completion(self, ctx):
-        self.counter += 1
+            
+    @commands.command()
+    async def usage(self, ctx):
+        data = sorted([[str(key), value] for key, value in self.client.cmd_usage.items()], key=lambda x: x[1], reverse=True)[:10]
+        headers = ["Command Name", "Usage"]
+        embed = discord.Embed(description=f"```\n{tb(data, headers, tablefmt='fancy_grid')}\n```", color=self.client.colour)
+        total = sum([value for key, value in self.client.cmd_usage.items()])
+        user = sorted([(key, value) for key, value in self.client.cmd_users.items()], key=lambda x: x[1])[0]
+        user = ctx.guild.get_member(user[0]) or await self.client.fetch_user(user[0])
+        embed.set_author(name=f"Command Usage Stats")
+        embed.description = f"Total commands used since start: **{total}**\nHighest Command User: **{str(user)}**" + embed.description
+        await ctx.send(embed=embed)
     
     @commands.command()
     async def uptime(self, ctx):

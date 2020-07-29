@@ -1,5 +1,6 @@
 import discord
 from discord.ext import menus
+from tabulate import tabulate as tb
 
 
 class CatchAllMenu(menus.MenuPages, inherit_buttons=False):
