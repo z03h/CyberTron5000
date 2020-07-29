@@ -346,7 +346,7 @@ class Games(commands.Cog):
             True: "<:tick:733458499777855538>",
             False: "<:x_:733458444346195990>",
         }
-        daggy = await self.client.fetch_user(self.daggy)
+        daggy = self.client.get_user(self.daggy) or await self.client.fetch_user(self.daggy)
         async with ctx.typing():
             resp = {'token': dagpi()}
             async with aiohttp.ClientSession() as cs:

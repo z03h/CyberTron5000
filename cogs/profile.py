@@ -76,7 +76,7 @@ class Profile(commands.Cog):
     @commands.command(aliases=["av"], help="Gets the avatar of a user.")
     async def avatar(self, ctx, *, avamember: Union[discord.Member, int] = None):
         if isinstance(avamember, int):
-            avamember = await self.client.fetch_user(avamember)
+            avamember = self.client.get_user(avamember) or await self.client.fetch_user(avamember)
         else:
             avamember = avamember or ctx.author
         embed = discord.Embed(colour=self.client.colour).set_image(url=avamember.avatar_url_as(static_format='png'))
@@ -275,13 +275,13 @@ class Profile(commands.Cog):
         await ctx.send(embed=embed)
     
     @commands.command(aliases=['mi', 'member', 'ui', 'user', 'userinfo'])
-    async def memberinfo(self, ctx, *, member: Union[discord.Member, discord.User, int] = None):
+    async def memberinfo(self, ctx, *, member: Union[discord.Member, int] = None):
         """
         Gives you userinfo
         """
         embed = discord.Embed(color=self.client.colour)
         if isinstance(member, int):
-            m = await self.client.fetch_user(member)
+            m = self.client.get_user(member) or await self.client.fetch_user(member)
         else:
             m = member or ctx.author
         embed.set_author(name=str(m), icon_url=m.avatar_url, url=m.avatar_url_as(static_format='png', size=4096))
@@ -293,14 +293,7 @@ class Profile(commands.Cog):
             else:
                 is_bot = "<:bot:703728026512392312>"
         mem_flags = dict(m.public_flags).items()
-        badges = [k for k, v in mem_flags]
-        bools = [v for k, v in mem_flags]
-        final = []
-        for v, b in zip(badges, bools):
-            if b:
-                final.append(v)
-            else:
-                continue
+        final = [k for k, v in mem_flags if v]
         a = [badge_mapping[str(b)] for b in final if b in badge_mapping]
         a.append("<:nitro:730892254092198019>") if await GuildStats(ctx).check_nitro(m) else None
         if isinstance(m, discord.User):

@@ -23,11 +23,8 @@ class Tags(commands.Cog):
         Invokes a tag
         """
         if not name:
-            cm = []
-            for command in ctx.command.commands:
-                cm.append(command)
             final = [f"`{ctx.prefix}{ctx.command} {c.name} {c.signature}` • {c.help or 'No help provided'}" for c in
-                     cm]
+                     ctx.command.commands]
             final.append(f"`{ctx.prefix}all_tags` • Shows you all the tags in the guild")
             source = paginator.IndexedListSource(embed=discord.Embed(color=self.client.colour, title="Tag Commands"),
                                                  data=final)
@@ -56,11 +53,7 @@ class Tags(commands.Cog):
         member = member or ctx.author
         tags = await self.client.pg_con.fetch("SELECT name, uses FROM tags WHERE guild_id = $1 AND user_id = $2",
                                               str(ctx.guild.id), str(member.id))
-        uses = [0 if v[1] is None else v[1] for v in tags]
-        names = [v[0] for v in tags]
-        f = []
-        for x, y in zip(names, uses):
-            f.append((x, y))
+        f = [(v[0], v[1] or 0) for v in tags]
         l = sorted(f, key=lambda b: b[1])
         final = [f"{a[0]} - {a[1]:,} uses" for a in l]
         source = paginator.IndexedListSource(final[::-1], embed=discord.Embed(colour=self.client.colour).set_author(
@@ -74,11 +67,7 @@ class Tags(commands.Cog):
         member = member or ctx.author
         tags = await self.client.pg_con.fetch("SELECT name, uses FROM tags WHERE guild_id = $1 AND user_id = $2",
                                               str(ctx.guild.id), str(member.id))
-        uses = [0 if v[1] is None else v[1] for v in tags]
-        names = [v[0] for v in tags]
-        f = []
-        for x, y in zip(names, uses):
-            f.append((x, y))
+        f = [(v[0], v[1] or 0) for v in tags]
         l = sorted(f, key=lambda b: b[1])
         final = [f"{a[0]} - {a[1]:,} uses" for a in l]
         source = paginator.IndexedListSource(final[::-1], embed=discord.Embed(colour=self.client.colour).set_author(
@@ -125,11 +114,7 @@ class Tags(commands.Cog):
     async def all_tags(self, ctx):
         """Lists all the tags in the guild"""
         tags = await self.client.pg_con.fetch("SELECT name, uses FROM tags WHERE guild_id = $1", str(ctx.guild.id))
-        uses = [0 if v[1] is None else v[1] for v in tags]
-        names = [v[0] for v in tags]
-        f = []
-        for x, y in zip(names, uses):
-            f.append((x, y))
+        f = [(v[0], v[1] or 0) for v in tags]
         l = sorted(f, key=lambda b: b[1])
         final = [f"{a[0]} - {a[1]:,} uses" for a in l]
         source = paginator.IndexedListSource(final[::-1], embed=discord.Embed(colour=self.client.colour).set_author(
@@ -167,7 +152,7 @@ class Tags(commands.Cog):
                     )
                     await ctx.send(f"Success! Tag `{name}` edited!")
                 else:
-                    await ctx.send("Sorry! Try again by using the `{0}tag create` command".format(ctx.prefix))
+                    await ctx.send("Sorry! Try again by using the `{0}tag edit` command".format(ctx.prefix))
             except asyncio.TimeoutError:
                 await ctx.send("You took too long, try again!")
         elif not tag:
@@ -182,12 +167,7 @@ class Tags(commands.Cog):
             return await ctx.send("That tag was not found for this guild!")
         this = await self.client.pg_con.fetch("SELECT name, uses FROM tags WHERE guild_id = $1", str(ctx.guild.id))
         f = [(v[0], v[1] or 0) for v in this]
-        #uses = [v[1] or 0 for v in this]
-        #names = [v[0] for v in this]
-        #f = []
         tup = (tag[0][2], tag[0][4] or 0)
-        #for x, y in zip(names, uses):
-        #    f.append((x, y))
         s = sorted(f, key=lambda x: x[1])[::-1]
         rank = s.index(tup) + 1
         embed = discord.Embed(title=tag[0][2], colour=self.client.colour)
@@ -216,7 +196,7 @@ class Tags(commands.Cog):
         uses = [(r.get('uses') for r in num_tags)]
         #uses = await self.client.pg_con.fetch("SELECT uses FROM tags WHERE user_id = $1 AND guild_id = $2",
         #                                      str(member.id), str(ctx.guild.id))
-        il = sorted([0 if v[0] is None else v[0] for v in uses])[::-1][0]
+        il = sorted([v[0] or 0 for v in uses])[::-1][0]
         if il < 10:
             pt = []
         elif 10 <= il <= 25:
@@ -227,7 +207,7 @@ class Tags(commands.Cog):
             pt = popular_badges[:3]
         else:
             pt = popular_badges
-        this = [(r.get('user_id'), r.get('uses')) for r in num_tags]
+        this = [(r.get('name'), r.get('uses')) for r in num_tags]
         #this = await self.client.pg_con.fetch("SELECT name, uses FROM tags WHERE guild_id = $1 and user_id = $2",
         #                                      str(ctx.guild.id), str(member.id))
         guild_tags = await self.client.pg_con.fetch("SELECT name, uses FROM tags WHERE guild_id = $1",

@@ -263,7 +263,7 @@ class Meta(commands.Cog):
     @commands.command(aliases=['ab', 'info'])
     async def about(self, ctx):
         """Shows you information regarding the bot"""
-        owner = await self.client.fetch_user(350349365937700864)
+        owner = self.client.get_user(350349365937700864) or await self.client.fetch_user(350349365937700864)
         delta_uptime = datetime.datetime.utcnow() - start_time
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
@@ -415,7 +415,7 @@ class Meta(commands.Cog):
         with open('suggestions.json', 'r') as f:
             res = json.load(f)
         for i in res[str(id)]:
-            a = await self.client.fetch_user(i)
+            a = self.client.get_user(i) or await self.client.fetch_user(i)
             await a.send(content=f"Suggestion **{id}** has been resolved!", embed=embed)
         res.pop(str(id))
         with open("suggestions.json", "w") as f:

@@ -89,16 +89,13 @@ class Moderation(commands.Cog):
                 self.client.wait_for("reaction_add"),
                 self.client.wait_for("reaction_remove")
             ], return_when=asyncio.FIRST_COMPLETED)
-            m = await ctx.channel.fetch_message(e.id)
+            #m = await ctx.channel.fetch_message(e.id)
             res = done.pop().result()
-            print(res)
-            if res[0].emoji not in valid_emojis:
-                pass
-            else:
+            #print(res)
+            if res[0].emoji in valid_emojis:
                 index = valid_emojis.index(res[0].emoji)
                 embed.set_field_at(index=index, name=names[index], value=f"{res[0].count}", inline=False)
                 await e.edit(embed=embed)
-                continue
     
     @vote.command(invoke_without_command=True)
     @commands.is_owner()
