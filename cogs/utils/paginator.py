@@ -1,5 +1,6 @@
 import discord
 from discord.ext import menus
+from tabulate import tabulate as tb
 
 
 class CatchAllMenu(menus.MenuPages, inherit_buttons=False):
@@ -76,25 +77,27 @@ class EmbedSource(menus.ListPageSource):
 
 
 class IndexedListSource(menus.ListPageSource):
-    def __init__(self, data: list, embed: discord.Embed, per_page: int = 10, show_index: bool = True):
+    def __init__(self, data: list, embed: discord.Embed, per_page: int = 10, show_index: bool = True,
+                 title: str = 'Entries'):
         super().__init__(per_page=per_page, entries=data)
         self.embed = embed
         self._show_index = show_index
+        self._title = title
     
     async def format_page(self, menu, entries: list):
         offset = menu.current_page * self.per_page + 1
         embed = self.embed
         if not embed.fields:
             if not entries:
-                embed.add_field(name='Entries', value='No Entries')
+                embed.add_field(name=f'{self._title}', value='No Entries')
                 index = 0
             else:
                 if self._show_index:
-                    embed.add_field(name='Entries',
+                    embed.add_field(name=f'{self._title}',
                                     value='\n'.join(f'`[{i:,}]` {v}' for i, v in enumerate(entries, start=offset)),
                                     inline=False)
                 else:
-                    embed.add_field(name='Entries',
+                    embed.add_field(name=f'{self._title}',
                                     value='\n'.join(f'{v}' for i, v in enumerate(entries, start=offset)),
                                     inline=False)
                 index = 0
@@ -103,13 +106,13 @@ class IndexedListSource(menus.ListPageSource):
             print(index)
         embed.set_footer(text=f'({menu.current_page + 1}/{menu._source.get_max_pages()})')
         if not entries:
-            embed.set_field_at(index=index, name='Entries',
+            embed.set_field_at(index=index, name=f'{self._title}',
                                value='No Entries')
         else:
             if self._show_index:
-                embed.set_field_at(index=index, name='Entries',
+                embed.set_field_at(index=index, name=f'{self._title}',
                                    value='\n'.join(f'`[{i:,}]` {v}' for i, v in enumerate(entries, start=offset)))
             else:
-                embed.set_field_at(index=index, name='Entries',
+                embed.set_field_at(index=index, name=f'{self._title}',
                                    value='\n'.join(f'{v}' for i, v in enumerate(entries, start=offset)))
         return embed

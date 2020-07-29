@@ -90,6 +90,8 @@ class Tags(commands.Cog):
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def create(self, ctx, *, name):
         """Creates a tag"""
+        if len(name) > 100:
+            return await ctx.send("That name is too long!")
         test = await self.client.pg_con.fetch("SELECT * FROM tags WHERE name = $1 AND guild_id = $2", name,
                                               str(ctx.guild.id))
         if test:

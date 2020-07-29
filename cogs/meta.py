@@ -19,8 +19,9 @@ import discord
 import humanize
 import psutil
 from discord.ext import commands
+from tabulate import tabulate as tb
 
-from .utils import cyberformat
+from .utils import cyberformat, paginator
 from .utils.checks import check_admin_or_owner, beta_squad
 from .utils.lists import sl
 import codecs
@@ -113,13 +114,20 @@ class Meta(commands.Cog):
         self.client = client
         self.tick = ":tick:733458499777855538"
         self.version = f"{self.client.user.name} Beta v3.0.0"
-        self.counter = 0
         self.softwares = ['<:dpy:708479036518694983>', '<:python:706850228652998667>', '<:JSON:710927078513442857>',
                           '<:psql:733848802334736395>']
-    
-    @commands.Cog.listener()
-    async def on_command_completion(self, ctx):
-        self.counter += 1
+            
+    @commands.command()
+    async def usage(self, ctx):
+        data = sorted([[str(key), value] for key, value in self.client.cmd_usage.items()], key=lambda x: x[1], reverse=True)[:10]
+        headers = ["Command Name", "Usage"]
+        embed = discord.Embed(description=f"```\n{tb(data, headers, tablefmt='fancy_grid')}\n```", color=self.client.colour)
+        total = sum([value for key, value in self.client.cmd_usage.items()])
+        user = sorted([(key, value) for key, value in self.client.cmd_users.items()], key=lambda x: x[1])[0]
+        user = ctx.guild.get_member(user[0]) or await self.client.fetch_user(user[0])
+        embed.set_author(name=f"Command Usage Stats")
+        embed.description = f"Total commands used since start: **{total}**\nHighest Command User: **{str(user)}**" + embed.description
+        await ctx.send(embed=embed)
     
     @commands.command()
     async def uptime(self, ctx):
@@ -135,23 +143,11 @@ class Meta(commands.Cog):
     async def ping(self, ctx):
         websocket = round(self.client.latency*1000, 3)
         start = time.perf_counter()
-        if websocket < 70:
-            health = sl[discord.Status.online]
-        elif 60 < websocket < 150:
-            health = sl[discord.Status.idle]
-        else:
-            health = sl[discord.Status.dnd]
-        embed = discord.Embed(color=self.client.colour, description=f"**Pong! :ping_pong:**\nWebsocket Latency **{websocket}** | {health}")
+        embed = discord.Embed(color=self.client.colour, description=f"**Pong! :ping_pong:**\nWebsocket Latency **{websocket}**")
         message = await ctx.send(embed=embed)
         end = time.perf_counter()
         duration = round((end - start) * 1000, 3)
-        if duration < 145:
-            health = sl[discord.Status.online]
-        elif 145 < duration < 250:
-            health = sl[discord.Status.idle]
-        else:
-            health = sl[discord.Status.dnd]
-        embed.description += f"\nResponse Time **{duration}** | {health}"
+        embed.description += f"\nResponse Time **{duration}**"
         await message.edit(embed=embed)
     
     @commands.command(aliases=["sourcecode", "src"], help="Shows source code for a given command")
@@ -320,7 +316,7 @@ class Meta(commands.Cog):
         await ctx.message.add_reaction(emoji=self.tick)
     
     @commands.command(name='git_commits', aliases=['gitc', 'commits', 'git'])
-    async def github(self, ctx, limit: int = 5):
+    async def _git_commits(self, ctx, limit: int = 5):
         """Shows you recent github commits"""
         if limit < 1 or limit > 15:
             return await ctx.send(
@@ -518,6 +514,8 @@ class Meta(commands.Cog):
         embed.set_thumbnail(url=self.client.user.avatar_url)
         embed.set_image(url='https://media.discordapp.net/attachments/381963689470984203/737734220755107900/Screen_Shot_2020-07-28_at_2.12.15_PM.png')
         await ctx.send(embed=embed)
+        
+    
 
 
 def setup(client):
