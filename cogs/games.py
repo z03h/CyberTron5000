@@ -32,15 +32,16 @@ class Games(commands.Cog):
         choice = random.choice(['rock', 'paper', 'scissors'])
         embed = discord.Embed(colour=self.client.colour, description="**Choose one** :point_down:")
         msg = await ctx.send("** **", embed=embed)
-        for e in ['🗿', '✂']:
+        rps = ['🗿', '📄', '✂']
+        for e in rps:
             await msg.add_reaction(e)
-            await msg.add_reaction(emoji="📄")
+        def check(reaction, user):
+            return str(reaction.emoji) in rps and user == ctx.author and msg.id == reaction.message.id
         async with timeout(30):
             reaction, user = await self.client.wait_for(
                 'reaction_add',
                 timeout=30.0,
-                check=lambda reaction,
-                             user: reaction.emoji
+                check=check
             )
             
             if str(reaction.emoji) == "🗿":
@@ -85,15 +86,18 @@ class Games(commands.Cog):
         embed.add_field(name=member3.display_name, value="\u200b")
         embed.set_author(name=ctx.message.author.display_name, icon_url=ctx.message.author.avatar_url)
         msg = await ctx.send(embed=embed)
-        for emoji in ['😘', '🔪']:
+
+        kmk = ['😘', '👫', '🔪']
+        def check(reaction, user):
+            return str(reaction.emoji) in kmk and user == ctx.author
+
+        for emoji in kmk:
             await msg.add_reaction(emoji)
-            await msg.add_reaction(emoji='👫')
         async with timeout(30):
             reaction, user = await self.client.wait_for(
                 'reaction_add',
                 timeout=30.0,
-                check=lambda reaction,
-                             user: reaction.emoji
+                check=check
             )
             if str(reaction.emoji) == "😘":
                 
@@ -111,8 +115,7 @@ class Games(commands.Cog):
                     reaction, user = await self.client.wait_for(
                         'reaction_add',
                         timeout=30.0,
-                        check=lambda reaction,
-                                     user: reaction.emoji
+                        check=check
                     )
                     if str(reaction.emoji) == "👫":
                         
@@ -150,8 +153,7 @@ class Games(commands.Cog):
                     reaction, user = await self.client.wait_for(
                         'reaction_add',
                         timeout=30.0,
-                        check=lambda reaction,
-                                     user: reaction.emoji
+                        check=check
                     )
                     if str(reaction.emoji) == "😘":
                         
@@ -189,8 +191,7 @@ class Games(commands.Cog):
                     reaction, user = await self.client.wait_for(
                         'reaction_add',
                         timeout=30.0,
-                        check=lambda reaction,
-                                     user: reaction.emoji
+                        check=check
                     )
                     if str(reaction.emoji) == "😘":
                         
@@ -220,8 +221,8 @@ class Games(commands.Cog):
         Who's that pokemon!?
         """
         try:
-            dutchy = await self.client.fetch_user(171539705043615744)
-            daggy = await self.client.fetch_user(self.daggy)
+            dutchy = self.client.get_user(171539705043615744) or await self.client.fetch_user(171539705043615744)
+            daggy = self.client.get_user(self.daggy) or await self.client.fetch_user(self.daggy)
             async with ctx.typing():
                 resp = {'token': dagpi()}
                 async with aiohttp.ClientSession() as cs:
@@ -290,7 +291,7 @@ class Games(commands.Cog):
     async def trivia(self, ctx, difficulty: str = None):
         try:
             an = []
-            difficulty = random.choice(['easy', 'medium', 'hard']) if not difficulty else difficulty
+            difficulty = difficulty if difficulty.lower() in ['easy', 'medium', 'hard'] else random.choice(['easy', 'medium', 'hard'])
             async with aiohttp.ClientSession() as cs:
                 async with cs.get("https://opentdb.com/api.php?amount=1",
                                   params={"amount": 1, "difficulty": difficulty}) as r:
@@ -306,8 +307,8 @@ class Games(commands.Cog):
                 embed = discord.Embed(title=unes(data["question"]),
                                       description=f"{yup}",
                                       colour=self.client.colour)
-                embed.set_author(name=f"{ctx.message.author.display_name}'s question:",
-                                 icon_url=ctx.message.author.avatar_url)
+                embed.set_author(name=f"{ctx.author.display_name}'s question:",
+                                 icon_url=ctx.author.avatar_url)
                 embed.add_field(name="Question Info",
                                 value=f"This question about **{unes(data['category'])}** is of **{unes(data['difficulty']).capitalize()}** difficulty")
                 embed.set_footer(text="https://opentdb.com")
@@ -329,7 +330,7 @@ class Games(commands.Cog):
         except Exception as error:
             if isinstance(error, IndexError):
                 return await ctx.send(
-                    f"<:warning:727013811571261540> **{ctx.author.name}**, invalid difficulty! Valid difficulties include easy, medium, hard.")
+                    f"<:warning:727013811571261540> **{ctx.author.display_name}**, invalid difficulty! Valid difficulties include easy, medium, hard.")
             elif isinstance(error, asyncio.TimeoutError) or isinstance(error, asyncio.CancelledError):
                 await message.edit(embed=discord.Embed(colour=self.client.colour).set_author(
                     name=f"Times up! The correct answer was {unes(data['correct_answer'])}."))
@@ -351,14 +352,9 @@ class Games(commands.Cog):
             async with aiohttp.ClientSession() as cs:
                 async with cs.get('https://dagpi.tk/api/logogame', headers=resp) as r:
                     resp = await r.json()
-            if not resp['easy']:
-                hard = True
-            else:
-                hard = False
-            if not hard:
-                easy = True
-            else:
-                easy = False
+            easy = bool(resp['easy'])
+            hard = not easy
+
             embed = discord.Embed(
                 title="Which company is this?", colour=self.client.colour).set_image(
                 url=resp['question']).set_footer(

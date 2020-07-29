@@ -33,7 +33,8 @@ def get_token():
 class CyberTron5000(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=self.get_prefix, pm_help=None,
-                         allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False), case_insensitive=True)
+                         allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False), case_insensitive=True,
+                         activity=discord.Activity(type=discord.ActivityType.watching, name=f"VIBE SCHOOL being rebuilt!"))
         
         self.colour = 0x00dcff
         self.tick = "<:tick:733458499777855538>"
@@ -43,8 +44,9 @@ class CyberTron5000(commands.Bot):
         self.prefixes = {}
     
     async def create_db_pool(self):
-        self.pg_con = await asyncpg.create_pool(user=get_token()['psql_user'], password=get_token()['psql_password'],
-                                                database=get_token()['psql_db'])
+        tokens = get_token()
+        self.pg_con = await asyncpg.create_pool(user=tokens['psql_user'], password=tokens['psql_password'],
+                                                database=tokens['psql_db'])
         
     async def get_prefix(self, message):
         DEFAULT_PREFIX = ["c$"]
@@ -53,9 +55,11 @@ class CyberTron5000(commands.Bot):
     
     async def on_guild_join(self, guild):
         await self.pg_con.execute("INSERT INTO prefixes (guild_id, prefix) VALUES ($1, $2)", guild.id, "c$")
+        self.prefixes[guild.id] = ['c$']
 
     async def on_guild_remove(self, guild):
         await self.pg_con.execute("DELETE FROM prefixes WHERE guild_id = $1", guild.id)
+        self.prefixes.pop(guild.id)
 
     async def on_ready(self):
         if not self.ready:
@@ -64,9 +68,6 @@ class CyberTron5000(commands.Bot):
                 if filename.endswith('.py'):
                     self.load_extension('cogs.{}'.format(filename[:-3]))
             print("Online!")
-            await self.change_presence(
-                activity=discord.Activity(type=discord.ActivityType.watching,
-                                          name=f"VIBE SCHOOL being rebuilt!"))
             prefix_data = await self.pg_con.fetch("SELECT guild_id, array_agg(prefix) FROM prefixes GROUP BY guild_id")
             for entry in prefix_data:
                 self.prefixes[entry['guild_id']] = entry['array_agg']
