@@ -36,7 +36,7 @@ class CyberTronHelpCommand(commands.HelpCommand):
         parent = command.full_parent_name
         if len(command.aliases) > 0:
             aliases = '•'.join(command.aliases)
-            fmt = f'{command.name}•{aliases}'
+            fmt = f'[{command.name}•{aliases}]'
             if parent:
                 fmt = f'{parent} {fmt}'
             alias = fmt
@@ -86,10 +86,13 @@ class CyberTronHelpCommand(commands.HelpCommand):
         foo = [f"→ `{c.name} {c.signature}` | {c.help or 'No help provided for this command'}" for c in entries]
         embed = discord.Embed(description=f"{cog_doc}", colour=self.context.bot.colour).set_author(
             name=f"{cog.qualified_name} Commands (Total {len(entries)})")
-        source = paginator.IndexedListSource(show_index=False, embed=embed, data=foo, per_page=6)
-        menu = paginator.CatchAllMenu(source=source)
-        menu.add_info_fields(self._help_dict)
-        await menu.start(self.context)
+        if entries:
+            source = paginator.IndexedListSource(show_index=False, embed=embed, data=foo, per_page=6, title='Commands')
+            menu = paginator.CatchAllMenu(source=source)
+            menu.add_info_fields(self._help_dict)
+            await menu.start(self.context)
+        else:
+            await self.context.send(embed=embed)
     
     async def send_command_help(self, command):
         """
@@ -115,10 +118,14 @@ class CyberTronHelpCommand(commands.HelpCommand):
             char = "\u200b" if not c.aliases else "|"
             sc.append(f"→ `{group.name} {c.name}{char}{'|'.join(c.aliases)} {c.signature or f'{u}'}` | {c.help}")
         embed.description = f"{group.help}"
-        source = paginator.IndexedListSource(show_index=False, data=sc, embed=embed, per_page=6)
-        menu = paginator.CatchAllMenu(source=source)
-        menu.add_info_fields(self._help_dict)
-        await menu.start(self.context)
+        if entries:
+            source = paginator.IndexedListSource(show_index=False, data=sc, embed=embed, per_page=6,
+                                                 title='Subcommands')
+            menu = paginator.CatchAllMenu(source=source)
+            menu.add_info_fields(self._help_dict)
+            await menu.start(self.context)
+        else:
+            await self.context.send(embed=embed)
 
 
 class Info(commands.Cog):

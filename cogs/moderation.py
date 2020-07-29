@@ -185,11 +185,11 @@ class Moderation(commands.Cog):
     @commands.group(invoke_without_command=True, aliases=['pre', 'prefix'], name='changeprefix')
     async def _prefix(self, ctx):
         """View the guild's current prefixes."""
-        prefixes = await self.client.pg_con.fetch("SELECT prefix FROM prefixes WHERE guild_id = $1", ctx.guild.id)
-        a = [p[0] for p in prefixes]
+        prefixes = self.client.prefixes.get(ctx.guild.id, ["c$"])
         embed = discord.Embed(color=self.client.colour)
         embed.set_author(name=f"Prefixes for {ctx.guild}", icon_url=ctx.guild.icon_url)
-        embed.add_field(name="Prefixes", value=f"{self.client.user.mention}, " + ", ".join([f"`{a}`" for a in a]))
+        embed.add_field(name="Prefixes",
+                        value=f"{self.client.user.mention}, " + ", ".join([f"`{pre}`" for pre in prefixes]))
         embed.set_footer(
             text=f'Do "{ctx.prefix}prefix add" to add a new prefix, or "{ctx.prefix}prefix remove" to remove a prefix!')
         await ctx.send(embed=embed)
@@ -198,40 +198,41 @@ class Moderation(commands.Cog):
     @check_admin_or_owner()
     async def add(self, ctx, *, prefix):
         """Add a prefix for the guild."""
-        _ = await self.client.pg_con.fetch("SELECT * FROM prefixes WHERE prefix = $1 AND guild_id = $2", prefix,
-                                           ctx.guild.id)
-        if not _:
-            num = await self.client.pg_con.fetch("SELECT * FROM prefixes WHERE guild_id = $1", ctx.guild.id)
-            if len(num) > 15:
-                return await ctx.send("This guild already has 15 prefixes! Please remove some before continuing.")
-            await self.client.pg_con.execute("INSERT INTO prefixes (guild_id, prefix) VALUES ($1, $2)", ctx.guild.id,
-                                             prefix)
-            await ctx.send(f'Success! `{prefix}` is now a prefix in {ctx.guild}!')
-        else:
-            await ctx.send(f"`{prefix}` is already a prefix for this guild!")
+        prefixes = self.client.prefixes
+        try:
+            prefixes = prefixes.get(ctx.guild.id, ["c$"])
+        except KeyError:
+            prefixes[ctx.guild.id] = ["c$"]
+        if prefix in prefixes:
+            return await ctx.send(f"`{prefix}` is already a prefix for this guild!")
+        if len(prefixes) > 15:
+            return await ctx.send("This guild already has 15 prefixes! Please remove some before continuing.")
+        await self.client.pg_con.execute("INSERT INTO prefixes (guild_id, prefix) VALUES ($1, $2)", ctx.guild.id,
+                                         prefix)
+        self.client.prefixes[ctx.guild.id].append(prefix)
+        await ctx.send(f'Success! `{prefix}` is now a prefix in {ctx.guild}!')
     
     @_prefix.command(aliases=['rm'])
     @check_admin_or_owner()
     async def remove(self, ctx, *, prefix):
         """Remove a prefix for the guild."""
-        _ = await self.client.pg_con.fetch("SELECT * FROM prefixes WHERE prefix = $1 AND guild_id = $2", prefix,
-                                           ctx.guild.id)
-        if _:
-            await self.client.pg_con.execute("DELETE FROM prefixes WHERE prefix = $1 AND guild_id = $2", prefix,
-                                             ctx.guild.id)
-            await ctx.send(f'`{prefix}` is no longer a prefix for {ctx.guild}')
-        else:
-            await ctx.send(f"`{prefix}` is not a prefix in {ctx.guild}!")
+        prefixes = self.client.prefixes.get(ctx.guild.id)
+        if prefix not in prefixes:
+            return await ctx.send(f"`{prefix}` is not a prefix in {ctx.guild}!")
+        await self.client.pg_con.execute("DELETE FROM prefixes WHERE prefix = $1 AND guild_id = $2", prefix,
+                                         ctx.guild.id)
+        self.client.prefixes[ctx.guild.id].remove(prefix)
+        await ctx.send(f'`{prefix}` is no longer a prefix for {ctx.guild}')
     
     @add.error
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
-            await ctx.send(f"You need the **Manage Server** permission to run this command.")
+            await ctx.send(f"You need the **Kick Members** permission to run this command.")
     
     @remove.error
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
-            await ctx.send(f"You need the **Manage Server** permission to run this command.")
+            await ctx.send(f"You need the **Kick Members** permission to run this command.")
 
 
 def setup(client):

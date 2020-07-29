@@ -135,23 +135,11 @@ class Meta(commands.Cog):
     async def ping(self, ctx):
         websocket = round(self.client.latency*1000, 3)
         start = time.perf_counter()
-        if websocket < 70:
-            health = sl[discord.Status.online]
-        elif 60 < websocket < 150:
-            health = sl[discord.Status.idle]
-        else:
-            health = sl[discord.Status.dnd]
-        embed = discord.Embed(color=self.client.colour, description=f"**Pong! :ping_pong:**\nWebsocket Latency **{websocket}** | {health}")
+        embed = discord.Embed(color=self.client.colour, description=f"**Pong! :ping_pong:**\nWebsocket Latency **{websocket}**")
         message = await ctx.send(embed=embed)
         end = time.perf_counter()
         duration = round((end - start) * 1000, 3)
-        if duration < 145:
-            health = sl[discord.Status.online]
-        elif 145 < duration < 250:
-            health = sl[discord.Status.idle]
-        else:
-            health = sl[discord.Status.dnd]
-        embed.description += f"\nResponse Time **{duration}** | {health}"
+        embed.description += f"\nResponse Time **{duration}**"
         await message.edit(embed=embed)
     
     @commands.command(aliases=["sourcecode", "src"], help="Shows source code for a given command")
@@ -320,7 +308,7 @@ class Meta(commands.Cog):
         await ctx.message.add_reaction(emoji=self.tick)
     
     @commands.command(name='git_commits', aliases=['gitc', 'commits', 'git'])
-    async def github(self, ctx, limit: int = 5):
+    async def _git_commits(self, ctx, limit: int = 5):
         """Shows you recent github commits"""
         if limit < 1 or limit > 15:
             return await ctx.send(
@@ -518,6 +506,8 @@ class Meta(commands.Cog):
         embed.set_thumbnail(url=self.client.user.avatar_url)
         embed.set_image(url='https://media.discordapp.net/attachments/381963689470984203/737734220755107900/Screen_Shot_2020-07-28_at_2.12.15_PM.png')
         await ctx.send(embed=embed)
+        
+    
 
 
 def setup(client):
