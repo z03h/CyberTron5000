@@ -36,10 +36,15 @@ class Games(commands.Cog):
         rps = ['🗿', '📄', '✂']
         for e in rps:
             await msg.add_reaction(e)
+<<<<<<< HEAD
         
         def check(reaction, user):
             return str(reaction.emoji) in rps and user == ctx.author and msg.id == reaction.message.id
         
+=======
+        def check(reaction, user):
+            return str(reaction.emoji) in rps and user == ctx.author and msg.id == reaction.message.id
+>>>>>>> 7528251fffdd3185e6c16c3c0a7f3cc2a8624b84
         async with timeout(30):
             reaction, user = await self.client.wait_for(
                 'reaction_add',
@@ -89,12 +94,20 @@ class Games(commands.Cog):
         embed.add_field(name=member3.display_name, value="\u200b")
         embed.set_author(name=ctx.message.author.display_name, icon_url=ctx.message.author.avatar_url)
         msg = await ctx.send(embed=embed)
+<<<<<<< HEAD
         
         kmk = ['😘', '👫', '🔪']
         
         def check(reaction, user):
             return str(reaction.emoji) in kmk and user == ctx.author
         
+=======
+
+        kmk = ['😘', '👫', '🔪']
+        def check(reaction, user):
+            return str(reaction.emoji) in kmk and user == ctx.author
+
+>>>>>>> 7528251fffdd3185e6c16c3c0a7f3cc2a8624b84
         for emoji in kmk:
             await msg.add_reaction(emoji)
         async with timeout(30):
@@ -296,10 +309,15 @@ class Games(commands.Cog):
     async def trivia(self, ctx, difficulty: str = None):
         try:
             an = []
+<<<<<<< HEAD
             difficulty = difficulty if difficulty and difficulty.lower() in ['easy', 'medium',
                                                                              'hard'] else random.choice(
                 ['easy', 'medium', 'hard'])
             async with self.session as cs:
+=======
+            difficulty = difficulty if difficulty and difficulty.lower() in ['easy', 'medium', 'hard'] else random.choice(['easy', 'medium', 'hard'])
+            async with aiohttp.ClientSession() as cs:
+>>>>>>> 7528251fffdd3185e6c16c3c0a7f3cc2a8624b84
                 async with cs.get("https://opentdb.com/api.php?amount=1",
                                   params={"amount": 1, "difficulty": difficulty}) as r:
                     res = await r.json()
@@ -359,10 +377,16 @@ class Games(commands.Cog):
             async with self.session as cs:
                 async with cs.get('https://dagpi.tk/api/logogame', headers=resp) as r:
                     resp = await r.json()
+<<<<<<< HEAD
                 await cs.close()
             easy = bool(resp['easy'])
             hard = not easy
             
+=======
+            easy = bool(resp['easy'])
+            hard = not easy
+
+>>>>>>> 7528251fffdd3185e6c16c3c0a7f3cc2a8624b84
             embed = discord.Embed(
                 title="Which company is this?", colour=self.client.colour).set_image(
                 url=resp['question']).set_footer(

@@ -97,7 +97,7 @@ class Fun(commands.Cog):
     
     @reply.command(help="Spams a message.", invoke_without_command=True)
     async def spam(self, ctx, *, message):
-        l = ['@u200beveryone', '@\u200bhere']
+        l = ['@\u200beveryone', '@\u200bhere']
         await ctx.send(f"{cyberformat.hyper_replace(text=message, old=['@everyone', '@here'], new=l)} " * 15)
     
     @reply.command(invoke_without_command=True)

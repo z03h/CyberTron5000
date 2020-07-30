@@ -18,37 +18,48 @@ class Moderation(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.tick = ":tick:733458499777855538"
+
+    def hierarchy(self, member):
+        #check if I can action this user
+        return member.guild.me.top_role > member.top_role and member != member.guild.owner
     
     @commands.command(aliases=['clear'])
     @commands.has_permissions(manage_messages=True)
-    async def purge(self, ctx, amount=5):
+    @commands.bot_has_permissions(manage_messages=True)
+    async def purge(self, ctx, amount: int=5):
         """ Purges a given amount of messages with the default being 5 """
-        await ctx.message.delete()
-        await ctx.channel.purge(limit=int(amount))
+        await ctx.channel.purge(limit=(amount + 1))
         await ctx.send(f"{amount} messages have been cleared.", delete_after=3)
     
     @commands.command()
-    @commands.has_permissions(kick_members=True)
+    @commands.has_guild_permissions(kick_members=True)
+    @commands.bot_has_guild_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason=None):
         """Kick a member from a guild."""
+        if not hierarchy(member):
+            return await ctx.send('I cannot moderate that user')
         r = "No reason specified" if not reason else reason
-        await member.kick(reason=r)
         await member.send(
             f"Hello, you have been kicked from participating in {ctx.guild}. Please see your reason for removal: `{r}`")
+        await member.kick(reason=r)
         await ctx.message.add_reaction(self.tick)
     
     @commands.command(help="Ban a member.")
-    @commands.has_permissions(ban_members=True)
+    @commands.has_guild_permissions(ban_members=True)
+    @commands.bot_has_guild_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason=None):
         """Ban a member from a guild."""
+        if not hierarchy(member):
+            return await ctx.send('I cannot moderate that user')
         r = "No reason specified" if not reason else reason
-        await member.ban(reason=r)
         await member.send(
             f"Hello, you have been kicked from participating in {ctx.guild}. Please see your reason for removal: `{r}`")
+        await member.ban(reason=r)
         await ctx.message.add_reaction(self.tick)
     
     @commands.command(help="Unban a member.")
-    @commands.has_permissions(ban_members=True)
+    @commands.has_guild_permissions(ban_members=True)
+    @commands.bot_has_guild_permissions(ban_members=True)
     async def unban(self, ctx, *, member):
         banned = await ctx.guild.bans()
         member_name, member_discriminator = member.split("#")
@@ -78,16 +89,13 @@ class Moderation(commands.Cog):
                 self.client.wait_for("reaction_add"),
                 self.client.wait_for("reaction_remove")
             ], return_when=asyncio.FIRST_COMPLETED)
-            m = await ctx.channel.fetch_message(e.id)
+            #m = await ctx.channel.fetch_message(e.id)
             res = done.pop().result()
-            print(res)
-            if res[0].emoji not in valid_emojis:
-                pass
-            else:
+            #print(res)
+            if res[0].emoji in valid_emojis:
                 index = valid_emojis.index(res[0].emoji)
                 embed.set_field_at(index=index, name=names[index], value=f"{res[0].count}", inline=False)
                 await e.edit(embed=embed)
-                continue
     
     @vote.command(invoke_without_command=True)
     @commands.is_owner()
@@ -108,24 +116,29 @@ class Moderation(commands.Cog):
                     invoke_without_command=True)
     @commands.has_permissions(administrator=True)
     async def user_nick(self, ctx, member: discord.Member, *, name):
-        await ctx.guild.get_member(member.id).edit(nick=name)
+        if not hierarchy(member):
+            return await ctx.send('I cannot moderate that user')
+        await member.edit(nick=name)
         await ctx.message.add_reaction(emoji=":tick:733458499777855538")
     
     @user_nick.command(invoke_without_command=True)
     @commands.has_permissions(administrator=True)
     async def default(self, ctx, member: discord.Member):
         """Change nickname back to default."""
-        await ctx.guild.get_member(member.id).edit(nick=member.name)
+        if not hierarchy(member):
+            return await ctx.send('I cannot moderate that user')
+        await member.edit(nick=member.name)
         await ctx.message.add_reaction(emoji=":tick:733458499777855538")
     
     @commands.command()
     @check_admin_or_owner()
     async def leave(self, ctx):
         """Makes bot leave server"""
-        await self.client.get_guild(ctx.guild.id).leave()
+        await ctx.guild.leave()
     
     @commands.command(aliases=['audit'])
     @commands.has_permissions(view_audit_log=True)
+    @commands.bot_has_guild_permissions(view_audit_log=True)
     async def auditlog(self, ctx, limit: int = 20):
         try:
             actions = []

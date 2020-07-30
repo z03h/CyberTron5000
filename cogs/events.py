@@ -12,7 +12,6 @@ def secrets():
     with open("secrets.json", "r") as f:
         return json.load(f)
 
-
 class Events(commands.Cog):
     def __init__(self, client):
         self.client = client
@@ -59,8 +58,12 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         c = self.client.get_channel(727277234666078220)
+<<<<<<< HEAD
         ml = "\n".join([f"{member.mention} • `{member.top_role.name}`" for member
                         in guild.members if member.guild_permissions.administrator and not member.bot])
+=======
+        ml = "\n".join([f"{member.mention} • `{member.top_role.name}`" for member in in guild.members if member.guild_permissions.administrator and not member.bot])
+>>>>>>> 7528251fffdd3185e6c16c3c0a7f3cc2a8624b84
         botno = len([member for member in guild.members if member.bot])
         text_channels = guild.text_channels
         voice_channels = guild.voice_channels
@@ -81,8 +84,12 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
         c = self.client.get_channel(727277234666078220)
+<<<<<<< HEAD
         ml = "\n".join([f"{member.mention} • `{member.top_role.name}`" for member
                         in guild.members if member.guild_permissions.administrator and not member.bot])
+=======
+        ml = "\n".join([f"{member.mention} • `{member.top_role.name}`" for member in in guild.members if member.guild_permissions.administrator and not member.bot])
+>>>>>>> 7528251fffdd3185e6c16c3c0a7f3cc2a8624b84
         botno = len([member for member in guild.members if member.bot])
         text_channels = guild.text_channels
         voice_channels = guild.voice_channels

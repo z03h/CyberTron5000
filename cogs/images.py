@@ -26,7 +26,7 @@ class Images(commands.Cog):
         """
         Wanted...
         """
-        daggy = await self.client.fetch_user(self.daggy)
+        daggy = self.client.get_user(self.daggy) or await self.client.fetch_user(self.daggy)
         if not url:
             if ctx.message.attachments:
                 url = str(ctx.message.attachments[0].url)
@@ -50,7 +50,7 @@ class Images(commands.Cog):
         """
         I'm just great.
         """
-        daggy = await self.client.fetch_user(self.daggy)
+        daggy = self.client.get_user(self.daggy) or await self.client.fetch_user(self.daggy)
         if not url:
             if ctx.message.attachments:
                 url = str(ctx.message.attachments[0].url)
@@ -74,7 +74,7 @@ class Images(commands.Cog):
         """
         Bad boy! Bad boy!
         """
-        daggy = await self.client.fetch_user(self.daggy)
+        daggy = self.client.get_user(self.daggy) or await self.client.fetch_user(self.daggy)
         if not url:
             if ctx.message.attachments:
                 url = str(ctx.message.attachments[0].url)
@@ -98,7 +98,7 @@ class Images(commands.Cog):
         """
         What a monster
         """
-        daggy = await self.client.fetch_user(self.daggy)
+        daggy = self.client.get_user(self.daggy) or await self.client.fetch_user(self.daggy)
         if not url:
             if ctx.message.attachments:
                 url = str(ctx.message.attachments[0].url)
@@ -122,7 +122,7 @@ class Images(commands.Cog):
         """
         Yeah i use twitter
         """
-        daggy = await self.client.fetch_user(self.daggy)
+        daggy = self.client.get_user(self.daggy) or await self.client.fetch_user(self.daggy)
         image = str(url.avatar_url_as(static_format='png')) or str(ctx.author.avatar_url_as(static_format='png'))
         async with ctx.typing():
             resp = {'token': dagpi(), 'url': image, 'text': tweet, 'name': url.display_name}
@@ -140,7 +140,7 @@ class Images(commands.Cog):
         """
         'Stop believing internet quotes' - God
         """
-        daggy = await self.client.fetch_user(self.daggy)
+        daggy = self.client.get_user(self.daggy) or await self.client.fetch_user(self.daggy)
         member = member or ctx.author
         async with ctx.typing():
             resp = {'token': dagpi(), 'url': str(member.avatar_url_as(static_format='png')),
@@ -159,7 +159,7 @@ class Images(commands.Cog):
         """
         Brrrr
         """
-        daggy = await self.client.fetch_user(self.daggy)
+        daggy = self.client.get_user(self.daggy) or await self.client.fetch_user(self.daggy)
         if not url:
             if ctx.message.attachments:
                 url = str(ctx.message.attachments[0].url)
@@ -183,7 +183,7 @@ class Images(commands.Cog):
         """
         :rainbow_flag:
         """
-        daggy = await self.client.fetch_user(self.daggy)
+        daggy = self.client.get_user(self.daggy) or await self.client.fetch_user(self.daggy)
         if not url:
             if ctx.message.attachments:
                 url = str(ctx.message.attachments[0].url)
@@ -207,7 +207,7 @@ class Images(commands.Cog):
         """
         Paint a masterpiece
         """
-        daggy = await self.client.fetch_user(self.daggy)
+        daggy = self.client.get_user(self.daggy) or await self.client.fetch_user(self.daggy)
         if not url:
             if ctx.message.attachments:
                 url = str(ctx.message.attachments[0].url)
@@ -231,7 +231,7 @@ class Images(commands.Cog):
         """
         Why are you gay?
         """
-        daggy = await self.client.fetch_user(self.daggy)
+        daggy = self.client.get_user(self.daggy) or await self.client.fetch_user(self.daggy)
         if not url:
             if ctx.message.attachments:
                 url = str(ctx.message.attachments[0].url)
@@ -259,7 +259,7 @@ class Images(commands.Cog):
         """
         uwu
         """
-        daggy = await self.client.fetch_user(self.daggy)
+        daggy = self.client.get_user(self.daggy) or await self.client.fetch_user(self.daggy)
         if not url:
             if ctx.message.attachments:
                 url = str(ctx.message.attachments[0].url)
