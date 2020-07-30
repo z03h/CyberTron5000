@@ -12,6 +12,7 @@ def secrets():
     with open("secrets.json", "r") as f:
         return json.load(f)
 
+
 class Events(commands.Cog):
     def __init__(self, client):
         self.client = client
@@ -21,36 +22,25 @@ class Events(commands.Cog):
     
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        if isinstance(error, discord.ext.commands.CheckFailure):
-            await ctx.message.add_reaction(emoji=self.x_r)
+        known_errors = [commands.BadArgument, commands.MissingRequiredArgument, commands.MissingPermissions,
+                        commands.BotMissingPermissions, commands.CommandOnCooldown]
+        if isinstance(error, commands.CommandNotFound) or isinstance(error, commands.NotOwner) or isinstance(error,
+                                                                                                             commands.CheckFailure) or isinstance(
+            error, commands.BadUnionArgument):
+            return
+        if type(error) in known_errors:
+            await ctx.message.add_reaction(self.x_r)
+            await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}!')
         
-        elif isinstance(error, discord.ext.commands.BadArgument):
-            await ctx.send(
-                f"<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}")
-        
-        elif isinstance(error, discord.ext.commands.MissingRequiredArgument):
-            await ctx.send(
-                f"<{self.x_r}> **{ctx.author.name}**, you're missing the required argument **{error.param.name}**!")
-        
-        elif isinstance(error, discord.ext.commands.MissingPermissions):
-            await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}')
-        
-        elif isinstance(error, commands.CommandNotFound) or isinstance(error, commands.NotOwner):
-            pass
-        
-        elif isinstance(error, commands.BotMissingPermissions):
-            await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}')
-        
-        elif isinstance(error, commands.BadUnionArgument):
-            await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}')
-        
-        elif isinstance(error, commands.CommandOnCooldown):
-            await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}')
         
         else:
+            
             await ctx.message.add_reaction(self.x_r)
-            await self.client.get_channel(730556685214548088).send(
+            channel = self.client.get_channel(730556685214548088)
+            await channel.send(
+                
                 embed=discord.Embed(colour=self.client.colour, title="Error!",
+                
                                     description=f"Error on `{ctx.command}`: `{error.__class__.__name__}`\n```py\n{error}```\n**Server:** {ctx.guild}\n**Author:** {ctx.author}\n[URL]({ctx.message.jump_url})"))
     
     @commands.Cog.listener(name="on_message")
@@ -69,7 +59,8 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         c = self.client.get_channel(727277234666078220)
-        ml = "\n".join([f"{member.mention} • `{member.top_role.name}`" for member in in guild.members if member.guild_permissions.administrator and not member.bot])
+        ml = "\n".join([f"{member.mention} • `{member.top_role.name}`" for member
+                        in guild.members if member.guild_permissions.administrator and not member.bot])
         botno = len([member for member in guild.members if member.bot])
         text_channels = guild.text_channels
         voice_channels = guild.voice_channels
@@ -90,7 +81,8 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
         c = self.client.get_channel(727277234666078220)
-        ml = "\n".join([f"{member.mention} • `{member.top_role.name}`" for member in in guild.members if member.guild_permissions.administrator and not member.bot])
+        ml = "\n".join([f"{member.mention} • `{member.top_role.name}`" for member
+                        in guild.members if member.guild_permissions.administrator and not member.bot])
         botno = len([member for member in guild.members if member.bot])
         text_channels = guild.text_channels
         voice_channels = guild.voice_channels

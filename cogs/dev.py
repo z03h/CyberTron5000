@@ -32,8 +32,10 @@ class Developer(commands.Cog):
         self.tick = ":tick:733458499777855538"
         self._ = None
     
+    async def cog_check(self, ctx):
+        return ctx.author.id == 350349365937700864
+    
     @commands.group(aliases=["e", "evaluate"], name='eval', invoke_without_command=True, help="Evaluates a function.")
-    @commands.is_owner()
     async def eval_fn(self, ctx, *, cmd):
         global result
         try:
@@ -70,12 +72,14 @@ class Developer(commands.Cog):
             return await ctx.send(embed=discord.Embed(color=self.client.colour,
                                                       description=f"{error.__class__.__name__}```py\n{error}\n```"))
         
+        embed = discord.Embed(color=self.client.colour)
+        # embed.description = await cyberformat.to_codeblock(result, lang)
+        embed.description = f"```py\n{result}\n```"
         await ctx.message.add_reaction(emoji=self.tick)
-        await ctx.send(f'{result}')
+        await ctx.send(embed=embed)
         self._ = result
     
     @commands.command()
-    @commands.is_owner()
     async def repl(self, ctx):
         """Starts a REPL session"""
         global result
@@ -124,7 +128,6 @@ class Developer(commands.Cog):
             self._ = result
     
     @commands.command(help="Loads Cogs", aliases=['l'])
-    @commands.is_owner()
     async def load(self, ctx, *extension):
         if not extension:
             for filename in os.listdir('cogs'):
@@ -159,7 +162,6 @@ class Developer(commands.Cog):
             await ctx.send(embed=discord.Embed(description="\n".join(a), colour=self.client.colour))
     
     @commands.command(help="Unloads Cogs", aliases=['ul'])
-    @commands.is_owner()
     async def unload(self, ctx, *extension):
         if not extension:
             for filename in os.listdir('cogs'):
@@ -191,7 +193,6 @@ class Developer(commands.Cog):
             await ctx.send(embed=discord.Embed(description="\n".join(a), colour=self.client.colour))
     
     @commands.command(help="Reloads Cogs", aliases=['rl'])
-    @commands.is_owner()
     async def reload(self, ctx, *extension):
         if not extension:
             for filename in os.listdir('cogs'):
@@ -233,35 +234,20 @@ class Developer(commands.Cog):
             await ctx.send(embed=discord.Embed(description="\n".join(a), colour=self.client.colour))
     
     @commands.command(help="Logs CyberTron5000 out.")
-    @commands.is_owner()
     async def logout(self, ctx):
         await ctx.send(
-            embed=discord.Embed(title=f"{self.client.user.name} logging out. Goodbye World! 🌍", color=self.client.colour))
+            embed=discord.Embed(title=f"{self.client.user.name} logging out. Goodbye World! 🌍",
+                                color=self.client.colour))
         await self.client.logout()
     
     @commands.command()
-    @commands.is_owner()
     async def restart(self, ctx):
         await ctx.message.add_reaction(emoji=self.tick)
         await self.client.logout()
         subprocess.call([sys.executable, "ct5k.py"])
     
-    @commands.group(invoke_without_command=True)
-    async def news(self, ctx):
-        """View the current news."""
-        embed = discord.Embed(colour=self.client.colour)
-        news = await self.client.pg_con.fetch("SELECT message, number FROM news")
-        if not news:
-            embed.description = "There is no news currently. Come back soon."
-        else:
-            embed.description = news[0][0]
-            embed.set_author(name=f"News update #{news[0][1]} for {self.client.user.name}",
-                             icon_url=self.client.user.avatar_url)
-        await ctx.send(embed=embed)
-    
-    @news.command()
-    @commands.is_owner()
-    async def update(self, ctx, *, message):
+    @commands.command(aliases=['nu', 'update'])
+    async def news_update(self, ctx, *, message):
         """Update the current news."""
         number = await self.client.pg_con.fetch("SELECT number FROM news")
         number = number[0][0] or 0

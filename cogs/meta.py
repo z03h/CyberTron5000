@@ -1,7 +1,5 @@
 """
-
 For general bot commands, basic/meta stuff.
-
 """
 
 import asyncio
@@ -24,6 +22,7 @@ from tabulate import tabulate as tb
 from .utils import cyberformat, paginator
 from .utils.checks import check_admin_or_owner, beta_squad
 from .utils.lists import sl
+from time import strptime as s
 import codecs
 
 start_time = datetime.datetime.utcnow()
@@ -33,6 +32,7 @@ servers = {
     "CyberTron5000 Emotes 2": "https://discord.gg/Qn7VYg8",
     "CyberTron5000 Emotes 3": "https://discord.gg/Xgddz6W"
 }
+
 
 # ≫
 
@@ -116,17 +116,17 @@ class Meta(commands.Cog):
         self.version = f"{self.client.user.name} Beta v3.0.0"
         self.softwares = ['<:dpy:708479036518694983>', '<:python:706850228652998667>', '<:JSON:710927078513442857>',
                           '<:psql:733848802334736395>']
-            
+    
     @commands.command()
     async def usage(self, ctx):
-        data = sorted([[str(key), value] for key, value in self.client.cmd_usage.items()], key=lambda x: x[1], reverse=True)[:10]
+        data = sorted([[str(key), value] for key, value in self.client.cmd_usage.items()], key=lambda x: x[1],
+                      reverse=True)[:10]
         headers = ["Command Name", "Usage"]
-        embed = discord.Embed(description=f"```\n{tb(data, headers, tablefmt='fancy_grid')}\n```", color=self.client.colour)
+        embed = discord.Embed(description=f"```\n{tb(data, headers, tablefmt='fancy_grid')}\n```",
+                              color=self.client.colour)
         total = sum([value for key, value in self.client.cmd_usage.items()])
-        user = sorted([(key, value) for key, value in self.client.cmd_users.items()], key=lambda x: x[1])[0]
-        user = ctx.guild.get_member(user[0]) or await self.client.fetch_user(user[0])
         embed.set_author(name=f"Command Usage Stats")
-        embed.description = f"Total commands used since start: **{total}**\nHighest Command User: **{str(user)}**" + embed.description
+        embed.description = f"Total commands used since start: **{total}**" + embed.description
         await ctx.send(embed=embed)
     
     @commands.command()
@@ -141,9 +141,10 @@ class Meta(commands.Cog):
     
     @commands.command(help="Checks the bot's ping.")
     async def ping(self, ctx):
-        websocket = round(self.client.latency*1000, 3)
+        websocket = round(self.client.latency * 1000, 3)
         start = time.perf_counter()
-        embed = discord.Embed(color=self.client.colour, description=f"**Pong! :ping_pong:**\nWebsocket Latency **{websocket}**")
+        embed = discord.Embed(color=self.client.colour,
+                              description=f"**Pong! :ping_pong:**\nWebsocket Latency **{websocket}**")
         message = await ctx.send(embed=embed)
         end = time.perf_counter()
         duration = round((end - start) * 1000, 3)
@@ -194,7 +195,7 @@ class Meta(commands.Cog):
                 embed.set_image(
                     url='https://media.discordapp.net/attachments/381963689470984203/737734220755107900/Screen_Shot_2020-07-28_at_2.12.15_PM.png')
                 await ctx.send(embed=embed)
-                
+            
             else:
                 await ctx.send(src)
     
@@ -315,19 +316,6 @@ class Meta(commands.Cog):
         await ctx.guild.me.edit(nick=self.client.user.name)
         await ctx.message.add_reaction(emoji=self.tick)
     
-    @commands.command(name='git_commits', aliases=['gitc', 'commits', 'git'])
-    async def _git_commits(self, ctx, limit: int = 5):
-        """Shows you recent github commits"""
-        if limit < 1 or limit > 15:
-            return await ctx.send(
-                f"<:warning:727013811571261540> **{ctx.author.name}**, limit must be greater than 0 and less than 16!")
-        commits = [f"{index}. {commit}" for index, commit in
-                   enumerate(await self.get_commits(limit, author=False, names=True), 1)]
-        await ctx.send(embed=discord.Embed(description="\n".join(commits), colour=self.client.colour).set_author(
-            name=f"Last {limit} GitHub Commit(s) for CyberTron5000",
-            icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png",
-            url="https://github.com/niztg/CyberTron5000"))
-    
     @commands.group(invoke_without_command=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def suggest(self, ctx, *, idea):
@@ -428,7 +416,6 @@ class Meta(commands.Cog):
         owner = self.client.get_user(id=350349365937700864)
         await owner.send(f"You should fix ```{error}```")
         await ctx.message.add_reaction(emoji=":tick:733458499777855538")
-
     
     @commands.command(aliases=['stats'])
     async def statistics(self, ctx):
@@ -468,54 +455,114 @@ class Meta(commands.Cog):
                         cls += 1
         for g in self.client.guilds:
             for c in g.channels:
-                    cc += 1
-        embed = discord.Embed(colour=self.client.colour).set_author(name=f"Stats for {self.client.user.name}", icon_url=self.client.user.avatar_url)
-        embed.add_field(name="Statistics", value=f"<:class:735360032434290830> Classes | **{cls:,}**\n<:function:735517201561288775> Functions | **{func+coro:,}**\n<:coroutine:735520608183648337> Coroutines | **{coro:,}**\n:speech_balloon: Comments | **{cmts:,}**")
-        embed.add_field(name="\u200b", value=f'<:Discord:735530547992068146> Servers | **{len(self.client.guilds)}**\n<:text_channel:703726554018086912> Channels | **{cc:,}**\n<:member:731190477927219231> Members | **{len(self.client.users):,}**\n:gear: Cogs **{len(self.client.cogs)}** | Commands **{len([c for c in self.client.commands])}**')
+                cc += 1
+        embed = discord.Embed(colour=self.client.colour).set_author(name=f"Stats for {self.client.user.name}",
+                                                                    icon_url=self.client.user.avatar_url)
+        embed.add_field(name="Statistics",
+                        value=f"<:class:735360032434290830> Classes | **{cls:,}**\n<:function:735517201561288775> Functions | **{func + coro:,}**\n<:coroutine:735520608183648337> Coroutines | **{coro:,}**\n:speech_balloon: Comments | **{cmts:,}**")
+        embed.add_field(name="\u200b",
+                        value=f'<:Discord:735530547992068146> Servers | **{len(self.client.guilds)}**\n<:text_channel:703726554018086912> Channels | **{cc:,}**\n<:member:731190477927219231> Members | **{len(self.client.users):,}**\n:gear: Cogs **{len(self.client.cogs)}** | Commands **{len([c for c in self.client.commands])}**')
         embed.set_footer(text=f"{await lines_of_code():,} lines of code")
         await ctx.send(embed=embed)
-        
+    
     @commands.command()
     async def credits(self, ctx):
         """The amazing peeps who make ct5k what it is"""
         embed = discord.Embed(colour=self.client.colour)
-        embed.set_author(name=f"The People who make {self.client.user.name} what it is today!", icon_url=self.client.user.avatar_url)
+        embed.set_author(name=f"The People who make {self.client.user.name} what it is today!",
+                         icon_url=self.client.user.avatar_url)
         embed.description = f"<@!561688948259422228> - Thank you for drawing {self.client.user.name}'s amazing avatar!\n\n"
         embed.description += f"<@!357918459058978816> - Thank you for helping me in the beginning and teaching me the ropes!\n[His Bot](https://discord.com/oauth2/authorize?client_id=675542011457044512&permissions=1611000896&scope=bot) | [GitHub](https://github.com/DankDumpster) | [Support Server](https://discord.com/invite/TWjxyhC)\n\n"
         embed.description += f"<@!574870314928832533> - Thank you for helping and giving inspiration for many commands on the bot!\n[Their Bot](https://discord.com/oauth2/authorize?client_id=628824408521441291&scope=bot&permissions=1476521159) | [GitHub](https://github.com/spinfish) | [Support Server](https://discord.gg/q3eVHeU)\n\n"
         embed.description += f"<@!491174779278065689> - Thank you for helping a bunch on the bot and inspiring the Images cog!\n[His Bot](https://discord.com/oauth2/authorize?client_id=675589737372975124&permissions=1611000896&scope=bot) | [GitHub](https://github.com/Daggy1234) | [Support Server](https://discord.com/invite/5Y2ryNq)"
-        embed.add_field(name="And thanks to the Beta Squad for testing ct5k's beta commands!", value='\n'.join([f'<@{a}>' for a in beta_squad]))
+        embed.add_field(name="And thanks to the Beta Squad for testing ct5k's beta commands!",
+                        value='\n'.join([f'<@{a}>' for a in beta_squad]))
         await ctx.send(embed=embed)
-        
+    
     @commands.command()
     async def invite(self, ctx):
         """Invite me to your server!"""
-        embed = discord.Embed(color=self.client.colour, title=f"Invite me to your guilds today!", url="https://cybertron-5k.netlify.app/invit")
-        embed.add_field(name="Other Links", value=f"[`No Permissions (0)`](https://discord.com/oauth2/authorize?client_id=697678160577429584&scope=bot&permissions=0)\n[`Chose your own permissions`](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2147483639&scope=bot)\n[`Administrator Permissions`](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=8&scope=bot)")
-        embed.set_thumbnail(url=self.client.user.avatar_url)
-        await ctx.send(embed=embed)
-        
+        embed = discord.Embed(colour=self.client.colour)
+        embed.add_field(name="Invite the Bot!", value=f"[`Permissions: 104189632`](https://cybertron-5k.netlify.app/invite) <:star:737736250718421032>\n[`Permissions: 8 (Admin)`](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=8&scope=bot)\n[`Permissions: 0`](https://discord.com/oauth2/authorize?client_id=697678160577429584&scope=bot&permissions=0)\n", inline=False)
+        embed.add_field(name="Other", value=f"[`Chose Your Own`](https://discord.com/api/oauth2/authorize?client_id=697678160577429584&permissions=2147483639&scope=bot)", inline=False)
+        embed.set_thumbnail(url=ctx.me.avatar_url)
+        await ctx.send(content=f"**{ctx.author}** | https://discord.com/oauth2/authorize?client_id=697678160577429584&scope=bot&permissions=104189632", embed=embed)
+    
     @commands.command()
     async def support(self, ctx):
         """Join our help server!"""
-        embed = discord.Embed(colour=self.client.colour, title="Join the Support Server", url="https://cybertron-5k.netlify.app/server")
-        embed.description = f"Join the support server to get regular updates on {self.client.user.name}!"
-        embed.add_field(name=f"CyberTron5000 Emote Servers", value=f"\n".join([f"[`{key}`]({value})" for key, value in servers.items()]))
-        embed.set_footer(text=f"Note: You must be in the main support server to add your bot to the emote servers!")
-        embed.set_thumbnail(url=self.client.user.avatar_url)
-        await ctx.send(embed=embed)
+        embed = discord.Embed(colour=self.client.colour)
+        embed.set_author(name="Join the Support Server!", url="https://cybertron-5k.netlify.app/server")
+        embed.description = f"[`Join Today!`](https://cybertron-5k.netlify.app/server) <:star:737736250718421032>"
+        embed.add_field(name=f"Emote Servers", value=f"\n".join([f"<:emoji:734231060069613638> [`{key}`]({value})" for key, value in servers.items()]))
+        embed.set_thumbnail(url=ctx.me.avatar_url)
+        await ctx.send(content=f"**{ctx.author}** | https://discord.com/invite/2fxKxJH", embed=embed)
         
-    @commands.command()
+    @commands.group(invoke_without_command=True, aliases=['git'])
     async def github(self, ctx):
         """View the sourcecode for CyberTron5000!"""
-        embed = discord.Embed(color=self.client.colour, title="<:star:737736250718421032> Check out the source code on GitHub!", url="https://github.com/niztg/CyberTron5000")
+        embed = discord.Embed(color=self.client.colour,
+                              title="<:star:737736250718421032> Check out the source code on GitHub!",
+                              url="https://github.com/niztg/CyberTron5000")
         embed.description = "Star the GitHub repository to support the bot!"
         embed.add_field(name="<:license:737733205645590639> LICENSE", value=f"[AGPLv3](https://www.gnu.org/licenses/)")
         embed.set_thumbnail(url=self.client.user.avatar_url)
-        embed.set_image(url='https://media.discordapp.net/attachments/381963689470984203/737734220755107900/Screen_Shot_2020-07-28_at_2.12.15_PM.png')
+        embed.set_image(
+            url='https://media.discordapp.net/attachments/381963689470984203/737734220755107900/Screen_Shot_2020-07-28_at_2.12.15_PM.png')
         await ctx.send(embed=embed)
         
-    
+    @github.command(name='commits')
+    async def _git_commits(self, ctx, limit: int = 5):
+        """Shows you recent github commits"""
+        if limit < 1 or limit > 15:
+            return await ctx.send(
+                f"<:warning:727013811571261540> **{ctx.author.name}**, limit must be greater than 0 and less than 16!")
+        commits = [f"{index}. {commit}" for index, commit in
+                   enumerate(await self.get_commits(limit, author=False, names=True), 1)]
+        await ctx.send(embed=discord.Embed(description="\n".join(commits), colour=self.client.colour).set_author(
+            name=f"Last {limit} GitHub Commit(s) for CyberTron5000",
+            icon_url="https://www.pngjoy.com/pngl/52/1164606_telegram-icon-github-icon-png-white-png-download.png",
+            url="https://github.com/niztg/CyberTron5000"))
+        
+    @github.command(aliases=['repo'])
+    async def repository(self, ctx, repository):
+        """View a github repository"""
+        embed = discord.Embed(colour=self.client.colour)
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f"https://api.github.com/repos/{repository}") as r1, cs.get(f"https://api.github.com/users/{repository.split('/')[0]}") as r2:
+                if r1.status != 200 or r2.status != 200:
+                    return await ctx.send(f"Repository not found.")
+                res1 = await r1.json()
+                res2 = await r2.json()
+                await cs.close()
+        embed.set_author(name=f'{res1.get("full_name")}', icon_url=res2.get("avatar_url"), url=res1.get("svn_url"))
+        embed.description = res1.get("description") + "\n"
+        stars = res1.get("stargazers_count")
+        watchers = res1.get("subscribers_count")
+        language = res1.get("language")
+        license = res1.get("license")
+        forks = res1.get("forks")
+        created = datetime.datetime(*s(str(res1.get('created_at'))[:-1], "%Y-%m-%dT%H:%M:%S")[:6])
+        embed.description += f"<:author:738185776642261022> **{res1.get('full_name').split('/')[0]}**\n"
+        embed.description += f"<:clock:738186842343735387> **{humanize.naturaltime(datetime.datetime.utcnow()-created)}**\n"
+        embed.description += f"<:star:737736250718421032> **{stars:,}**\n<:watchers:738173064130461727> **{watchers:,}**\n"
+        embed.description += f"<:fork:738179007295782993> **{forks:,}**\n"
+        embed.description += f"<:license:738176207895658507> **{license['spdx_id']}**\n"
+        embed.set_footer(text=f"Written in {language}")
+        await ctx.send(embed=embed)
+     
+    @commands.command()
+    async def news(self, ctx):
+        """View the current news."""
+        embed = discord.Embed(colour=self.client.colour)
+        news = await self.client.pg_con.fetch("SELECT message, number FROM news")
+        if not news:
+            embed.description = "There is no news currently. Come back soon."
+        else:
+            embed.description = news[0][0]
+            embed.set_author(name=f"News update #{news[0][1]} for {self.client.user.name}",
+                             icon_url=self.client.user.avatar_url)
+        await ctx.send(embed=embed)
 
 
 def setup(client):

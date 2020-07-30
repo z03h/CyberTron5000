@@ -173,7 +173,11 @@ class Profile(commands.Cog):
                 else:
                     pass
             embed.add_field(name=f"{c}", value='\u200b' + "\n".join(x), inline=False)
+<<<<<<< HEAD
+        
+=======
 
+>>>>>>> 7528251fffdd3185e6c16c3c0a7f3cc2a8624b84
         y = ctx.guild.text_channels + ctx.guild.voice_channels
         chl = []
         for o in y:
@@ -195,7 +199,11 @@ class Profile(commands.Cog):
                     else:
                         channel = "<:voice_channel:703726554068418560>"
                     chl.append(f"{channel} {o.name}")
+<<<<<<< HEAD
+        
+=======
 
+>>>>>>> 7528251fffdd3185e6c16c3c0a7f3cc2a8624b84
         embed.description = "\n".join(chl)
         return await ctx.send("peanut no like :angry:") if ctx.guild.id == 653376332507643914 else await ctx.send(
             embed=embed)
@@ -252,7 +260,11 @@ class Profile(commands.Cog):
                     else:
                         channel = "<:voice_channel:703726554068418560>"
                     chl.append(f"{channel} {o.name}")
+<<<<<<< HEAD
+        
+=======
 
+>>>>>>> 7528251fffdd3185e6c16c3c0a7f3cc2a8624b84
         embed.description = "\n".join(chl)
         return await ctx.send("peanut no like :angry:") if ctx.guild.id == 653376332507643914 else await ctx.send(
             embed=embed)
@@ -450,6 +462,16 @@ class Profile(commands.Cog):
         embed.set_footer(
             text=f'Channel created {humanize.naturaltime(datetime.datetime.utcnow() - channel.created_at)}c')
         await ctx.send(embed=embed)
+    
+    @avatar.error
+    async def cog_error(self, ctx, error):
+        if isinstance(error, commands.BadUnionArgument):
+            await ctx.send(f"That member or user was not found!")
+    
+    @memberinfo.error
+    async def cog_error(self, ctx, error):
+        if isinstance(error, commands.BadUnionArgument):
+            await ctx.send(f"That member or user was not found!")
 
 
 def setup(client):
