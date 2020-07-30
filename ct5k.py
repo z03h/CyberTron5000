@@ -1,17 +1,15 @@
+
 """
 CyberTron5000 Discord Bot
 Copyright (C) 2020  nizcomix
-
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
 published by the Free Software Foundation, either version 3 of the
 License, or (at your option) any later version.
-
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
-
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
@@ -41,6 +39,7 @@ class CyberTron5000(commands.Bot):
         self.load_extension(name='jishaku')
         self.ready = False
         self.prefixes = {}
+        self.cmd_usage = {}
     
     async def create_db_pool(self):
         self.pg_con = await asyncpg.create_pool(user=get_token()['psql_user'], password=get_token()['psql_password'],
@@ -72,6 +71,11 @@ class CyberTron5000(commands.Bot):
                 self.prefixes[entry['guild_id']] = entry['array_agg']
             self.ready = True
 
+    async def on_command(self, ctx):
+        try:
+            self.cmd_usage[str(ctx.command)] += 1
+        except KeyError:
+            self.cmd_usage[str(ctx.command)] = 1
 
 client = CyberTron5000()
 client.loop.run_until_complete(client.create_db_pool())

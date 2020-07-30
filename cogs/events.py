@@ -22,45 +22,33 @@ class Events(commands.Cog):
     
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        if isinstance(error, discord.ext.commands.CheckFailure):
-            await ctx.message.add_reaction(emoji=self.x_r)
+        known_errors = [commands.BadArgument, commands.MissingRequiredArgument, commands.MissingPermissions,
+                        commands.BotMissingPermissions, commands.CommandOnCooldown]
+        if isinstance(error, commands.CommandNotFound) or isinstance(error, commands.NotOwner) or isinstance(error,
+                                                                                                             commands.CheckFailure) or isinstance(
+            error, commands.BadUnionArgument):
+            return
+        if type(error) in known_errors:
+            await ctx.message.add_reaction(self.x_r)
+            await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}!')
         
-        elif isinstance(error, discord.ext.commands.BadArgument):
-            await ctx.send(
-                f"<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}")
-        
-        elif isinstance(error, discord.ext.commands.MissingRequiredArgument):
-            await ctx.send(
-                f"<{self.x_r}> **{ctx.author.name}**, you're missing the required argument **{error.param.name}**!")
-        
-        elif isinstance(error, discord.ext.commands.MissingPermissions):
-            await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}')
-        
-        elif isinstance(error, commands.CommandNotFound) or isinstance(error, commands.NotOwner):
-            pass
-        
-        elif isinstance(error, commands.BotMissingPermissions):
-            await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}')
-        
-        elif isinstance(error, commands.BadUnionArgument):
-            await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}')
-        
-        elif isinstance(error, commands.CommandOnCooldown):
-            await ctx.send(f'<{self.x_r}> **{ctx.author.name}**, {cyberformat.minimalize(str(error))}')
         
         else:
+            
             await ctx.message.add_reaction(self.x_r)
-            await self.client.get_channel(730556685214548088).send(
+            channel = self.client.get_channel(730556685214548088)
+            await channel.send(
+                
                 embed=discord.Embed(colour=self.client.colour, title="Error!",
+                
                                     description=f"Error on `{ctx.command}`: `{error.__class__.__name__}`\n```py\n{error}```\n**Server:** {ctx.guild}\n**Author:** {ctx.author}\n[URL]({ctx.message.jump_url})"))
     
     @commands.Cog.listener(name="on_message")
     async def on_user_mention(self, message):
-        if "<@!697678160577429584>" == message.content:
-            owner = await self.client.fetch_user(350349365937700864)
-            prefixes = await self.client.pg_con.fetch("SELECT prefix FROM prefixes WHERE guild_id = $1",
-                                                      message.guild.id)
-            a = [p[0] for p in prefixes]
+        owner = self.client.get_user(350349365937700864) or await self.client.fetch_user(350349365937700864)
+        if message.content in ("<@!697678160577429584>", "<@697678160577429584>"):
+            DEFAULT_PREFIX = ["c$"]
+            a = self.client.prefixes.get(message.guild.id, DEFAULT_PREFIX)
             embed = discord.Embed(colour=self.client.colour,
                                   description=f'**My prefixes for {message.guild} are** {f"{self.client.user.mention}, " + ", ".join([f"`{a}`" for a in a])}\n\n**Do** '
                                               f'{f"{self.client.user.mention} help, " + ", ".join([f"`{a}help`" for a in a])} **for a full list of commands**\n\n→ [Invite](https://cybertron-5k.netlify.app/invite) | [Support](https://cybertron-5k.netlify.app/server) | <:github:724036339426787380> [GitHub](https://github.com/niztg/CyberTron5000) | <:cursor_default:734657467132411914>[Website](https://cybertron-5k.netlify.app) | <:karma:704158558547214426> [Reddit](https://reddit.com/r/CyberTron5000)')
@@ -71,13 +59,13 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         c = self.client.get_channel(727277234666078220)
-        mod_list = [member for member in guild.members if member.guild_permissions.administrator]
-        ml = "\n".join([f"{member.mention} • `{member.top_role.name}`" for member in mod_list if member.bot is False])
+        ml = "\n".join([f"{member.mention} • `{member.top_role.name}`" for member
+                        in guild.members if member.guild_permissions.administrator and not member.bot])
         botno = len([member for member in guild.members if member.bot])
-        text_channels = [text_channel for text_channel in guild.text_channels]
-        voice_channels = [voice_channel for voice_channel in guild.voice_channels]
-        categories = [category for category in guild.categories]
-        emojis = [emoji for emoji in guild.emojis]
+        text_channels = guild.text_channels
+        voice_channels = guild.voice_channels
+        categories = guild.categories
+        emojis = guild.emojis
         embed = discord.Embed(colour=0x00ff00, title=f'{guild}',
                               description=f"**{guild.id}**"f"\n<:member:716339965771907099>**{len(guild.members):,}\n**Owner:** {guild.owner.mention}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**\n**Admins:**\n{ml}")
         embed.set_thumbnail(url=guild.icon_url)
@@ -93,13 +81,13 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
         c = self.client.get_channel(727277234666078220)
-        mod_list = [member for member in guild.members if member.guild_permissions.administrator]
-        ml = "\n".join([f"{member.mention} • `{member.top_role.name}`" for member in mod_list if member.bot is False])
+        ml = "\n".join([f"{member.mention} • `{member.top_role.name}`" for member
+                        in guild.members if member.guild_permissions.administrator and not member.bot])
         botno = len([member for member in guild.members if member.bot])
-        text_channels = [text_channel for text_channel in guild.text_channels]
-        voice_channels = [voice_channel for voice_channel in guild.voice_channels]
-        categories = [category for category in guild.categories]
-        emojis = [emoji for emoji in guild.emojis]
+        text_channels = guild.text_channels
+        voice_channels = guild.voice_channels
+        categories = guild.categories
+        emojis = guild.emojis
         embed = discord.Embed(colour=discord.Colour.red(), title=f'{guild}',
                               description=f"**{guild.id}**"f"\n<:member:716339965771907099>**{len(guild.members):,}**\n**Owner:** {guild.owner.mention}\n\n<:category:716057680548200468> **{len(categories)}** | <:text_channel:703726554018086912>**{len(text_channels)}** • <:voice_channel:703726554068418560>**{len(voice_channels)}**\n😔🤔😳 **{len(emojis)}**\n<:bot:703728026512392312> **{botno}**\n**Admins:**{ml}")
         embed.set_thumbnail(url=guild.icon_url)
@@ -110,7 +98,7 @@ class Events(commands.Cog):
     @commands.Cog.listener(name="on_message")
     async def cleverbot_session(self, message):
         if (message.channel.id == 730486269468999741) or (message.channel.id == 730570845013147708):
-            if message.author == self.client.user:
+            if message.author.bot:
                 return
             async with message.channel.typing():
                 if len(message.content) < 2 or len(message.content) > 100:

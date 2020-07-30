@@ -21,7 +21,7 @@ def secrets():
         return json.load(f)
 
 
-async def fetch_rtfm(res):
+async def fetch_rtfs(res):
     items = []
     for item in res:
         item.pop("module")
@@ -31,17 +31,10 @@ async def fetch_rtfm(res):
             continue
     data = []
     for item in items:
-        location = ''
-        if item['path'].startswith("commands"):
-            location += "https://discordpy.readthedocs.io/en/latest/ext/commands/api.html?#discord.ext.commands."
-        elif item['path'].startswith("discord"):
-            location += "https://discordpy.readthedocs.io/en/latest/api.html?#discord."
-        if "utils" in item['path']:
-            location = "https://discordpy.readthedocs.io/en/latest/api.html?#discord.utils."
         if not item['parent']:
-            data.append(f"[`{item['object']}`]({location}{item['object']})")
+            data.append(f"[`{item['object']}`]({item['url']})")
         else:
-            data.append(f"[`{item['parent']}.{item['object']}`]({location}{item['parent']}.{item['object']})")
+            data.append(f"[`{item['parent']}.{item['object']}`]({item['url']})")
     return data
 
 
@@ -106,6 +99,7 @@ class Api(commands.Cog):
                     res = await r.json()
                 if r.status != 200:
                     return await ctx.send("Error!")
+                await cs.close()
                 embed = discord.Embed(title=f"{res[0]['name'].title()} • #{res[0]['id']}", colour=self.client.colour)
                 embed.set_author(name=f'The {" ".join(res[0]["species"])}')
                 embed.set_thumbnail(url=res[0]['sprites']['normal'])
@@ -138,6 +132,7 @@ class Api(commands.Cog):
             async with aiohttp.ClientSession() as cs:
                 async with cs.get('http://api.urbandictionary.com/v0/define', params={'term': terms}) as r:
                     res = await r.json()
+                await cs.close()
                 for item in res['list']:
                     embed = discord.Embed(color=self.client.colour)
                     embed.title = item['word']
@@ -192,8 +187,9 @@ class Api(commands.Cog):
         else:
             versions = ['???']
         embed.description += f"<:author:734991429843157042> **{res['info']['author']}{char}**\n<:python:706850228652998667> {' | '.join([f'**{version}**' for version in versions])}\n<:license:737733205645590639> **{res['info']['license'] or '???'}**\n<:releases:734994325020213248> **{len(res['releases'])}**"
-        for key, value in res['info']['project_urls'].items():
-            embed.description += f"\n[{key.title()}]({value})"
+        if res['info']['project_urls']:
+            for key, value in res['info']['project_urls'].items():
+                embed.description += f"\n[{key.title()}]({value})"
         await ctx.send(embed=embed)
     
     @commands.command(aliases=['cb'])
@@ -273,6 +269,7 @@ class Api(commands.Cog):
         async with aiohttp.ClientSession() as cs:
             async with cs.get(f'https://some-random-api.ml/facts/{animal.lower()}') as t:
                 resp = await t.json()
+            await cs.close()
             return await ctx.send(f"Random **{animal.capitalize()}** Fact:" + "\n" + resp['fact'])
     
     # https://some-random-api.ml/img/cat
@@ -322,9 +319,9 @@ class Api(commands.Cog):
         source = paginator.EmbedSource(embeds)
         await paginator.CatchAllMenu(source=source).start(ctx)
     
-    @commands.command(aliases=['rtfd'])
-    async def rtfm(self, ctx, *, query: str = None):
-        """Shows results from the discord.py documentation"""
+    @commands.command()
+    async def rtfs(self, ctx, *, query: str = None):
+        """Shows results from the discord.py sourcecode"""
         if not query:
             return await ctx.send("https://discordpy.readthedocs.io/en/latest/")
         if query.startswith("discord."):
@@ -340,10 +337,12 @@ class Api(commands.Cog):
                 return await ctx.send("no results.")
         await cs.close()
         embed = discord.Embed(color=self.client.colour)
-        data = await fetch_rtfm(res)
-        source = paginator.IndexedListSource(data, embed=embed, per_page=5)
+        data = await fetch_rtfs(res)
+        source = paginator.IndexedListSource(data, embed=embed, per_page=5, show_index=False)
         await paginator.CatchAllMenu(source=source).start(ctx)
 
+
+#
 
 def setup(client):
     client.add_cog(Api(client))

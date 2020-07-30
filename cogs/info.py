@@ -151,10 +151,9 @@ class Info(commands.Cog):
     @commands.group(invoke_without_command=True)
     async def cogs(self, ctx):
         """Shows you every cog"""
-        await ctx.send(embed=discord.Embed(colour=self.context.bot.colour, title=f"All Cogs ({len(self.client.cogs)})",
+        await ctx.send(embed=discord.Embed(colour=self.client.colour, title=f"All Cogs ({len(self.client.cogs)})",
                                            description=f"Do `{ctx.prefix}help <cog>` to know more about them!" + "\n\n" + "\n".join(
-                                               [f"`{cog}` | {self.client.cogs[cog].__doc__}" for cog in
-                                                self.client.cogs])))
+                                               [i for i in self.client.cogs.keys()])))
     
     @cogs.command()
     @commands.is_owner()

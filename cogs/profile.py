@@ -33,10 +33,11 @@ class GuildStats:
     
     @property
     def guild_graph(self):
-        labels = f'Online ({self.status_counter[discord.Status.online]:,})', f'Do Not Disturb ({self.status_counter[discord.Status.dnd]:,})', f'Idle ({self.status_counter[discord.Status.idle]:,})', f'Offline ({self.status_counter[discord.Status.offline]:,})'
-        sizes = [self.status_counter[discord.Status.online], self.status_counter[discord.Status.dnd],
-                 self.status_counter[discord.Status.idle],
-                 self.status_counter[discord.Status.offline]]
+        status_counts = self.status_counter
+        labels = f'Online ({status_counts[discord.Status.online]:,})', f'Do Not Disturb ({status_counts[discord.Status.dnd]:,})', f'Idle ({status_counts[discord.Status.idle]:,})', f'Offline ({status_counts[discord.Status.offline]:,})'
+        sizes = [status_counts[discord.Status.online], status_counts[discord.Status.dnd],
+                 status_counts[discord.Status.idle],
+                 status_counts[discord.Status.offline]]
         colors = ['#42B581', '#E34544', '#FAA619', '#747F8D']
         explode = (0.0, 0, 0, 0)
         
@@ -54,26 +55,15 @@ class GuildStats:
     
     async def check_nitro(self, m: Union[discord.Member, int]):
         if isinstance(m, int):
-            m = await self.context.bot.fetch_user(int)
-        else:
-            m = m
-        if m.is_avatar_animated():
-            return True
-        if m in self.context.guild.premium_subscribers:
+            m = self.context.bot.get_user(m) or await self.context.bot.fetch_user(m)
+        if m.is_avatar_animated() or m in self.context.guild.premium_subscribers:
             return True
         if not isinstance(m, discord.User):
             if m.activity:
                 for a in m.activities:
-                    if a.type is not discord.ActivityType.custom:
-                        continue
-                    else:
-                        if a.emoji:
-                            if a.emoji.is_custom_emoji():
-                                return True
-                            else:
-                                return False
-                        else:
-                            return False
+                    if a.type == discord.ActivityType.custom:
+                        if a.emoji and a.emoji.is_custom_emoji():
+                            return True
         return False
 
 
@@ -86,7 +76,7 @@ class Profile(commands.Cog):
     @commands.command(aliases=["av"], help="Gets the avatar of a user.")
     async def avatar(self, ctx, *, avamember: Union[discord.Member, int] = None):
         if isinstance(avamember, int):
-            avamember = await self.client.fetch_user(avamember)
+            avamember = self.client.get_user(avamember) or await self.client.fetch_user(avamember)
         else:
             avamember = avamember or ctx.author
         embed = discord.Embed(colour=self.client.colour).set_image(url=avamember.avatar_url_as(static_format='png'))
@@ -114,9 +104,9 @@ class Profile(commands.Cog):
                       f"{sl[discord.Status.offline]}**{g[discord.Status.offline]:,}**",
                       f"<:streaming:734276396037439628>**{len([m for m in ctx.guild.members if m.activity and m.activity.type == discord.ActivityType.streaming])}**",
                       ]
-            text_channels = [text_channel for text_channel in guild.text_channels]
-            voice_channels = [voice_channel for voice_channel in guild.voice_channels]
-            categories = [category for category in guild.categories]
+            text_channels = guild.text_channels
+            voice_channels = guild.voice_channels
+            categories = guild.categories
             region = REGIONS[f"{str(guild.region)}"]
             banner_url = f" | [Banner URL]({ctx.guild.banner_url_as(format='png')})" if ctx.guild.banner_url else "\u200b"
             embed = discord.Embed(colour=self.client.colour,
@@ -134,9 +124,9 @@ class Profile(commands.Cog):
         """Shows you the mods of a guild"""
         n = "\n"
         owner = ctx.guild.owner.mention
-        members = [m for m in ctx.guild.members]
-        admins = [admin for admin in members if admin.guild_permissions.administrator and admin.bot is False]
-        mods = [mod for mod in members if mod.guild_permissions.kick_members and mod.bot is False]
+        members = ctx.guild.members
+        admins = [admin for admin in members if admin.guild_permissions.administrator and not admin.bot]
+        mods = [mod for mod in members if mod.guild_permissions.kick_members and not mod.bot]
         mod_bots = [bot for bot in members if bot.guild_permissions.kick_members and bot.bot]
         await ctx.send(
             embed=discord.Embed(description=f"<:owner:730864906429136907> **OWNER:** {owner}\n"
@@ -183,12 +173,11 @@ class Profile(commands.Cog):
                 else:
                     pass
             embed.add_field(name=f"{c}", value='\u200b' + "\n".join(x), inline=False)
-        y = [b for b in ctx.guild.categories]
+        
+        y = ctx.guild.text_channels + ctx.guild.voice_channels
         chl = []
-        for o in ctx.guild.channels:
-            if o.category or o in y:
-                pass
-            else:
+        for o in y:
+            if not o.category:
                 if isinstance(o, discord.TextChannel):
                     if o.is_nsfw():
                         channel = "<:nsfw:730852009032286288>"
@@ -206,8 +195,7 @@ class Profile(commands.Cog):
                     else:
                         channel = "<:voice_channel:703726554068418560>"
                     chl.append(f"{channel} {o.name}")
-                else:
-                    pass
+        
         embed.description = "\n".join(chl)
         return await ctx.send("peanut no like :angry:") if ctx.guild.id == 653376332507643914 else await ctx.send(
             embed=embed)
@@ -243,12 +231,10 @@ class Profile(commands.Cog):
                 embed.add_field(name=f"{c}", value='\u200b' + "\n".join(x), inline=False)
             else:
                 pass
-        y = [b for b in ctx.guild.categories]
+        y = ctx.guild.text_channels + ctx.guild.voice_channels
         chl = []
-        for o in ctx.guild.channels:
-            if o.category or o in y:
-                pass
-            else:
+        for o in y:
+            if not o.category:
                 if isinstance(o, discord.TextChannel):
                     if o.is_nsfw():
                         channel = "<:nsfw:730852009032286288>"
@@ -266,8 +252,7 @@ class Profile(commands.Cog):
                     else:
                         channel = "<:voice_channel:703726554068418560>"
                     chl.append(f"{channel} {o.name}")
-                else:
-                    pass
+        
         embed.description = "\n".join(chl)
         return await ctx.send("peanut no like :angry:") if ctx.guild.id == 653376332507643914 else await ctx.send(
             embed=embed)
@@ -296,7 +281,7 @@ class Profile(commands.Cog):
         """
         embed = discord.Embed(color=self.client.colour)
         if isinstance(member, int):
-            m = await self.client.fetch_user(member)
+            m = self.client.get_user(member) or await self.client.fetch_user(member)
         else:
             m = member or ctx.author
         embed.set_author(name=str(m), icon_url=m.avatar_url, url=m.avatar_url_as(static_format='png', size=4096))
@@ -308,14 +293,7 @@ class Profile(commands.Cog):
             else:
                 is_bot = "<:bot:703728026512392312>"
         mem_flags = dict(m.public_flags).items()
-        badges = [k for k, v in mem_flags]
-        bools = [v for k, v in mem_flags]
-        final = []
-        for v, b in zip(badges, bools):
-            if b:
-                final.append(v)
-            else:
-                continue
+        final = [k for k, v in mem_flags if v]
         a = [badge_mapping[str(b)] for b in final if b in badge_mapping]
         a.append("<:nitro:730892254092198019>") if await GuildStats(ctx).check_nitro(m) else None
         if isinstance(m, discord.User):
@@ -472,6 +450,16 @@ class Profile(commands.Cog):
         embed.set_footer(
             text=f'Channel created {humanize.naturaltime(datetime.datetime.utcnow() - channel.created_at)}c')
         await ctx.send(embed=embed)
+    
+    @avatar.error
+    async def cog_error(self, ctx, error):
+        if isinstance(error, commands.BadUnionArgument):
+            await ctx.send(f"That member or user was not found!")
+    
+    @memberinfo.error
+    async def cog_error(self, ctx, error):
+        if isinstance(error, commands.BadUnionArgument):
+            await ctx.send(f"That member or user was not found!")
 
 
 def setup(client):

@@ -96,7 +96,7 @@ class VibeSchool(commands.Cog):
         await ctx.send("**Quizzes Commands**\n" + "\n".join(cmds))
     
     @take_quiz.command(aliases=['young', 'ty'], invoke_without_command=True)
-    @check_guild_and_channel(channel=687818177773568090)
+    @check_guild_and_channel(channel=738230552959909909)
     async def the_young(self, ctx):
         """Quiz for which you can study in <#687817303177691373> and take in <#687818177773568090>"""
         try:
@@ -161,7 +161,7 @@ class VibeSchool(commands.Cog):
             await ctx.send(er)
     
     @take_quiz.command(aliases=['ad', 'adulthood'], invoke_without_command=True)
-    @check_guild_and_channel(channel=687821074200526873)
+    @check_guild_and_channel(channel=738231113696280587)
     async def vibe_adult(self, ctx):
         """Quiz for which you can study in <#687821074200526873> and take in <#687821074200526873>"""
         try:
